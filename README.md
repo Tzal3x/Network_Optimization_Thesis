@@ -9,9 +9,9 @@ Before diving into a specific subject, it is required to understand the basic co
 ### Satelite-Stations problem:
 Let N satelites orbiting earth and M stations on the ground.
 xs denotes rate of information transmited by satelite s. +/-
-for every satelite: maximize U(Si)
-                    subject to: Kirchhoff law
-                                |xs| <= Capacity
-                                ++some_other_constraints
+for every satelite: maximize U(Si) \\
+\t\t\t\t\t\t\t\t\t\t subject to: Kirchhoff law \\
+\t\t\t\t\t\t\t\t\t\t |xs| <= Capacity \\
+\t\t\t\t\t\t\t\t\t\t ++some_other_constraints \\
                                 
-Formulate and solve this problem using MATLAB's optimization package. 
+Formulate and solve this problem using MATLAB's optimization package. \\ 
