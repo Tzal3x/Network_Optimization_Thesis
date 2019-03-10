@@ -1,4 +1,4 @@
-%% Main file, here everything is ammased.
+%% Main file, here everything is assembled.
 %{
 Usefull hotkeys:
 Ctrl+/ auto-comments the selected lines
@@ -35,27 +35,62 @@ options = optimoptions('fmincon','Display','iter','Algorithm','sqp');
 
 
 %% Test driving 
-x = [];
-y = [];
-sat = satelite(1,2,3);
+% n=600;
+% x = 1:n;
+% y = 1:n;      
+% % x2 = 1:n;
+% % y2 = 1:n;      
+% z = repmat(408,length(x));
+% sat = satelite(1,2,3);
+% % sat2 = satelite(5,6,3);
+% orbit = viscircles([sat.get_lat() sat.get_long()],408);
+% for i = 1:n % 1*step, 2*step, 3*step (...)
+%    sat.next_pos(i)
+%    x(i) = sat.get_lat();
+%    y(i) = sat.get_long();
+%    disp([y(i),x(i)])
+% %    sat2.next_pos(i)
+% %    x2(i) = sat2.get_lat();
+% %    y2(i) = sat2.get_long();
+% end
+% comet3(x,y,z) %comet (x,y) for 2d graph
 
-for i = 1:600
-   sat.next_pos(i)
-   x = [x,sat.get_lat()];
-   y = [y,sat.get_long()];
-%    pause(0.2) 
+%% Main start
+step_bound = 1000;
+hold on % keep plotting on the existing figure
+title('Satelites orbiting the earth and some stations fixed in place')
+rad = 408;
+axis([-rad-100 rad+100 -rad-100 rad+100]) %setting up figure size
+viscircles([0 0],408-88) %earth
+
+% creating satelites:
+sat1 = satelite(0,0,50);
+sat2 = satelite(0,0,-60);
+sat3 = satelite(0,0,-70);
+sat4 = satelite(0,0,80);
+sat5 = satelite(0,0,60);
+
+sats = [sat1,sat2,sat3,sat4,sat5]; %list containing every satelite
+
+for step=1:0.1:step_bound
+    %Move every satelite:
+    for sati = sats
+        sati.next_pos(step);
+        plot(sati.get_lat, sati.get_long,'r*');
+    end
+    drawnow
+    pause(1) % 1 frame per second for animation purposes
 end
+hold off
 
-comet(x,y)
+
 
 
 %{
 --------------------------------------------------------------------
 Function definitions in a script must appear at the end of the file.
-Only the first fuction can be accessed by other filies. The rest are
-acounted as local functions.
+Only the first fuction can be accessed by other files. The rest are
+acounted as local functions. MATLAB does no support default values on 
+function parameters.
 --------------------------------------------------------------------
 %}
-function out = f(x) %note: MATLAB does no support default values on function parameters
-out = 100*(x(2)-x(1)^2)^2 + (1-x(1))^2;
-end
