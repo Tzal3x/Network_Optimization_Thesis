@@ -1,4 +1,4 @@
-% --------- HELPING SCRIPT FOR EXPERIMENTATION AND DEBUGING. IGNORE IT -----------------------
+
 step_bound = 1000;
 hold on % keep plotting on the existing figure
 title('Satelites orbiting the earth and some stations fixed in place')
@@ -32,7 +32,3 @@ for step=1:0.1:step_bound
     pause(0.3) % 1 frame per second for animation purposes
 end
 hold off
-
-%% test stations
-stat1 = station(2,earth_radius,10)
-stat2 = station(2,earth_radius,16)
