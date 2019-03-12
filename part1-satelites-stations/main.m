@@ -35,51 +35,43 @@ options = optimoptions('fmincon','Display','iter','Algorithm','sqp');
 
 
 %% Space set up:
-step_bound = 1000;
 hold on; % keep plotting on the existing figure
+axis([-earth_radius-200 earth_radius+200 -earth_radius-200 earth_radius+200]); %setting up figure size
 title("Satelites orbiting the earth and some stations placed on the planet 's surface.");
 earth_radius = 300;
-axis([-earth_radius-200 earth_radius+200 -earth_radius-200 earth_radius+200]); %setting up figure size
+step_bound = 10000;
 
-% Creating satelite and station objects: remember, both take inputs as (arg_vel, arg_alt, arg_steps)
-sat1 = satelite(30,earth_radius+60,8);
-sat2 = satelite(-26,earth_radius+30,19);
-stat1 = station(2,earth_radius,10);
-stat2 = station(2,earth_radius,81);%for some reason, both stations overlap each other instead of being initialized at different positions!!!
+sat1 = satelite(30,earth_radius+60,30,10);
+sat2 = satelite(60,earth_radius+80,65,10);
+sat3 = satelite(30,earth_radius+90,60,10);
+sat4 = satelite(80,earth_radius+50,55,10);
 
-for step=1:0.1:step_bound
+station1 = satelite(10,earth_radius,90,10);
+station2 = satelite(10,earth_radius,10,10);
+
+for i=1:step_bound
     earth = viscircles([0 0],earth_radius,'Color','b'); %earth
     
-    sat1.next_pos(step);
-    sat2.next_pos(step);
-    stat1.next_pos(step);
-    stat2.next_pos(step);
-   
-    scoordinates1 = [sat1.get_long() sat1.get_lat()];
-    scoordinates2 = [sat2.get_long() sat2.get_lat()];
+    vis_sat1 = viscircles(sat1.lifetime_coordinates(:,i)',8,'Color','g');
+    vis_sat2 = viscircles(sat2.lifetime_coordinates(:,i)',8,'Color','g');
+    vis_sat3 = viscircles(sat3.lifetime_coordinates(:,i)',8,'Color','g');
+    vis_sat4 = viscircles(sat4.lifetime_coordinates(:,i)',8,'Color','g');
+
+    vis_station1 = viscircles(station1.lifetime_coordinates(:,i)',12,'Color','r');
+    vis_station2 = viscircles(station2.lifetime_coordinates(:,i)',12,'Color','r');
     
-    tcoordinates1 = [stat1.get_long() stat1.get_lat()];
-    tcoordinates2 = [stat2.get_long() stat2.get_lat()];
-   
-    disp(tcoordinates1)%debug
-    disp(tcoordinates2)%debug
-    disp('--------------------------')%debug
-   
-    vis_sat1 = viscircles(scoordinates1,8,'Color','g');
-    vis_sat2 = viscircles(scoordinates2,8,'Color','g');
-    vis_stat1 = viscircles(tcoordinates1,12,'Color','r');
-    vis_stat2 = viscircles(tcoordinates2,12,'Color','r');
-       
-    pause(0.02) %WARNING: all 'delete' (for graphic objects) functions must be after the 'pause' function 
+    pause(0.01) %WARNING: all 'delete' (for graphic objects) functions must be after the 'pause' function 
     delete(vis_sat1) 
-    delete(vis_sat2) 
-    delete(vis_stat1) 
-    delete(vis_stat2)
+    delete(vis_sat2)
+    delete(vis_sat3)
+    delete(vis_sat4)
+    
+    delete(vis_station1)
+    delete(vis_station2)
+    
     delete(earth)
 end
 hold off;
-
-
 
 %{
 --------------------------------------------------------------------
