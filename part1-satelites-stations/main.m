@@ -36,18 +36,18 @@ options = optimoptions('fmincon','Display','iter','Algorithm','sqp');
 
 %% Space set up:
 hold on; % keep plotting on the existing figure
+earth_radius = 300;
 axis([-earth_radius-200 earth_radius+200 -earth_radius-200 earth_radius+200]); %setting up figure size
 title("Satelites orbiting the earth and some stations placed on the planet 's surface.");
-earth_radius = 300;
-step_bound = 10000;
+step_bound = 50000;%should be the same as the 
 
-sat1 = satelite(30,earth_radius+60,30,10);
-sat2 = satelite(60,earth_radius+80,65,10);
-sat3 = satelite(30,earth_radius+90,60,10);
-sat4 = satelite(80,earth_radius+50,55,10);
+sat1 = satelite(30,earth_radius+60,30,10,step_bound); %(arg_vel,arg_alt,arg_init_pos,arg_periods,arg_bound)
+sat2 = satelite(60,earth_radius+80,65,10,step_bound);
+sat3 = satelite(30,earth_radius+90,60,10,step_bound);
+sat4 = satelite(80,earth_radius+50,55,10,step_bound);
 
-station1 = satelite(10,earth_radius,90,10);
-station2 = satelite(10,earth_radius,10,10);
+station1 = satelite(10,earth_radius,90,10,step_bound);
+station2 = satelite(10,earth_radius,10,10,step_bound);
 
 for i=1:step_bound
     earth = viscircles([0 0],earth_radius,'Color','b'); %earth
@@ -60,7 +60,7 @@ for i=1:step_bound
     vis_station1 = viscircles(station1.lifetime_coordinates(:,i)',12,'Color','r');
     vis_station2 = viscircles(station2.lifetime_coordinates(:,i)',12,'Color','r');
     
-    pause(0.01) %WARNING: all 'delete' (for graphic objects) functions must be after the 'pause' function 
+    pause(0.05) %WARNING: all 'delete' (for graphic objects) functions must be after the 'pause' function 
     delete(vis_sat1) 
     delete(vis_sat2)
     delete(vis_sat3)
