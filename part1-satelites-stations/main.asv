@@ -100,7 +100,7 @@ station2 = satelite3D(20,20,earth_radius,50, rounds, velocities(10));
 
 
 %%%% WARNING! 't' must be always < 10000(from linspace) of all satelites and stations (avoiding index out of bounds error)
-stop = 40;
+stop = 60;
 counter = 1;
 times = 10000;
 for i = 1:times
@@ -173,21 +173,36 @@ current_coordinates = [vis_sat1_coordinates;
 
 %% Creating matrix A:
 n = length(current_coordinates(:,1));
-A = zeros(n,n); %(N+M)x(N+M)
+DISTANCES = zeros(n,n); %(N+M)x(N+M)
+LINKS = zeros(n,n); %(N+M)x(N+M)
 communication_range = 200;
 for i = 1:n
-    counter = 1; % must not exceed length(current_coordinates(:,1), a.k.a #sats+#stations (N+M)
-    for j = 1:n %j = (i+1):n
+    for j = 1:n
+        DISTANCES(i,j) = euclidean_dist(current_coordinates(i,:),current_coordinates(j,:)); 
         if euclidean_dist(current_coordinates(i,:),current_coordinates(j,:)) <= communication_range %200 is arbitrary
-            A(i,counter) = 1;
+            LINKS(i,j) = 1;
         else
-            A(i,counter) = 0;
+            LINKS(i,j) = 0;
         end
-        counter = counter + 1;
     end
 end
-disp('Binary matrix containing ')
-disp(A)
+
+%Each row concerns -> a satelite, last 2 rows -> stations
+disp('Distance matrix:-----------------------------------------------------')
+disp(DISTANCES)
+disp('---------------------------------------------------------------------')
+disp(LINKS)%should I include the diagonal elements (selfs)?
+disp('---------------------------------------------------------------------')
+
+b = [5 ;6 ;7 ;5 ;1 ;2 ;5 ;3 ;4 ;3 ;2]; % capacities
+objective_function = @(s)sum(s); %s: divergence, s is a 1x(N+M) vector
+
+s = zeros(1,n);
+for i = 1:n
+    s(i) = sum(LINKS(i,:))-sum(LINKS(:,i));
+end
+
+
 
 %{
 --------------------------------------------------------------------

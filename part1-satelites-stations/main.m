@@ -100,7 +100,7 @@ station2 = satelite3D(20,20,earth_radius,50, rounds, velocities(10));
 
 
 %%%% WARNING! 't' must be always < 10000(from linspace) of all satelites and stations (avoiding index out of bounds error)
-stop = 40;
+stop = 60;
 counter = 1;
 times = 10000;
 for i = 1:times
@@ -173,23 +173,39 @@ current_coordinates = [vis_sat1_coordinates;
 
 %% Creating matrix A:
 n = length(current_coordinates(:,1));
-A1 = zeros(n,n); %(N+M)x(N+M)
-A2 = zeros(n,n); %(N+M)x(N+M)
+DISTANCES = zeros(n,n); %(N+M)x(N+M)
+LINKS = zeros(n,n); %(N+M)x(N+M)
 communication_range = 200;
 for i = 1:n
     for j = 1:n
-        A1(i,j) = euclidean_dist(current_coordinates(i,:),current_coordinates(j,:)); 
+        DISTANCES(i,j) = euclidean_dist(current_coordinates(i,:),current_coordinates(j,:)); 
         if euclidean_dist(current_coordinates(i,:),current_coordinates(j,:)) <= communication_range %200 is arbitrary
-            A2(i,j) = 1;
+            LINKS(i,j) = 1;
         else
-            A2(i,j) = 0;
+            LINKS(i,j) = 0;
         end
     end
 end
-disp('Distance matrix:-------------')
-disp(A1)
-disp('-----------------------------')
-disp(A2)
+
+%Each row concerns -> a satelite, last 2 rows -> stations
+disp('Distance matrix:-----------------------------------------------------')
+disp(DISTANCES)
+disp('---------------------------------------------------------------------')
+disp(LINKS)%should I include the diagonal elements (selfs)?
+disp('---------------------------------------------------------------------')
+
+%% Constructing the function
+b = [5 ;6 ;7 ;5 ;1 ;2 ;5 ;3 ;4 ;3 ;2]; % capacities
+% objective_function = @(s)sum(s);  % UNDER CONSTRUCTION
+objective_function = @(x)sum(LINKS*x - LINKS*x);
+
+s = zeros(1,n); %s: divergence, s is a 1x(N+M) vector
+% for i = 1:n
+%     s(i) = @(x)sum(LINKS(i,:).*x)-sum(LINKS(:,i).*x); %% This is WRONG!
+%     IT WONT EVEN RUN (OBVIOUSLY)! If it run a zero sum is expected.
+% end 
+ 
+
 
 
 %{
