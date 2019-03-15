@@ -173,24 +173,21 @@ current_coordinates = [vis_sat1_coordinates;
 
 %% Creating matrix A:
 n = length(current_coordinates(:,1));
-A1 = zeros(n,n); %(N+M)x(N+M)
-A2 = zeros(n,n); %(N+M)x(N+M)
+A = zeros(n,n); %(N+M)x(N+M)
 communication_range = 200;
 for i = 1:n
-    for j = 1:n
-        A1(i,j) = euclidean_dist(current_coordinates(i,:),current_coordinates(j,:)); 
+    counter = 1; % must not exceed length(current_coordinates(:,1), a.k.a #sats+#stations (N+M)
+    for j = 1:n %j = (i+1):n
         if euclidean_dist(current_coordinates(i,:),current_coordinates(j,:)) <= communication_range %200 is arbitrary
-            A2(i,j) = 1;
+            A(i,counter) = 1;
         else
-            A2(i,j) = 0;
+            A(i,counter) = 0;
         end
+        counter = counter + 1;
     end
 end
-disp('Distance matrix:-------------')
-disp(A1)
-disp('-----------------------------')
-disp(A2)
-
+disp('Binary matrix containing ')
+disp(A)
 
 %{
 --------------------------------------------------------------------
