@@ -7,8 +7,8 @@ Therefore, this README contains two-in-one: a record of progress and a descripti
 Before diving into a specific subject, it is required to understand the basic concepts of network optimization theory and to experiment with some hypothetical/artificial problem(s).
 
 ### Satelite-Stations problem:
-Let N satelites orbiting earth and M stations on the ground.
-xs denotes rate of information transmited by satelite s. +/-
+Let N satelites orbiting the earth and M stations on the planet's surface.
+xs denotes rate of information transmited by satelite s to another satelite or station.
 
 maximize U(Si)  
 subject to: Kirchhoff law  
