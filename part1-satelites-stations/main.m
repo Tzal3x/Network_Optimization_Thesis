@@ -77,26 +77,28 @@ hold off;
 hold on; % keep plotting on the existing figure
 earth_radius = 200;
 axis([-earth_radius-200 earth_radius+200 -earth_radius-200 earth_radius+200 -earth_radius-200 earth_radius+200]); %setting up figure size
+axis equal
+
 title("Satelites orbiting the earth and some stations placed on the planet 's surface. -3D ");
 rounds = 10;
 
 [x,y,z] = sphere();%get coordinates in order to create 3D spheres. A sphere can be the earth, a satelite or a station.
 %%%% ---------[s s   s s s s s s st st]
 % velocities = [3 3.2 6 4 3 5 2 3 80 80]*1000; % the smaller the faster (because of the use of linspace() in the satelite3D constructor)
-velocities = [3 3 3 3 3 3 3 3 80 80]*10000; %debug
+velocities = [3 3 3 3 3 3 3 3 80 80]*1000; %debug
 % velocities = [ 1 1 1 1 1 1 1 1 0.1 0.1]*10; %debug
-sat1 = satelite3D(20, 20,earth_radius+50, 20, rounds, velocities(1)); % arg_vel is weirdly defined. The bigger it's value the slower the object moves (since it makes more steps to make a full circle)
-sat2 = satelite3D(20, 20, earth_radius+50, 30, rounds, velocities(2));
-sat3 = satelite3D(20, 20,earth_radius+50, 40, rounds, velocities(3));
-sat4 = satelite3D(20, 20, earth_radius+50, 50, rounds, velocities(4));
-sat5 = satelite3D(20, 20,earth_radius+50, 60, rounds, velocities(5)); 
-sat6 = satelite3D(20, 20, earth_radius+50, 70, rounds, velocities(6));
-sat7= satelite3D( 20, 20, earth_radius+50, 80, rounds, velocities(7));
-sat8 = satelite3D(20, 20, earth_radius+50, 90, rounds, velocities(8));
-sat9 = satelite3D(20, 20, earth_radius+50, 100, rounds, velocities(8));
+sat1 = satelite3D(20, 20,earth_radius+50, 20, rounds, velocities(1),'satelite'); % arg_vel is weirdly defined. The bigger it's value the slower the object moves (since it makes more steps to make a full circle)
+sat2 = satelite3D(80, 80, earth_radius+50, 60, rounds, velocities(2),'satelite');
+sat3 = satelite3D(20, 20,earth_radius+50, 100, rounds, velocities(3),'satelite');
+sat4 = satelite3D(20, 20, earth_radius+50, 140, rounds, velocities(4),'satelite');
+sat5 = satelite3D(20, 20,earth_radius+50, 180, rounds, velocities(5),'satelite'); 
+sat6 = satelite3D(20, 20, earth_radius+50, 220, rounds, velocities(6),'satelite');
+sat7= satelite3D( 20, 20, earth_radius+50, 260, rounds, velocities(7),'satelite');
+sat8 = satelite3D(20, 20, earth_radius+50, 300, rounds, velocities(8),'satelite');
+sat9 = satelite3D(20, 20, earth_radius+50, 340, rounds, velocities(8),'satelite');
 
-station1 = satelite3D(20,20,earth_radius,20, rounds, velocities(9));
-station2 = satelite3D(20,20,earth_radius,50, rounds, velocities(10));
+station1 = satelite3D(20,20,earth_radius,20, rounds, velocities(9),'station');
+station2 = satelite3D(20,20,earth_radius,300, rounds, velocities(10),'station');
 
 
 %%%% WARNING! 't' must be always < 10000(from linspace) of all satelites and stations (avoiding index out of bounds error)
@@ -139,7 +141,7 @@ for i = 1:times
    end
    
    %Delete ---------------------------
-   pause(0.05) %WARNING: all 'delete' (for graphic objects) functions must be after the 'pause' function 
+   pause(0.1) %WARNING: all 'delete' (for graphic objects) functions must be after the 'pause' function 
    delete(vis_sat1)
    delete(vis_sat2)
    delete(vis_sat3)
@@ -172,7 +174,8 @@ current_coordinates = [vis_sat1_coordinates;
                        ];
 
 %% Creating matrix A:
-n = length(current_coordinates(:,1));
+nodes = [sat1 sat2 sat3 sat4 sat5 sat6 sat7 sat8 sat9 station1 station2];
+n = length(current_coordinates(:,1));% n = number of total nodes. (Remember N:#satelites, M:#stations)
 DISTANCES = zeros(n,n); %(N+M)x(N+M)
 LINKS = zeros(n,n); %(N+M)x(N+M)
 communication_range = 200;
@@ -180,13 +183,19 @@ for i = 1:n
     for j = 1:n
         DISTANCES(i,j) = euclidean_dist(current_coordinates(i,:),current_coordinates(j,:)); 
         if euclidean_dist(current_coordinates(i,:),current_coordinates(j,:)) <= communication_range %200 is arbitrary
-            LINKS(i,j) = 1;
+            if strcmp(nodes(i).name,'satelite') && strcmp(nodes(j).name,'satelite')
+                LINKS(i,j) = 1; %satelite to satelite link
+            else
+                LINKS(i,j) = -1; %satelite to station link, '-1' since stations are sinks in graph terms
+            end
         else
             LINKS(i,j) = 0;
         end
+        if i == j
+           LINKS(i,j)=0; % do not link the node to itself
+        end
     end
 end
-
 %Each row concerns -> a satelite, last 2 rows -> stations
 disp('Distance matrix:-----------------------------------------------------')
 disp(DISTANCES)
@@ -195,18 +204,9 @@ disp(LINKS)%should I include the diagonal elements (selfs)?
 disp('---------------------------------------------------------------------')
 
 %% Constructing the function
-b = [5 ;6 ;7 ;5 ;1 ;2 ;5 ;3 ;4 ;3 ;2]; % capacities
-% objective_function = @(s)sum(s);  % UNDER CONSTRUCTION
-objective_function = @(x)sum(LINKS*x - LINKS*x);
-
-s = zeros(1,n); %s: divergence, s is a 1x(N+M) vector
-% for i = 1:n
-%     s(i) = @(x)sum(LINKS(i,:).*x)-sum(LINKS(:,i).*x); %% This is WRONG!
-%     IT WONT EVEN RUN (OBVIOUSLY)! If it run a zero sum is expected.
-% end 
- 
-
-
+%Generate capacities:
+objective_function = @(xs)sum([zeros(1,length(xs)-2),1,1].*xs);
+ linksnum = length(find(triu(LINKS)~=0));
 
 %{
 --------------------------------------------------------------------
