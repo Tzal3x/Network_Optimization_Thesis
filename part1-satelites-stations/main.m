@@ -87,24 +87,69 @@ rounds = 10;
 % velocities = [3 3.2 6 4 3 5 2 3 80 80]*1000; % the smaller the faster (because of the use of linspace() in the satelite3D constructor)
 velocities = [3 3 3 3 3 3 3 3 80 80]*1000; %debug
 % velocities = [ 1 1 1 1 1 1 1 1 0.1 0.1]*10; %debug
-sat1 = satelite3D(20, 20,earth_radius+50, 20, rounds, velocities(1),'satelite'); % arg_vel is weirdly defined. The bigger it's value the slower the object moves (since it makes more steps to make a full circle)
-sat2 = satelite3D(80, 80, earth_radius+50, 60, rounds, velocities(2),'satelite');
-sat3 = satelite3D(20, 20,earth_radius+50, 100, rounds, velocities(3),'satelite');
-sat4 = satelite3D(20, 20, earth_radius+50, 140, rounds, velocities(4),'satelite');
-sat5 = satelite3D(20, 20,earth_radius+50, 180, rounds, velocities(5),'satelite'); 
-sat6 = satelite3D(20, 20, earth_radius+50, 220, rounds, velocities(6),'satelite');
-sat7= satelite3D( 20, 20, earth_radius+50, 260, rounds, velocities(7),'satelite');
-sat8 = satelite3D(20, 20, earth_radius+50, 300, rounds, velocities(8),'satelite');
-sat9 = satelite3D(20, 20, earth_radius+50, 340, rounds, velocities(8),'satelite');
+ 
+% sat1 = satelite3D(20, 20,earth_radius+50, 20, rounds, velocities(1),'satelite'); % arg_vel is weirdly defined. The bigger it's value the slower the object moves (since it makes more steps to make a full circle)
+% sat2 = satelite3D(20, 20, earth_radius+50, 60, rounds, velocities(2),'satelite');
+% sat3 = satelite3D(20, 20,earth_radius+50, 100, rounds, velocities(3),'satelite');
+% sat4 = satelite3D(20, 20, earth_radius+50, 140, rounds, velocities(4),'satelite');
+% sat5 = satelite3D(20, 20,earth_radius+50, 180, rounds, velocities(5),'satelite'); 
+% sat6 = satelite3D(20, 20, earth_radius+50, 220, rounds, velocities(6),'satelite');
+% sat7= satelite3D( 20, 20, earth_radius+50, 260, rounds, velocities(7),'satelite');
+% sat8 = satelite3D(20, 20, earth_radius+50, 300, rounds, velocities(8),'satelite');
+% sat9 = satelite3D(20, 20, earth_radius+50, 340, rounds, velocities(8),'satelite');
+% 
+% station1 = satelite3D(20,20,earth_radius,20, rounds, velocities(9),'station');
+% station2 = satelite3D(20,20,earth_radius,260, rounds, velocities(10),'station');
 
-station1 = satelite3D(20,20,earth_radius,20, rounds, velocities(9),'station');
-station2 = satelite3D(20,20,earth_radius,300, rounds, velocities(10),'station');
+%%%% Experimental orbits (harder case)
+velocities = [3 3.2 6 4 3 5 2 3 80 80]*1000;
+sat1 = satelite3D(30, 30,earth_radius+50, 20, rounds, velocities(1),'satelite'); % arg_vel is weirdly defined. The bigger it's value the slower the object moves (since it makes more steps to make a full circle)
+sat2 = satelite3D(50, 50, earth_radius+50, 60, rounds, velocities(2),'satelite');
+sat3 = satelite3D(-20, -20,earth_radius+50, 100, rounds, velocities(3),'satelite');
+sat4 = satelite3D(100, 100, earth_radius+50, 140, rounds, velocities(4),'satelite');
+sat5 = satelite3D(35, 35,earth_radius+50, 180, rounds, velocities(5),'satelite'); 
+sat6 = satelite3D(90, 90, earth_radius+50, 220, rounds, velocities(6),'satelite');
+sat7= satelite3D(-90, -90, earth_radius+50, 260, rounds, velocities(7),'satelite');
+sat8 = satelite3D(-40, -40, earth_radius+50, 300, rounds, velocities(8),'satelite');
+sat9 = satelite3D(-120, -120, earth_radius+50, 340, rounds, velocities(8),'satelite');
+station1 = satelite3D(210,210,earth_radius,20, rounds, velocities(9),'station');
+station2 = satelite3D(230,230,earth_radius,260, rounds, velocities(10),'station');
 
 
-%%%% WARNING! 't' must be always < 10000(from linspace) of all satelites and stations (avoiding index out of bounds error)
+%%%% WARNING! 't' must be always < min(velocities)(lesser from linspace) of all satelites and stations (avoiding index out of bounds error)
 stop = 60;
 counter = 1;
 times = 10000;
+
+%% SHOWING ORBITS!!! PROBLEM WITH VARIABLE ASSIGNMENT
+% x1 = sat1.lifetime_coordinates(:,1)';
+% x1 = sph2cart(x1(1),x1(2),x1(3));
+% x2 = sat2.lifetime_coordinates(:,1)';
+% x2 = sph2cart(x2(1),x2(2),x2(3));
+% x3 = sat3.lifetime_coordinates(:,1)';
+% x3 = sph2cart(x3(1),x3(2),x3(3));
+% x4 = sat4.lifetime_coordinates(:,1)';
+% x4 = sph2cart(x4(1),x4(2),x4(3));
+% x5 = sat5.lifetime_coordinates(:,1)';
+% x5 = sph2cart(x5(1),x5(2),x5(3));
+% x6 = sat6.lifetime_coordinates(:,1)';
+% x6 = sph2cart(x6(1),x6(2),x6(3));
+% x7 = sat7.lifetime_coordinates(:,1)';
+% x7 = sph2cart(x7(1),x7(2),x7(3));
+% x8 = sat8.lifetime_coordinates(:,1)';
+% x8 = sph2cart(x8(1),x8(2),x8(3));
+% x9 = sat9.lifetime_coordinates(:,1)';
+% x9 = sph2cart(x9(1),x9(2),x9(3));
+% plotCircle3D([0,0,0],[x1(1),x1(2),x1(3)],earth_radius+50);
+% plotCircle3D([0,0,0],[x2(1),x2(2),x2(3)],earth_radius+50);
+% plotCircle3D([0,0,0],[x3(1),x3(2),x3(3)],earth_radius+50);
+% plotCircle3D([0,0,0],[x4(1),x4(2),x4(3)],earth_radius+50);
+% plotCircle3D([0,0,0],[x5(1),x5(2),x5(3)],earth_radius+50);
+% plotCircle3D([0,0,0],[x6(1),x6(2),x6(3)],earth_radius+50);
+% plotCircle3D([0,0,0],[x7(1),x7(2),x7(3)],earth_radius+50);
+% plotCircle3D([0,0,0],[x8(1),x8(2),x8(3)],earth_radius+50);
+% plotCircle3D([0,0,0],[x9(1),x9(2),x9(3)],earth_radius+50);
+
 for i = 1:times
    %Coordinates ---------------------------
    vis_sat1_coordinates = sat1.lifetime_coordinates(:,i)';
@@ -116,7 +161,7 @@ for i = 1:times
    vis_sat7_coordinates = sat7.lifetime_coordinates(:,i)';
    vis_sat8_coordinates = sat8.lifetime_coordinates(:,i)';
    vis_sat9_coordinates = sat9.lifetime_coordinates(:,i)';
-     
+   
    vis_station1_coordinates = station1.lifetime_coordinates(:,i)';
    vis_station2_coordinates = station2.lifetime_coordinates(:,i)';
    
@@ -141,7 +186,7 @@ for i = 1:times
    end
    
    %Delete ---------------------------
-   pause(0.1) %WARNING: all 'delete' (for graphic objects) functions must be after the 'pause' function 
+   pause(0.01) %WARNING: all 'delete' (for graphic objects) functions must be after the 'pause' function 
    delete(vis_sat1)
    delete(vis_sat2)
    delete(vis_sat3)
@@ -176,6 +221,7 @@ current_coordinates = [vis_sat1_coordinates;
 %% Creating matrix A:
 nodes = [sat1 sat2 sat3 sat4 sat5 sat6 sat7 sat8 sat9 station1 station2];
 n = length(current_coordinates(:,1));% n = number of total nodes. (Remember N:#satelites, M:#stations)
+M = 2; %number of stations in graph
 DISTANCES = zeros(n,n); %(N+M)x(N+M)
 LINKS = zeros(n,n); %(N+M)x(N+M)
 communication_range = 200;
@@ -191,7 +237,7 @@ for i = 1:n
         else
             LINKS(i,j) = 0;
         end
-        if i == j
+        if (i == j) || ((i >= n-M) && j <= i ) % CHANGE THIS IF YOU ADD MORE STATIONS
            LINKS(i,j)=0; % do not link the node to itself
         end
     end
@@ -206,7 +252,7 @@ disp('---------------------------------------------------------------------')
 %% Constructing the function
 %Generate capacities:
 objective_function = @(xs)sum([zeros(1,length(xs)-2),1,1].*xs);
- linksnum = length(find(triu(LINKS)~=0));
+linksnum = length(find(triu(LINKS)~=0));
 
 %{
 --------------------------------------------------------------------
@@ -216,7 +262,16 @@ acounted as local functions. MATLAB does no support default values on
 function parameters.
 --------------------------------------------------------------------
 %}
+% plotCircle3D([0,0,0],[10,0,0],3)
+% axis equal
+
 function out = euclidean_dist(vec1, vec2) 
     out = sqrt(sum((vec1 - vec2) .^ 2));
 end
 
+function plotCircle3D(center,normal,radius) %#ok<DEFNU>
+theta=0:0.01:2*pi;
+v=null(normal);
+points=repmat(center',1,size(theta,2))+radius*(v(:,1)*cos(theta)+v(:,2)*sin(theta));
+plot3(points(1,:),points(2,:),points(3,:),'r-');
+end
