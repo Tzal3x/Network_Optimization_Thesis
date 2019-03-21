@@ -74,6 +74,7 @@ end
 hold off;
 
 %% Space 3D:--------------------------------------------------------
+cd C:\Users\User\Documents\GitHub\Network_Optimization_Thesis\part1-satelites-stations
 hold on; % keep plotting on the existing figure
 earth_radius = 200;
 axis([-earth_radius-200 earth_radius+200 -earth_radius-200 earth_radius+200 -earth_radius-200 earth_radius+200]); %setting up figure size
@@ -85,43 +86,36 @@ rounds = 10;
 [x,y,z] = sphere();%get coordinates in order to create 3D spheres. A sphere can be the earth, a satelite or a station.
 %%%% ---------[s s   s s s s s s st st]
 % velocities = [3 3.2 6 4 3 5 2 3 80 80]*1000; % the smaller the faster (because of the use of linspace() in the satelite3D constructor)
-velocities = [3 3 3 3 3 3 3 3 80 80]*1000; %debug
 % velocities = [ 1 1 1 1 1 1 1 1 0.1 0.1]*10; %debug
- 
-% sat1 = satelite3D(20, 20,earth_radius+50, 20, rounds, velocities(1),'satelite'); % arg_vel is weirdly defined. The bigger it's value the slower the object moves (since it makes more steps to make a full circle)
-% sat2 = satelite3D(20, 20, earth_radius+50, 60, rounds, velocities(2),'satelite');
-% sat3 = satelite3D(20, 20,earth_radius+50, 100, rounds, velocities(3),'satelite');
-% sat4 = satelite3D(20, 20, earth_radius+50, 140, rounds, velocities(4),'satelite');
-% sat5 = satelite3D(20, 20,earth_radius+50, 180, rounds, velocities(5),'satelite'); 
-% sat6 = satelite3D(20, 20, earth_radius+50, 220, rounds, velocities(6),'satelite');
-% sat7= satelite3D( 20, 20, earth_radius+50, 260, rounds, velocities(7),'satelite');
-% sat8 = satelite3D(20, 20, earth_radius+50, 300, rounds, velocities(8),'satelite');
-% sat9 = satelite3D(20, 20, earth_radius+50, 340, rounds, velocities(8),'satelite');
-% 
-% station1 = satelite3D(20,20,earth_radius,20, rounds, velocities(9),'station');
-% station2 = satelite3D(20,20,earth_radius,260, rounds, velocities(10),'station');
+velocities = [3 3 3 3 3 3 3 3 80 80]*1000; %debug
+% velocities = [3 3.2 6 4 3 5 2 3 80 80]*1000;
 
-%%%% Experimental orbits (harder case)
-velocities = [3 3.2 6 4 3 5 2 3 80 80]*1000;
-sat1 = satelite3D(30, 30,earth_radius+50, 20, rounds, velocities(1),'satelite'); % arg_vel is weirdly defined. The bigger it's value the slower the object moves (since it makes more steps to make a full circle)
-sat2 = satelite3D(50, 50, earth_radius+50, 60, rounds, velocities(2),'satelite');
-sat3 = satelite3D(-20, -20,earth_radius+50, 100, rounds, velocities(3),'satelite');
-sat4 = satelite3D(100, 100, earth_radius+50, 140, rounds, velocities(4),'satelite');
-sat5 = satelite3D(35, 35,earth_radius+50, 180, rounds, velocities(5),'satelite'); 
-sat6 = satelite3D(90, 90, earth_radius+50, 220, rounds, velocities(6),'satelite');
-sat7= satelite3D(-90, -90, earth_radius+50, 260, rounds, velocities(7),'satelite');
-sat8 = satelite3D(-40, -40, earth_radius+50, 300, rounds, velocities(8),'satelite');
-sat9 = satelite3D(-120, -120, earth_radius+50, 340, rounds, velocities(8),'satelite');
-station1 = satelite3D(210,210,earth_radius,20, rounds, velocities(9),'station');
-station2 = satelite3D(230,230,earth_radius,260, rounds, velocities(10),'station');
+sat1 = satelite3D(20, 20, earth_radius+50, 20, rounds, velocities(1),'satelite'); % arg_vel is weirdly defined. The bigger it's value the slower the object moves (since it makes more steps to make a full circle)
+sat2 = satelite3D(20, 20, earth_radius+50, 60, rounds, velocities(2),'satelite');
+sat3 = satelite3D(20, 20, earth_radius+50, 100, rounds, velocities(3),'satelite');
+sat4 = satelite3D(20, 20, earth_radius+50, 140, rounds, velocities(4),'satelite');
+sat5 = satelite3D(20, 20, earth_radius+50, 180, rounds, velocities(5),'satelite'); 
+sat6 = satelite3D(20, 20, earth_radius+50, 220, rounds, velocities(6),'satelite');
+sat7= satelite3D( 20, 20, earth_radius+50, 260, rounds, velocities(7),'satelite');
+sat8 = satelite3D(20, 20, earth_radius+50, 300, rounds, velocities(8),'satelite');
+sat9 = satelite3D(20, 20, earth_radius+50, 340, rounds, velocities(8),'satelite');
+station1 = satelite3D(20,20,earth_radius,21, rounds, velocities(9),'station');
+station2 = satelite3D(20,20,earth_radius,260, rounds, velocities(10),'station');
 
+%%%% Experimental orbits (harder, non-uniform case)
+% sat1 = satelite3D(30, 30,earth_radius+50, 20, rounds, velocities(1),'satelite'); % arg_vel is weirdly defined. The bigger it's value the slower the object moves (since it makes more steps to make a full circle)
+% sat2 = satelite3D(50, 50, earth_radius+50, 60, rounds, velocities(2),'satelite');
+% sat3 = satelite3D(-20, -20,earth_radius+50, 100, rounds, velocities(3),'satelite');
+% sat4 = satelite3D(100, 100, earth_radius+50, 140, rounds, velocities(4),'satelite');
+% sat5 = satelite3D(35, 35,earth_radius+50, 180, rounds, velocities(5),'satelite'); 
+% sat6 = satelite3D(90, 90, earth_radius+50, 220, rounds, velocities(6),'satelite');
+% sat7= satelite3D(-90, -90, earth_radius+50, 260, rounds, velocities(7),'satelite');
+% sat8 = satelite3D(-40, -40, earth_radius+50, 300, rounds, velocities(8),'satelite');
+% sat9 = satelite3D(-120, -120, earth_radius+50, 340, rounds, velocities(8),'satelite');
+% station1 = satelite3D(210,210,earth_radius,20, rounds, velocities(9),'station');
+% station2 = satelite3D(230,230,earth_radius,260, rounds, velocities(10),'station');
 
-%%%% WARNING! 't' must be always < min(velocities)(lesser from linspace) of all satelites and stations (avoiding index out of bounds error)
-stop = 60;
-counter = 1;
-times = 10000;
-
-%% SHOWING ORBITS!!! PROBLEM WITH VARIABLE ASSIGNMENT
+%%%% SHOWING ORBITS!!! PROBLEM WITH VARIABLE ASSIGNMENT
 % x1 = sat1.lifetime_coordinates(:,1)';
 % x1 = sph2cart(x1(1),x1(2),x1(3));
 % x2 = sat2.lifetime_coordinates(:,1)';
@@ -150,6 +144,9 @@ times = 10000;
 % plotCircle3D([0,0,0],[x8(1),x8(2),x8(3)],earth_radius+50);
 % plotCircle3D([0,0,0],[x9(1),x9(2),x9(3)],earth_radius+50);
 
+%%%% WARNING! 't' must be always < min(velocities)(lesser from linspace) of all satelites and stations (avoiding index out of bounds error)
+stop = 60;
+times = 10000;
 for i = 1:times
    %Coordinates ---------------------------
    vis_sat1_coordinates = sat1.lifetime_coordinates(:,i)';
@@ -218,12 +215,12 @@ current_coordinates = [vis_sat1_coordinates;
                        vis_station2_coordinates;                       
                        ];
 
-%% Creating matrix A:
+%% Creating objective function and constraints:
 nodes = [sat1 sat2 sat3 sat4 sat5 sat6 sat7 sat8 sat9 station1 station2];
 n = length(current_coordinates(:,1));% n = number of total nodes. (Remember N:#satelites, M:#stations)
 M = 2; %number of stations in graph
 DISTANCES = zeros(n,n); %(N+M)x(N+M)
-LINKS = zeros(n,n); %(N+M)x(N+M)
+LINKS = zeros(n,n); %(N+M)x(N+M)^2
 communication_range = 200;
 for i = 1:n
     for j = 1:n
@@ -237,11 +234,20 @@ for i = 1:n
         else
             LINKS(i,j) = 0;
         end
-        if (i == j) || ((i >= n-M) && j <= i ) % CHANGE THIS IF YOU ADD MORE STATIONS
+        if (i == j) % || ((i >= n-M) && j <= i ) % if self or (if station and lower trianglular matrix because "stations sink data only one way")
            LINKS(i,j)=0; % do not link the node to itself
         end
     end
 end
+num_of_links = length(find(LINKS~=0))/2;
+
+%%%% Making negative the symmetric elements
+% for i = 1:n
+%     for j = (i+1):n
+%         LINKS(i,j)=LINKS(i,j)*(-1);
+%     end
+% end
+
 %Each row concerns -> a satelite, last 2 rows -> stations
 disp('Distance matrix:-----------------------------------------------------')
 disp(DISTANCES)
@@ -249,10 +255,27 @@ disp('---------------------------------------------------------------------')
 disp(LINKS)%should I include the diagonal elements (selfs)?
 disp('---------------------------------------------------------------------')
 
+
+%% Constructing Aeq for Kirchoff
+%Step 1: create A(n)x(13+11)=A(n)x(13+11) in order to 
+xij = zeros(num_of_links,3); % xij[value][parent node]
+counter = 1;
+for i = 1:n
+    for j = i:n
+       if LINKS(i,j) ~= 0 
+          xij(counter,1) = LINKS(i,j);
+          xij(counter,2) = i;
+          xij(counter,3) = j;
+          counter = counter + 1;
+       end
+    end
+end
+
+
+
 %% Constructing the function
 %Generate capacities:
-objective_function = @(xs)sum([zeros(1,length(xs)-2),1,1].*xs);
-linksnum = length(find(triu(LINKS)~=0));
+objective_function = @(xs)[zeros(1,num_of_links),ones(1,n)].*xs;
 
 %{
 --------------------------------------------------------------------
