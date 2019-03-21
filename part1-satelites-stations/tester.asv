@@ -71,7 +71,20 @@
 % r = 408;
 % surf( r*x, r*y, r*z ) 
 
-
+function out = xijvec(i,x,num_nodes)
+% Is used at the making of the xij matrix (kirchhoff matrix)
+% i = current position of outter iterator, x = xij, num_nodes = number of
+% nodes
+% Output is a vector of 
+    temp = zeros(1,length(x));
+    for it = 1:length(x)
+        if x(it,2)==i || x(it,3)==i
+            temp(it) = x(it,1);
+        end
+    end
+    z
+    out = temp;
+end
 
 
 

@@ -276,7 +276,7 @@ disp(xij)
 disp('|-------------------------------------------|')
 
 A_kirchhoff = zeros(0,num_of_links+n);
-for i = 1:n %1:11
+for i = 1:num_of_links %1:13
     if isempty(A_kirchhoff)
         temp = xijvec(i,xij,n);
         A_kirchhoff = [A_kirchhoff , temp]; %column bind
@@ -285,11 +285,8 @@ for i = 1:n %1:11
         A_kirchhoff = [A_kirchhoff ; temp]; %row bind
     end
 end
-
-disp('|Aeq1:-------------------------------------------|')
-disp(A_kirchhoff)
-disp('|------------------------------------------------|')
- 
+    
+    
 %% Constructing the function
 %Generate capacities:
 objective_function = @(xs)[zeros(1,num_of_links),ones(1,n)].*xs;
@@ -315,19 +312,15 @@ function out = xijvec(i,x,num_nodes)
 % Is used at the making of the xij matrix (kirchhoff matrix)
 % i = current position of outter iterator, x = xij, num_nodes = number of
 % nodes
-% Output is a vector of A_kirchhoff matrix's row.
+% Output is a vector of 
     temp = zeros(1,length(x));
     for it = 1:length(x)
-        if x(it,2)== i || x(it,3)== i
+        if x(it,2)==i || x(it,3)==i
             temp(it) = x(it,1);
         end
     end
     temp2 = diag(ones(1,num_nodes));
-    if i>9 % if it is a satelite CHANGE THIS TO A MORE ROBUST WAY
-        out = [temp, temp2(i,:)/2]; % SHOULD IT BE (/2)  OR SHOULD IT BE WITHOUT IT?
-    else
-        out = [temp, -temp2(i,:)/2]; % SHOULD IT BE (/2)  OR SHOULD IT BE WITHOUT IT?
-    end
+    out = [temp, -temp2(i,:)];
 end
 
 function plotCircle3D(center,normal,radius) %#ok<DEFNU>
