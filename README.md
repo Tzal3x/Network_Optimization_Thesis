@@ -10,7 +10,7 @@ Before diving into a specific subject, it is required to understand the basic co
 Let N satelites orbiting the earth and M stations on the planet's surface.
 xs denotes rate of information transmited by satelite s to another satelite or station.
 
-maximize U(Si)  
+maximize ΣU(Si)  
 subject to: Kirchhoff law  
 |xs| <= Capacity  
 ++some_other_constraints  
