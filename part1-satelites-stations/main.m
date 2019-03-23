@@ -275,24 +275,22 @@ disp('|--[value][parent node 1][parent node 2]|---|')
 disp(xij)
 disp('|-------------------------------------------|')
 
-A_kirchhoff = zeros(0,num_of_links+n);
+A_kirchhoff = zeros(0,num_of_links*2+n);
 for i = 1:n %1:11
+    temp = xijvec(i,xij,n);
     if isempty(A_kirchhoff)
-        temp = xijvec(i,xij,n);
         A_kirchhoff = [A_kirchhoff , temp]; %column bind
     else
-        temp = xijvec(i,xij,n);
         A_kirchhoff = [A_kirchhoff ; temp]; %row bind
     end
 end
-
 disp('|Aeq1:-------------------------------------------|')
 disp(A_kirchhoff)
 disp('|------------------------------------------------|')
- 
 %% Constructing the function
 %Generate capacities:
 objective_function = @(xs)[zeros(1,num_of_links),ones(1,n)].*xs;
+
 
 %{
 --------------------------------------------------------------------
@@ -313,21 +311,32 @@ end
 
 function out = xijvec(i,x,num_nodes)
 % Is used at the making of the xij matrix (kirchhoff matrix)
-% i = current position of outter iterator, x = xij, num_nodes = number of
-% nodes
-% Output is a vector of A_kirchhoff matrix's row.
-    temp = zeros(1,length(x));
+% i = current position of outter iterator, x = xij, num_nodes = number of nodes
+% Output is a vector of A_kirchhoff matrix's row (fianl_Aeq).
+    temp = zeros(1,length(x)*2);
     for it = 1:length(x)
-        if x(it,2)== i || x(it,3)== i
-            temp(it) = x(it,1);
+        if i <= 9  % if inter-satelite communication
+            if x(it,2)== i || x(it,3)== i % if it has a parent_node_1 or parent_node_2
+                if x(it,2)== i % if xij, meaning if it is the parent_node_1
+                    temp(it) = x(it,1); % because (Aeq1 = - Aeq2) and final_Aeq[] 
+                    temp(it+length(x)) = -(-x(it,1));
+                else % sidelestis_xij = - sidelestis_xji
+                    temp(it) = -x(it,1);
+                    temp(it+length(x)) = -(-(-x(it,1)));
+                end
+            end
+            
+        else % else if i > 9 a.k.a if it a station node, ignore one direction (i.e. xi->xj but not xi<=>xj)
+            if x(it,2) == i
+               temp(it) = x(it,1); 
+               temp(it+length(x)) = -(-x(it,1)); 
+            end
         end
+            
     end
+    % Adding si (every single one of them = -1)
     temp2 = diag(ones(1,num_nodes));
-    if i>9 % if it is a satelite CHANGE THIS TO A MORE ROBUST WAY
-        out = [temp, temp2(i,:)/2]; % SHOULD IT BE (/2)  OR SHOULD IT BE WITHOUT IT?
-    else
-        out = [temp, -temp2(i,:)/2]; % SHOULD IT BE (/2)  OR SHOULD IT BE WITHOUT IT?
-    end
+    out = [temp, -temp2(i,:)]; % should it be(/2)? NO!
 end
 
 function plotCircle3D(center,normal,radius) %#ok<DEFNU>
