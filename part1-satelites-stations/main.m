@@ -257,8 +257,13 @@ disp(LINKS)%should I include the diagonal elements (selfs)?
 disp('-- 1 = satelite to satelite connection, -1 = else --------------------------------')
 disp('|=================================================================================|')
 
-%% Constructing Aeq for Kirchoff
-%Step 1: create A(n)x(13+11)=A(n)x(13+11) in order to 
+
+%% Constructing fmincon parameters (objective function, contraints: Aeq, beq, A, b)
+%%%% Constructing the function
+% Generate capacities:
+objective_function = @(xs)[zeros(1,num_of_links*2),ones(1,n)]*xs'; %xs is the optimization vector. xs = [x1,x2,...,x(links_num),x(links_num+1),...,x(2*links_num),s1,s2,...,sn]
+
+% Creating Aeq (Kirchhoff's law matrix)
 xij = zeros(num_of_links,3); % xij[value][parent node 1][parent node 2]
 counter = 1;
 for i = 1:n
@@ -284,13 +289,27 @@ for i = 1:n %1:11
         A_kirchhoff = [A_kirchhoff ; temp]; %row bind
     end
 end
+
 disp('|Aeq1:-------------------------------------------|')
 disp(A_kirchhoff)
 disp('|------------------------------------------------|')
-%% Constructing the function
-%Generate capacities:
-objective_function = @(xs)[zeros(1,num_of_links),ones(1,n)].*xs;
 
+% Constructing A, beq
+A_ = diag(ones(1,length(A_kirchhoff(1,:)))); % each optimization variable must be equal or greater than zero.
+disp('|A_:-----------------------------------------------|')
+disp(A_)
+disp('|------------------------------------------------|')
+
+b_eq = zeros(1,length(A_kirchhoff(:,1)));
+b_ = zeros(1,length(A_(:,1)));
+disp('|b_eq = b :------------------------------------------------|')
+disp(b_eq)
+disp('|------------------------------------------------|')
+
+
+%% Using fmincon!
+%%%%--------- fmincon(fun,x0,A,b,Aeq,beq) % x0 is the initial point used by the optimizer
+opt_results = fmincon(objective_function, 1:37, A_, b_,A_kirchhoff,b_eq);
 
 %{
 --------------------------------------------------------------------
