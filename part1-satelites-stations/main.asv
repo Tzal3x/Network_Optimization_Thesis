@@ -311,10 +311,10 @@ disp('|------------------------------------------------|')
 %%%%--------- fmincon(fun,x0,A,b,Aeq,beq) % x0 is the initial point used by the optimizer
 opt_results = fmincon(objective_function, 1:(num_of_links*2+n), A_, b_,A_kirchhoff,b_eq);
 for i = 1:length(opt_results)
-    if i<=num_of_links*2
-        sprintf("x%i= %e",[i,opt_results(i)])
+    if 1<=num_of_links
+        printf("x%f:",)
     else
-        sprintf("s%i= %e",[i-num_of_links*2,opt_results(i)])
+        printf("s%f:",)
     end
 end
     
