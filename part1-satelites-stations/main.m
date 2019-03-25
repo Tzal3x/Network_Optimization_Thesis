@@ -87,33 +87,33 @@ rounds = 10;
 %%%% ---------[s s   s s s s s s st st]
 % velocities = [3 3.2 6 4 3 5 2 3 80 80]*1000; % the smaller the faster (because of the use of linspace() in the satelite3D constructor)
 % velocities = [ 1 1 1 1 1 1 1 1 0.1 0.1]*10; %debug
-velocities = [3 3 3 3 3 3 3 3 80 80]*1000; %debug
-% velocities = [3 3.2 6 4 3 5 2 3 80 80]*1000;
+% velocities = [3 3 3 3 3 3 3 3 80 80]*1000; %easy mode
+velocities = [3 3.2 6 4 3 5 2 3 80 80]*1000; %hard mode
 
-sat1 = satelite3D(20, 20, earth_radius+50, 20, rounds, velocities(1),'satelite'); % arg_vel is weirdly defined. The bigger it's value the slower the object moves (since it makes more steps to make a full circle)
-sat2 = satelite3D(20, 20, earth_radius+50, 60, rounds, velocities(2),'satelite');
-sat3 = satelite3D(20, 20, earth_radius+50, 100, rounds, velocities(3),'satelite');
-sat4 = satelite3D(20, 20, earth_radius+50, 140, rounds, velocities(4),'satelite');
-sat5 = satelite3D(20, 20, earth_radius+50, 180, rounds, velocities(5),'satelite'); 
-sat6 = satelite3D(20, 20, earth_radius+50, 220, rounds, velocities(6),'satelite');
-sat7= satelite3D( 20, 20, earth_radius+50, 260, rounds, velocities(7),'satelite');
-sat8 = satelite3D(20, 20, earth_radius+50, 300, rounds, velocities(8),'satelite');
-sat9 = satelite3D(20, 20, earth_radius+50, 340, rounds, velocities(8),'satelite');
-station1 = satelite3D(20,20,earth_radius,21, rounds, velocities(9),'station');
-station2 = satelite3D(20,20,earth_radius,260, rounds, velocities(10),'station');
+% sat1 = satelite3D(20, 20, earth_radius+50, 20, rounds, velocities(1),'satelite'); % arg_vel is weirdly defined. The bigger it's value the slower the object moves (since it makes more steps to make a full circle)
+% sat2 = satelite3D(20, 20, earth_radius+50, 60, rounds, velocities(2),'satelite');
+% sat3 = satelite3D(20, 20, earth_radius+50, 100, rounds, velocities(3),'satelite');
+% sat4 = satelite3D(20, 20, earth_radius+50, 140, rounds, velocities(4),'satelite');
+% sat5 = satelite3D(20, 20, earth_radius+50, 180, rounds, velocities(5),'satelite'); 
+% sat6 = satelite3D(20, 20, earth_radius+50, 220, rounds, velocities(6),'satelite');
+% sat7= satelite3D( 20, 20, earth_radius+50, 260, rounds, velocities(7),'satelite');
+% sat8 = satelite3D(20, 20, earth_radius+50, 300, rounds, velocities(8),'satelite');
+% sat9 = satelite3D(20, 20, earth_radius+50, 340, rounds, velocities(8),'satelite');
+% station1 = satelite3D(20,20,earth_radius,21, rounds, velocities(9),'station');
+% station2 = satelite3D(20,20,earth_radius,260, rounds, velocities(10),'station');
 
 %%%% Experimental orbits (harder, non-uniform case)
-% sat1 = satelite3D(30, 30,earth_radius+50, 20, rounds, velocities(1),'satelite'); % arg_vel is weirdly defined. The bigger it's value the slower the object moves (since it makes more steps to make a full circle)
-% sat2 = satelite3D(50, 50, earth_radius+50, 60, rounds, velocities(2),'satelite');
-% sat3 = satelite3D(-20, -20,earth_radius+50, 100, rounds, velocities(3),'satelite');
-% sat4 = satelite3D(100, 100, earth_radius+50, 140, rounds, velocities(4),'satelite');
-% sat5 = satelite3D(35, 35,earth_radius+50, 180, rounds, velocities(5),'satelite'); 
-% sat6 = satelite3D(90, 90, earth_radius+50, 220, rounds, velocities(6),'satelite');
-% sat7= satelite3D(-90, -90, earth_radius+50, 260, rounds, velocities(7),'satelite');
-% sat8 = satelite3D(-40, -40, earth_radius+50, 300, rounds, velocities(8),'satelite');
-% sat9 = satelite3D(-120, -120, earth_radius+50, 340, rounds, velocities(8),'satelite');
-% station1 = satelite3D(210,210,earth_radius,20, rounds, velocities(9),'station');
-% station2 = satelite3D(230,230,earth_radius,260, rounds, velocities(10),'station');
+sat1 = satelite3D(30, 30,earth_radius+50, 20, rounds, velocities(1),'satelite'); % arg_vel is weirdly defined. The bigger it's value the slower the object moves (since it makes more steps to make a full circle)
+sat2 = satelite3D(50, 50, earth_radius+50, 60, rounds, velocities(2),'satelite');
+sat3 = satelite3D(-20, -20,earth_radius+50, 100, rounds, velocities(3),'satelite');
+sat4 = satelite3D(100, 100, earth_radius+50, 140, rounds, velocities(4),'satelite');
+sat5 = satelite3D(35, 35,earth_radius+50, 180, rounds, velocities(5),'satelite'); 
+sat6 = satelite3D(90, 90, earth_radius+50, 220, rounds, velocities(6),'satelite');
+sat7= satelite3D(-90, -90, earth_radius+50, 260, rounds, velocities(7),'satelite');
+sat8 = satelite3D(-40, -40, earth_radius+50, 300, rounds, velocities(8),'satelite');
+sat9 = satelite3D(-120, -120, earth_radius+50, 340, rounds, velocities(8),'satelite');
+station1 = satelite3D(210,210,earth_radius,20, rounds, velocities(9),'station');
+station2 = satelite3D(230,230,earth_radius,260, rounds, velocities(10),'station');
 
 %%%% SHOWING ORBITS!!! PROBLEM WITH VARIABLE ASSIGNMENT
 % x1 = sat1.lifetime_coordinates(:,1)';
@@ -309,7 +309,7 @@ disp('|------------------------------------------------|')
 
 %% Using fmincon!
 %%%%--------- fmincon(fun,x0,A,b,Aeq,beq) % x0 is the initial point used by the optimizer
-opt_results = fmincon(objective_function, 1:37, A_, b_,A_kirchhoff,b_eq);
+opt_results = fmincon(objective_function, 1:(num_of_links*2+n), A_, b_,A_kirchhoff,b_eq);
 
 %{
 --------------------------------------------------------------------
@@ -345,13 +345,14 @@ function out = xijvec(i,x,num_nodes)
                 end
             end
             
-        else % else if i > 9 a.k.a if it a station node, ignore one direction (i.e. xi->xj but not xi<=>xj)
+        else % else if i > 9 a.k.a if it a station node...
             if x(it,2) == i
-               temp(it) = x(it,1); 
-               temp(it+length(x)) = -(-x(it,1)); 
+%                temp(it) = x(it,1); 
+                temp(it) = 0; %... ignore one direction (i.e. xi->xj but not xi<=>xj)
+                temp(it+length(x)) = -(-x(it,1)); 
             end
         end
-            
+ 
     end
     % Adding si (every single one of them = -1)
     temp2 = diag(ones(1,num_nodes));
