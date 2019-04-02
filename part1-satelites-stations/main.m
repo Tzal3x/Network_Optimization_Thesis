@@ -145,7 +145,7 @@ station2 = satelite3D(20,20,earth_radius,260, rounds, velocities(10),'station');
 % plotCircle3D([0,0,0],[x9(1),x9(2),x9(3)],earth_radius+50);
 
 %%%% WARNING! 't' must be always < min(velocities)(lesser from linspace) of all satelites and stations (avoiding index out of bounds error)
-stop = 60;
+stop = 600;
 times = 10000;
 for i = 1:times
    %Coordinates ---------------------------

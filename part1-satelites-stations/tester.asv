@@ -9,7 +9,7 @@ a = plotm(coastlat,coastlon,'LineWidth',1,'Color','blue');
 citylats = [30 -23 -32]; citylongs = [32 -43 116];
 b = plotm(citylats(1),citylongs(1),'r.','MarkerSize',15);
 c = plotm(citylats(2),citylongs(2),'r.','MarkerSize',15);
-% d = plotm(citylats(3),citylongs(3),'r.','MarkerSize',15);
+d = plotm(citylats(3),citylongs(3),'r.','MarkerSize',15);
 
 % Connect lines
 % [gclat,gclong] = track2('gc',citylats(1),citylongs(1),...
@@ -28,9 +28,8 @@ c = plotm(citylats(2),citylongs(2),'r.','MarkerSize',15);
 for i=1:100
     d = plotm(citylats(3)+i,citylongs(3),'r.','MarkerSize',20);
     [rhlat,rhlong] = track2('rh',citylats(2),citylongs(2),citylats(3)+i,citylongs(3));% rh: rhumb line track
-    conn = plotm(rhlat,rhlong,'m-');
     pause(1)
     delete(d)
-    delete(conn)
+    delete(con)
 end
 
