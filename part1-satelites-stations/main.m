@@ -75,6 +75,7 @@ hold off;
 
 %% Space 3D:--------------------------------------------------------
 cd C:\Users\User\Documents\GitHub\Network_Optimization_Thesis\part1-satelites-stations
+figure('Name','3D Simulation of satelite orbits');
 hold on; % keep plotting on the existing figure
 earth_radius = 200;
 axis([-earth_radius-200 earth_radius+200 -earth_radius-200 earth_radius+200 -earth_radius-200 earth_radius+200]); %setting up figure size
@@ -145,7 +146,7 @@ station2 = satelite3D(20,20,earth_radius,260, rounds, velocities(10),'station');
 % plotCircle3D([0,0,0],[x9(1),x9(2),x9(3)],earth_radius+50);
 
 %%%% WARNING! 't' must be always < min(velocities)(lesser from linspace) of all satelites and stations (avoiding index out of bounds error)
-stop = 600;
+stop = 60;
 times = 10000;
 for i = 1:times
    %Coordinates ---------------------------
@@ -200,20 +201,6 @@ for i = 1:times
    delete(earth)
 end
 % hold off %not necessary(?)
-
-%%%% Since i = 
-current_coordinates = [vis_sat1_coordinates;
-                       vis_sat2_coordinates;
-                       vis_sat3_coordinates;
-                       vis_sat4_coordinates;
-                       vis_sat5_coordinates;
-                       vis_sat6_coordinates;
-                       vis_sat7_coordinates;
-                       vis_sat8_coordinates;
-                       vis_sat9_coordinates;
-                       vis_station1_coordinates;
-                       vis_station2_coordinates;                       
-                       ];
 
 %% Creating objective function and constraints:
 nodes = [sat1 sat2 sat3 sat4 sat5 sat6 sat7 sat8 sat9 station1 station2];
@@ -307,6 +294,7 @@ disp(b_eq)
 disp('|------------------------------------------------|')
 
 
+
 %% Using fmincon!
 %%%%--------- fmincon(fun,x0,A,b,Aeq,beq) % x0 is the initial point used by the optimizer
 opt_results = fmincon(objective_function, 1:(num_of_links*2+n), A_, b_,A_kirchhoff,b_eq,zeros(size(1:(num_of_links*2+n))));%,zeros(size(1:(num_of_links*2+n)))
@@ -315,6 +303,45 @@ for i = 1:length(opt_results)
         sprintf("x%i= %e",[i,opt_results(i)])
     else
         sprintf("s%i= %e",[i-num_of_links*2,opt_results(i)])
+    end
+end
+disp('---------- OPT_RESULTS ----------')
+disp(opt_results)
+disp('---------------------------------')
+%% Plot 2D world map and links
+% THIS SCRIPT IS FOR THE VISUALIZATION OF THE SATELITE ORBITS ON A 2D MAP
+% OF THE EARTH. BEFORE CONTINUING IT SHOULD BE CONSIDERED THAT THERE IS NO 
+% COMPLETE MATCHING OF THE 3D ORBITS TO THE 2D MAPPING BECAUSE STATIONS 
+% SHOULD BE REGARDED AS STATIONARY (ROTATION OF THE EARTH WILL BE IGNORED) 
+% TO KEEP THE VELOCITY CALCULATIONS OF EACH SATELITE SIMPLE.
+
+figure('Name','Links on the World Map');
+hold on
+load coastlines
+axesm mollweid
+framem('FEdgeColor','blue','FLineWidth',0.5)
+world_map = plotm(coastlat,coastlon,'LineWidth',1,'Color','blue'); % PLOT WORLD MAP
+
+coords = [vis_sat1_coordinates; vis_sat2_coordinates; vis_sat3_coordinates; vis_sat4_coordinates; ...
+          vis_sat5_coordinates; vis_sat6_coordinates; vis_sat7_coordinates; vis_sat8_coordinates; ...
+          vis_sat9_coordinates; vis_station1_coordinates; vis_station2_coordinates];    
+% Plot satelites and stations
+for i = 1:length(coords(:,1))
+    if i <= 9
+        plotm(coords(i,2),coords(i,3),'r.','MarkerSize',30)
+    else
+        plotm(coords(i,2),coords(i,3),'r.','MarkerSize',30,'Color','g')
+    end
+end
+
+% Add links:
+linewidths = opt_results/max(opt_results);% counted as percentages in relevance to the maximum opt value
+for i = 1:length(LINKS(1,:))
+    for j = i:length(LINKS(:,1))
+        if LINKS(i,j) ~= 0
+            [rhlat,rhlong] = track2('rh',coords(i,2),coords(i,3),coords(j,2),coords(j,3));
+            conn = plotm(rhlat,rhlong,'m-','LineWidth',linewidths(i)*3);
+        end
     end
 end
 
