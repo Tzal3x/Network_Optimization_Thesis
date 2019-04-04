@@ -91,30 +91,30 @@ rounds = 10;
 velocities = [3 3 3 3 3 3 3 3 80 80]*1000; %easy mode
 % velocities = [3 3.2 6 4 3 5 2 3 80 80]*1000; %hard mode
 
-sat1 = satelite3D(20, 20, earth_radius+50, 20, rounds, velocities(1),'satelite'); % arg_vel is weirdly defined. The bigger it's value the slower the object moves (since it makes more steps to make a full circle)
-sat2 = satelite3D(20, 20, earth_radius+50, 60, rounds, velocities(2),'satelite');
-sat3 = satelite3D(20, 20, earth_radius+50, 100, rounds, velocities(3),'satelite');
-sat4 = satelite3D(20, 20, earth_radius+50, 140, rounds, velocities(4),'satelite');
-sat5 = satelite3D(20, 20, earth_radius+50, 180, rounds, velocities(5),'satelite'); 
-sat6 = satelite3D(20, 20, earth_radius+50, 220, rounds, velocities(6),'satelite');
-sat7= satelite3D( 20, 20, earth_radius+50, 260, rounds, velocities(7),'satelite');
-sat8 = satelite3D(20, 20, earth_radius+50, 300, rounds, velocities(8),'satelite');
-sat9 = satelite3D(20, 20, earth_radius+50, 340, rounds, velocities(8),'satelite');
-station1 = satelite3D(20,20,earth_radius,21, rounds, velocities(9),'station');
-station2 = satelite3D(20,20,earth_radius,260, rounds, velocities(10),'station');
+% sat1 = satelite3D(20, 20, earth_radius+50, 20, rounds, velocities(1),'satelite'); % arg_vel is weirdly defined. The bigger it's value the slower the object moves (since it makes more steps to make a full circle)
+% sat2 = satelite3D(20, 20, earth_radius+50, 60, rounds, velocities(2),'satelite');
+% sat3 = satelite3D(20, 20, earth_radius+50, 100, rounds, velocities(3),'satelite');
+% sat4 = satelite3D(20, 20, earth_radius+50, 140, rounds, velocities(4),'satelite');
+% sat5 = satelite3D(20, 20, earth_radius+50, 180, rounds, velocities(5),'satelite'); 
+% sat6 = satelite3D(20, 20, earth_radius+50, 220, rounds, velocities(6),'satelite');
+% sat7= satelite3D( 20, 20, earth_radius+50, 260, rounds, velocities(7),'satelite');
+% sat8 = satelite3D(20, 20, earth_radius+50, 300, rounds, velocities(8),'satelite');
+% sat9 = satelite3D(20, 20, earth_radius+50, 340, rounds, velocities(8),'satelite');
+% station1 = satelite3D(20,20,earth_radius,21, rounds, velocities(9),'station');
+% station2 = satelite3D(20,20,earth_radius,260, rounds, velocities(10),'station');
 
-%%%% Experimental orbits (harder, non-uniform case)
-% sat1 = satelite3D(30, 30,earth_radius+50, 20, rounds, velocities(1),'satelite'); % arg_vel is weirdly defined. The bigger it's value the slower the object moves (since it makes more steps to make a full circle)
-% sat2 = satelite3D(50, 50, earth_radius+50, 60, rounds, velocities(2),'satelite');
-% sat3 = satelite3D(-20, -20,earth_radius+50, 100, rounds, velocities(3),'satelite');
-% sat4 = satelite3D(100, 100, earth_radius+50, 140, rounds, velocities(4),'satelite');
-% sat5 = satelite3D(35, 35,earth_radius+50, 180, rounds, velocities(5),'satelite'); 
-% sat6 = satelite3D(90, 90, earth_radius+50, 220, rounds, velocities(6),'satelite');
-% sat7= satelite3D(-90, -90, earth_radius+50, 260, rounds, velocities(7),'satelite');
-% sat8 = satelite3D(-40, -40, earth_radius+50, 300, rounds, velocities(8),'satelite');
-% sat9 = satelite3D(-120, -120, earth_radius+50, 340, rounds, velocities(8),'satelite');
-% station1 = satelite3D(210,210,earth_radius,20, rounds, velocities(9),'station');
-% station2 = satelite3D(230,230,earth_radius,260, rounds, velocities(10),'station');
+%%% Experimental orbits (harder, non-uniform case)
+sat1 = satelite3D(30, 30,earth_radius+50, 20, rounds, velocities(1),'satelite'); % arg_vel is weirdly defined. The bigger it's value the slower the object moves (since it makes more steps to make a full circle)
+sat2 = satelite3D(50, 50, earth_radius+50, 60, rounds, velocities(2),'satelite');
+sat3 = satelite3D(-20, -20,earth_radius+50, 100, rounds, velocities(3),'satelite');
+sat4 = satelite3D(100, 100, earth_radius+50, 140, rounds, velocities(4),'satelite');
+sat5 = satelite3D(35, 35,earth_radius+50, 180, rounds, velocities(5),'satelite'); 
+sat6 = satelite3D(90, 90, earth_radius+50, 220, rounds, velocities(6),'satelite');
+sat7= satelite3D(-90, -90, earth_radius+50, 260, rounds, velocities(7),'satelite');
+sat8 = satelite3D(-40, -40, earth_radius+50, 300, rounds, velocities(8),'satelite');
+sat9 = satelite3D(-120, -120, earth_radius+50, 340, rounds, velocities(8),'satelite');
+station1 = satelite3D(210,210,earth_radius,20, rounds, velocities(9),'station');
+station2 = satelite3D(230,230,earth_radius,260, rounds, velocities(10),'station');
 
 %%%% SHOWING ORBITS!!! PROBLEM WITH VARIABLE ASSIGNMENT
 % x1 = sat1.lifetime_coordinates(:,1)';
@@ -204,6 +204,9 @@ end
 
 %% Creating objective function and constraints:
 nodes = [sat1 sat2 sat3 sat4 sat5 sat6 sat7 sat8 sat9 station1 station2];
+current_coordinates =[vis_sat1_coordinates; vis_sat2_coordinates; vis_sat3_coordinates; vis_sat4_coordinates; ...
+                      vis_sat5_coordinates; vis_sat6_coordinates; vis_sat7_coordinates; vis_sat8_coordinates; ...
+                      vis_sat9_coordinates; vis_station1_coordinates; vis_station2_coordinates];
 n = length(current_coordinates(:,1));% n = number of total nodes. (Remember N:#satelites, M:#stations)
 M = 2; %number of stations in graph
 DISTANCES = zeros(n,n); %(N+M)x(N+M)
@@ -293,8 +296,6 @@ disp('|b_eq = b :------------------------------------------------|')
 disp(b_eq)
 disp('|------------------------------------------------|')
 
-
-
 %% Using fmincon!
 %%%%--------- fmincon(fun,x0,A,b,Aeq,beq) % x0 is the initial point used by the optimizer
 opt_results = fmincon(objective_function, 1:(num_of_links*2+n), A_, b_,A_kirchhoff,b_eq,zeros(size(1:(num_of_links*2+n))));%,zeros(size(1:(num_of_links*2+n)))
@@ -308,6 +309,7 @@ end
 disp('---------- OPT_RESULTS ----------')
 disp(opt_results)
 disp('---------------------------------')
+
 %% Plot 2D world map and links
 % THIS SCRIPT IS FOR THE VISUALIZATION OF THE SATELITE ORBITS ON A 2D MAP
 % OF THE EARTH. BEFORE CONTINUING IT SHOULD BE CONSIDERED THAT THERE IS NO 
@@ -322,6 +324,10 @@ axesm mollweid
 framem('FEdgeColor','blue','FLineWidth',0.5)
 world_map = plotm(coastlat,coastlon,'LineWidth',1,'Color','blue'); % PLOT WORLD MAP
 
+% Getting station initial position! (Earth's orbit will be ignored for now)
+vis_station1_coordinates = station1.lifetime_coordinates(:,1)';
+vis_station2_coordinates = station2.lifetime_coordinates(:,1)';
+
 coords = [vis_sat1_coordinates; vis_sat2_coordinates; vis_sat3_coordinates; vis_sat4_coordinates; ...
           vis_sat5_coordinates; vis_sat6_coordinates; vis_sat7_coordinates; vis_sat8_coordinates; ...
           vis_sat9_coordinates; vis_station1_coordinates; vis_station2_coordinates];    
@@ -334,14 +340,13 @@ for i = 1:length(coords(:,1))
     end
 end
 
-%% Add links:
-[rhlat,rhlong] = track2('rh',citylats(2),citylongs(2),citylats(3)+i,citylongs(3));% rh: rhumb line track
-conn = plotm(rhlat,rhlong,'m-');
-
+% Add links:
+linewidths = opt_results/max(opt_results);% counted as percentages in relevance to the maximum opt value
 for i = 1:length(LINKS(1,:))
-    for j = 1:length(LINKS(:,1))
+    for j = i:length(LINKS(:,1))
         if LINKS(i,j) ~= 0
-            [rhlat,rhlong] = track2('rh',coor
+            [rhlat,rhlong] = track2('rh',coords(i,2),coords(i,3),coords(j,2),coords(j,3));
+            conn = plotm(rhlat,rhlong,'m-','LineWidth',linewidths(i)*3);
         end
     end
 end

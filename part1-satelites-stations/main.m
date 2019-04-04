@@ -204,6 +204,9 @@ end
 
 %% Creating objective function and constraints:
 nodes = [sat1 sat2 sat3 sat4 sat5 sat6 sat7 sat8 sat9 station1 station2];
+current_coordinates =[vis_sat1_coordinates; vis_sat2_coordinates; vis_sat3_coordinates; vis_sat4_coordinates; ...
+                      vis_sat5_coordinates; vis_sat6_coordinates; vis_sat7_coordinates; vis_sat8_coordinates; ...
+                      vis_sat9_coordinates; vis_station1_coordinates; vis_station2_coordinates];
 n = length(current_coordinates(:,1));% n = number of total nodes. (Remember N:#satelites, M:#stations)
 M = 2; %number of stations in graph
 DISTANCES = zeros(n,n); %(N+M)x(N+M)
@@ -293,8 +296,6 @@ disp('|b_eq = b :------------------------------------------------|')
 disp(b_eq)
 disp('|------------------------------------------------|')
 
-
-
 %% Using fmincon!
 %%%%--------- fmincon(fun,x0,A,b,Aeq,beq) % x0 is the initial point used by the optimizer
 opt_results = fmincon(objective_function, 1:(num_of_links*2+n), A_, b_,A_kirchhoff,b_eq,zeros(size(1:(num_of_links*2+n))));%,zeros(size(1:(num_of_links*2+n)))
@@ -308,6 +309,7 @@ end
 disp('---------- OPT_RESULTS ----------')
 disp(opt_results)
 disp('---------------------------------')
+
 %% Plot 2D world map and links
 % THIS SCRIPT IS FOR THE VISUALIZATION OF THE SATELITE ORBITS ON A 2D MAP
 % OF THE EARTH. BEFORE CONTINUING IT SHOULD BE CONSIDERED THAT THERE IS NO 
@@ -321,6 +323,10 @@ load coastlines
 axesm mollweid
 framem('FEdgeColor','blue','FLineWidth',0.5)
 world_map = plotm(coastlat,coastlon,'LineWidth',1,'Color','blue'); % PLOT WORLD MAP
+
+% Getting station initial position! (Earth's orbit will be ignored for now)
+vis_station1_coordinates = station1.lifetime_coordinates(:,1)';
+vis_station2_coordinates = station2.lifetime_coordinates(:,1)';
 
 coords = [vis_sat1_coordinates; vis_sat2_coordinates; vis_sat3_coordinates; vis_sat4_coordinates; ...
           vis_sat5_coordinates; vis_sat6_coordinates; vis_sat7_coordinates; vis_sat8_coordinates; ...
