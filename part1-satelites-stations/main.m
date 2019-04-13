@@ -116,35 +116,6 @@ station2 = satelite3D(20,20,earth_radius,260, rounds, velocities(10),'station');
 % station1 = satelite3D(210,210,earth_radius,20, rounds, velocities(9),'station');
 % station2 = satelite3D(230,230,earth_radius,260, rounds, velocities(10),'station');
 
-%%%% SHOWING ORBITS!!! PROBLEM WITH VARIABLE ASSIGNMENT
-% x1 = sat1.lifetime_coordinates(:,1)';
-% x1 = sph2cart(x1(1),x1(2),x1(3));
-% x2 = sat2.lifetime_coordinates(:,1)';
-% x2 = sph2cart(x2(1),x2(2),x2(3));
-% x3 = sat3.lifetime_coordinates(:,1)';
-% x3 = sph2cart(x3(1),x3(2),x3(3));
-% x4 = sat4.lifetime_coordinates(:,1)';
-% x4 = sph2cart(x4(1),x4(2),x4(3));
-% x5 = sat5.lifetime_coordinates(:,1)';
-% x5 = sph2cart(x5(1),x5(2),x5(3));
-% x6 = sat6.lifetime_coordinates(:,1)';
-% x6 = sph2cart(x6(1),x6(2),x6(3));
-% x7 = sat7.lifetime_coordinates(:,1)';
-% x7 = sph2cart(x7(1),x7(2),x7(3));
-% x8 = sat8.lifetime_coordinates(:,1)';
-% x8 = sph2cart(x8(1),x8(2),x8(3));
-% x9 = sat9.lifetime_coordinates(:,1)';
-% x9 = sph2cart(x9(1),x9(2),x9(3));
-% plotCircle3D([0,0,0],[x1(1),x1(2),x1(3)],earth_radius+50);
-% plotCircle3D([0,0,0],[x2(1),x2(2),x2(3)],earth_radius+50);
-% plotCircle3D([0,0,0],[x3(1),x3(2),x3(3)],earth_radius+50);
-% plotCircle3D([0,0,0],[x4(1),x4(2),x4(3)],earth_radius+50);
-% plotCircle3D([0,0,0],[x5(1),x5(2),x5(3)],earth_radius+50);
-% plotCircle3D([0,0,0],[x6(1),x6(2),x6(3)],earth_radius+50);
-% plotCircle3D([0,0,0],[x7(1),x7(2),x7(3)],earth_radius+50);
-% plotCircle3D([0,0,0],[x8(1),x8(2),x8(3)],earth_radius+50);
-% plotCircle3D([0,0,0],[x9(1),x9(2),x9(3)],earth_radius+50);
-
 %%%% WARNING! 't' must be always < min(velocities)(lesser from linspace) of all satelites and stations (avoiding index out of bounds error)
 stop = 60;
 times = 10000;
