@@ -1,5 +1,13 @@
 %% Space 3D:--------------------------------------------------------
 cd C:\Users\User\Documents\GitHub\Network_Optimization_Thesis\part1-satelites-stations
+
+NUMBER_OF_SATELITES = 12;
+NUMBER_OF_STATIONS = 2;
+DIFFERENT_VELOCITIES = true; % boolean
+
+nodes = create_nodes(NUMBER_OF_SATELITES,NUMBER_OF_STATIONS,3,80,DIFFERENT_VELOCITIES);
+
+% Setting up figure display options: - - - - - - - - - - - - - - - - -
 figure('Name','3D Simulation of satelite orbits');
 title("Satelites orbiting the earth and some stations placed on the planet 's surface. -3D ");
 hold on; % keep plotting on the existing figure
@@ -7,11 +15,6 @@ earth_radius = 200;
 axis([-earth_radius-200 earth_radius+200 -earth_radius-200 earth_radius+200 -earth_radius-200 earth_radius+200]); %setting up figure size
 axis equal
 
-NUMBER_OF_SATELITES = 9;
-NUMBER_OF_STATIONS = 80;
-
-%%%% ---------[s s   s s s s s s st st] Iverse velocities
-nodes = create_nodes(NUMBER_OF_SATELITES,NUMBER_OF_STATIONS,3,80,true);
 %%%% WARNING! 't' must be always < min(velocities)(lesser from linspace) of all satelites and stations (avoiding index out of bounds error)
 rounds = 10;
 stop = 30;
@@ -24,7 +27,7 @@ for i = 1:times
    for j = 1:length(nodes)
        coords = [coords; nodes(j).lifetime_coordinates(:,i)' ];
    end
-   
+
    %Visualize ---------------------------
    earth = surf( earth_radius*x, earth_radius*y, earth_radius*z );
    displays = [];
@@ -34,6 +37,8 @@ for i = 1:times
       else
         displays = [displays, surf(coords(j,1)+20*x,coords(j,2)+20*y,coords(j,3)+20*z)]; 
       end
+      disp('[~DEBUG:]'+string(j))% debug
+      pause(1000)% debug
    end
    
    if i == stop
@@ -70,26 +75,24 @@ function out = create_nodes(num_satelites, num_stations, sat_inverse_vel, stat_i
     
     if random_factor
         rng(10) %setting seed
-        rands = [(rand(1,num_satelites)*20)-10, zeros(1,num_stations)];
-        %(rand(1,num_satelites)*20)-10 -> rand() returns values in (0,1) so
-        %I do this in order to turn it into (-10,10)
+        rands = [(rand(1,num_satelites)*40)-20, zeros(1,num_stations)];
+        %(rand(1,num_satelites)*number*2)-number -> rand() returns values in (0,1) so
+        % I do this in order to turn it into (-number,number)
         inverse_velocities = inverse_velocities + rands;
     end
 
     % Remember: satelite3D(arg_theta,arg_phi, arg_alt, arg_init_pos, arg_periods, arg_vel, arg_name)
-    initializer_difs = (0:(num_satelites+num_stations-1))*30; %used to initialiaze satelites at different positions in order to not overlap each other
-    for ii = 1:num_satelites
-        matr = [matr, satelite3D(20, 20, earth_radius+50, 20 + initializer_difs(ii), rounds, inverse_velocities(ii), 'satelite')];
+    % Constructing satelites & stations:
+    initializer_difs = (0:(num_satelites+num_stations-1))*40; %used to initialiaze satelites at different positions in order to not overlap each other
+    for ii = 1:(num_satelites + num_stations)
+        if ii <= num_satelites
+            matr = [matr, satelite3D(20, 20, earth_radius+50, 20 + initializer_difs(ii), rounds, inverse_velocities(ii), 'satelite')];
+        else
+            matr = [matr, satelite3D(20, 20, earth_radius, 200 + initializer_difs(ii)*4, rounds, (num_satelites+num_stations)*1000, 'station')];
+        end
     end
     
-%     for ii = 1:num_stations % If number of stations<1 then there will be a problem
-%         matr = [matr, satelite3D(20, 20, earth_radius, 20 + initializer_difs(ii), rounds, inverse_velocities(ii), 'station')];
-%     end
-    counter = 0;
-    while(counter<num_stations)
-        matr = [matr, satelite3D(20, 20, earth_radius, 20 + 50, rounds, (num_satelites+num_stations)*1000, 'station')];
-        matr = [matr, satelite3D(20, 20, earth_radius, 20, rounds, (num_satelites+num_stations)*1000, 'station')];
-    end
+    
     disp('[~Report:] Satelites and stations successfully created')
     out = matr;
 end

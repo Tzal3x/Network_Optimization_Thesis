@@ -1,5 +1,24 @@
 %% Space 3D:--------------------------------------------------------
+%{
+ Note that this is not a very robust implementation of the creation of the
+ network.
+- - - - - - - - - - - - - - - - -
+ My Debug tools: 
+1) disp('[~DEBUG:]'+string(object_of_interest))% debug
+2) pause(1000)% debug 
+%}
+
 cd C:\Users\User\Documents\GitHub\Network_Optimization_Thesis\part1-satelites-stations
+
+NUMBER_OF_SATELITES = 12;
+NUMBER_OF_STATIONS = 2;
+DIFFERENT_VELOCITIES = true; % boolean
+INVERSE_VELOCITIES_SATEL = 3; % smaller value -> faster
+INVERSE_VELOCITIES_STATIONS = 80; % larger value -> slower
+
+nodes = create_nodes(NUMBER_OF_SATELITES,NUMBER_OF_STATIONS,INVERSE_VELOCITIES_SATEL,INVERSE_VELOCITIES_STATIONS,DIFFERENT_VELOCITIES); 
+
+% Setting up figure display options: - - - - - - - - - - - - - - - - -
 figure('Name','3D Simulation of satelite orbits');
 title("Satelites orbiting the earth and some stations placed on the planet 's surface. -3D ");
 hold on; % keep plotting on the existing figure
@@ -7,12 +26,6 @@ earth_radius = 200;
 axis([-earth_radius-200 earth_radius+200 -earth_radius-200 earth_radius+200 -earth_radius-200 earth_radius+200]); %setting up figure size
 axis equal
 
-NUMBER_OF_SATELITES = 12;
-NUMBER_OF_STATIONS = 2;
-DIFFERENT_VELOCITIES = true; % boolean
-
-%%%% ---------[s s   s s s s s s st st] Iverse velocities
-nodes = create_nodes(NUMBER_OF_SATELITES,NUMBER_OF_STATIONS,3,80,DIFFERENT_VELOCITIES);
 %%%% WARNING! 't' must be always < min(velocities)(lesser from linspace) of all satelites and stations (avoiding index out of bounds error)
 rounds = 10;
 stop = 30;
@@ -25,7 +38,7 @@ for i = 1:times
    for j = 1:length(nodes)
        coords = [coords; nodes(j).lifetime_coordinates(:,i)' ];
    end
-   
+
    %Visualize ---------------------------
    earth = surf( earth_radius*x, earth_radius*y, earth_radius*z );
    displays = [];
@@ -37,13 +50,14 @@ for i = 1:times
       end
    end
    
+   % Placing here the 'stop' break for the figure to stay active with all
+   % objects:
    if i == stop
        break
    end
    
-   %Delete ---------------------------
+   %Delete (to create the animation illusion)
    pause(0.01) %WARNING: all 'delete' (for graphic objects) functions must be after the 'pause' function 
-   
    for j = 1:length(displays)
       delete(displays(j))
    end
@@ -72,14 +86,14 @@ function out = create_nodes(num_satelites, num_stations, sat_inverse_vel, stat_i
     if random_factor
         rng(10) %setting seed
         rands = [(rand(1,num_satelites)*40)-20, zeros(1,num_stations)];
-        %(rand(1,num_satelites)*20)-10 -> rand() returns values in (0,1) so
-        %I do this in order to turn it into (-10,10)
+        %(rand(1,num_satelites)*number*2)-number -> rand() returns values in (0,1) so
+        % I do this in order to turn it into (-number,number)
         inverse_velocities = inverse_velocities + rands;
     end
 
     % Remember: satelite3D(arg_theta,arg_phi, arg_alt, arg_init_pos, arg_periods, arg_vel, arg_name)
     % Constructing satelites & stations:
-    initializer_difs = (0:(num_satelites+num_stations-1))*40; %used to initialiaze satelites at different positions in order to not overlap each other
+    initializer_difs = (0:(num_satelites+num_stations-1))*27; %used to initialiaze satelites at different positions in order to not overlap each other
     for ii = 1:(num_satelites + num_stations)
         if ii <= num_satelites
             matr = [matr, satelite3D(20, 20, earth_radius+50, 20 + initializer_difs(ii), rounds, inverse_velocities(ii), 'satelite')];
