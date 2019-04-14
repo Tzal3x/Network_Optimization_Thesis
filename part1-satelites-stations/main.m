@@ -289,11 +289,11 @@ function parameters.
 % plotCircle3D([0,0,0],[10,0,0],3)
 % axis equal
 
-function out = euclidean_dist(vec1, vec2)
-%Definition: euclidean_dist(vec1, vec2)
-%Calculates euclidean distance of two vectors
-    out = sqrt(sum((vec1 - vec2) .^ 2));
-end
+% function out = euclidean_dist(vec1, vec2)
+% %Definition: euclidean_dist(vec1, vec2)
+% %Calculates euclidean distance of two vectors
+%     out = sqrt(sum((vec1 - vec2) .^ 2));
+% end
 
 function out = xijvec(i,x,num_nodes)
 % Is used at the making of the xij matrix (kirchhoff matrix)
