@@ -26,6 +26,38 @@ options = optimoptions('fmincon','Display','iter','Algorithm','sqp');
 %}
 
 %% MENU: :-----------------------------------------------------------
+quit_menu = false;
+choice = NaN; %user's choice. Initializing at NaN in order to detect possible errors
+while(~quit_menu)
+    disp(''); %break line
+    disp(''); %break line
+    disp('++++++++++++++++++++++++++++++++++++++++++++++++++++')
+    disp('+___________________ M  E  N  U ___________________+')
+    disp('++++++++++++++++++++++++++++++++++++++++++++++++++++')
+    disp('+ Parameters:_____________|~ Defaults~|            +')
+    disp('+ [1] Number of satelites |                        +')
+    disp('+ [2] Number of stations  |                        +')
+    disp('+ - - - - - - - - - - - - - - - - - - - - - - - - -+')
+    disp('++++++++++++++++++++++++++++++++++++++++++++++++++++')
+    prompt ='[~Report:] Run on default values? ''y''/''n''...';
+    choice = input(prompt);
+    while(~(choice == 'y' || choice == 'n'))
+        disp('[~Error:] Invalid input (consider using apostrophes).')
+        disp('[~Report:] Please try again.')
+        prompt ='[~Report:] Run on default values? ''y''/''n''...';
+        choice = input(prompt);
+    end
+    if choice == 'y'    
+        quit_menu = true;
+    else
+        prompt='+ Which parameter would you like to change?... sats/stats';
+        disp('+ [1] Number of satelites (sats)')
+        disp('+ [2] Number of stations  (stats)')
+        choice2 = prompt;
+        
+    end % end 1st if
+end
+
 
 %% Space 3D:--------------------------------------------------------
 
