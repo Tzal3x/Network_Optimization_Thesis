@@ -10,17 +10,22 @@
 
 cd C:\Users\User\Documents\GitHub\Network_Optimization_Thesis\part1-satelites-stations
 
-NUMBER_OF_SATELITES = 12;
-NUMBER_OF_STATIONS = 2;
-DIFFERENT_VELOCITIES = true; % boolean
-INVERSE_VELOCITIES_SATEL = 3; % smaller value -> faster
-INVERSE_VELOCITIES_STATIONS = 80; % larger value -> slower
+% Main parameters: - - - - -- - - - -- - - - - - - - - - - 
+% I should consider adding THETA, PHI and ALTITUDE vectors on the
+% "create_nodes" function.
+NUMBER_OF_SATELITES = 9; % integer, default 9
+NUMBER_OF_STATIONS = 2; % integer, default 2
+RANDOM_VELOCITIES = false; % boolean, default false
+INVERSE_VELOCITIES_SATEL = ones(1,NUMBER_OF_SATELITES) * 3; % smaller value -> faster
+INVERSE_VELOCITIES_STATIONS = ones(1,NUMBER_OF_STATIONS) * 80; % larger value -> slower
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
-nodes = create_nodes(NUMBER_OF_SATELITES,NUMBER_OF_STATIONS,INVERSE_VELOCITIES_SATEL,INVERSE_VELOCITIES_STATIONS,DIFFERENT_VELOCITIES); 
+nodes = create_nodes(NUMBER_OF_SATELITES, NUMBER_OF_STATIONS, INVERSE_VELOCITIES_SATEL, ... 
+                     INVERSE_VELOCITIES_STATIONS, RANDOM_VELOCITIES); 
 
 % Setting up figure display options: - - - - - - - - - - - - - - - - -
 figure('Name','3D Simulation of satelite orbits');
-title("Satelites orbiting the earth and some stations placed on the planet 's surface. -3D ");
+title("satelites:"+string(NUMBER_OF_SATELITES)+", stations:"+string(NUMBER_OF_STATIONS)+", random velocities:"+string(RANDOM_VELOCITIES));
 hold on; % keep plotting on the existing figure
 earth_radius = 200;
 axis([-earth_radius-200 earth_radius+200 -earth_radius-200 earth_radius+200 -earth_radius-200 earth_radius+200]); %setting up figure size
@@ -28,15 +33,19 @@ axis equal
 
 %%%% WARNING! 't' must be always < min(velocities)(lesser from linspace) of all satelites and stations (avoiding index out of bounds error)
 rounds = 10;
-stop = 30;
+stop = 10; % 30
 times = 10000;
 [x,y,z] = sphere();%get coordinates in order to create 3D spheres. A sphere can be the earth, a satelite or a station.
 for i = 1:times
-    
+
    %Coordinates ---------------------------
    coords = [];
    for j = 1:length(nodes)
+       disp('start----'+string(j))
+       disp(nodes(j).lifetime_coordinates(:,i)')
+       disp('middle----'+string(j))
        coords = [coords; nodes(j).lifetime_coordinates(:,i)' ];
+       disp('end----'+string(j))
    end
 
    %Visualize ---------------------------
@@ -62,7 +71,7 @@ for i = 1:times
       delete(displays(j))
    end
    delete(earth)
-   disp(i)
+   disp(i) % debug
 end
 % hold off %not necessary(?)
 
@@ -72,25 +81,27 @@ function out = create_nodes(num_satelites, num_stations, sat_inverse_vel, stat_i
 %
 % - num_satelites: number of satelites (set default as 9)
 % - num_stations: number of stations (set default as 2)
-% - sat_inverse_vel: inverse velocity of satelites (smaller values imply high
-% velocity) use values around 3
-% - stat_inverse_vel: inverse velocity of satelites (every station has the
-% same value) (smaller values imply high velocity) use values around 80
+% - sat_inverse_vel: vector, inverse velocity of satelites (smaller values imply high
+% velocity) use values around [3 3 3 ... 3]
+% - stat_inverse_vel: vector, inverse velocity of satelites (every station has the
+% same value) (smaller values imply high velocity) use values around [80 80 80 ... 80]
 % - random_factor: boolean, if true it adds some random noise from uniform distribution in [-10,10] on the satelite velocities
 
     earth_radius = 200;
     rounds = 10;
     matr = [ ];
-    inverse_velocities = [ones(1,num_satelites)*sat_inverse_vel, ones(1,num_stations)*stat_inverse_vel]*1000; % the bigger the value the slower the velocity
+    inverse_velocities = [sat_inverse_vel, stat_inverse_vel]; % the bigger the value the slower the velocity
     
     if random_factor
-        rng(10) %setting seed
-        rands = [(rand(1,num_satelites)*40)-20, zeros(1,num_stations)];
-        %(rand(1,num_satelites)*number*2)-number -> rand() returns values in (0,1) so
-        % I do this in order to turn it into (-number,number)
+        rng(79) %setting seed
+        random_numbers_sats = (rand(1,num_satelites)*8+1)-(4-1);%(rand(1,num_satelites)*number*2)-number -> rand() returns values in (0,1) so
+                                                                % I do this in order to turn it into (-number,number)
+        rands = [random_numbers_sats, zeros(1,num_stations)];
+        
         inverse_velocities = inverse_velocities + rands;
     end
-
+    inverse_velocities = inverse_velocities * 1000;
+    
     % Remember: satelite3D(arg_theta,arg_phi, arg_alt, arg_init_pos, arg_periods, arg_vel, arg_name)
     % Constructing satelites & stations:
     initializer_difs = (0:(num_satelites+num_stations-1))*27; %used to initialiaze satelites at different positions in order to not overlap each other
