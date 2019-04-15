@@ -10,7 +10,7 @@ cd C:\Users\User\Documents\GitHub\Network_Optimization_Thesis\part1-satelites-st
 
 % Main parameters: - - - - -- - - - -- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 NUMBER_OF_SATELLITES = 9; % integer, default 9
-NUMBER_OF_STATIONS = 1; % integer, default 2
+NUMBER_OF_STATIONS = 2; % integer, default 2
 RANDOM_VELOCITIES = false; % boolean, default false
 INVERSE_VELOCITIES_SATEL = ones(1,NUMBER_OF_SATELLITES) * 3; % smaller value -> faster, it can be a vector of the wanted speeds [v1 v2 ... vn], where n == NUMBER_OF_SATELLITES
 INVERSE_VELOCITIES_STATIONS = ones(1,NUMBER_OF_STATIONS) * 80; % larger value -> slower, >> >> >> >> >> >> >> >> >> >> >> >> 
@@ -24,7 +24,8 @@ nodes = create_nodes(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, INVERSE_VELOCITIE
 figure('Name','3D Simulation of satelite orbits');
 title("satelites:"+string(NUMBER_OF_SATELLITES)+...
       ", stations:"+string(NUMBER_OF_STATIONS)+...
-      ", random velocities:"+string(RANDOM_VELOCITIES));
+      ", random velocities:"+string(RANDOM_VELOCITIES)+...
+      ", stop:"+string(STOP_AT_TIME));
   
 hold on; % keep plotting on the existing figure
 earth_radius = 200;
@@ -165,16 +166,28 @@ b = zeros(1,length(A(:,1)))+20;
 %% Using fmincon!
 %%%%--------- fmincon(fun,x0,A,b,Aeq,beq) % x0 is the initial point used by the optimizer
 opt_results = fmincon(objective_function, 1:(num_of_links*2+n), A, b, A_kirchhoff, b_eq, zeros(size(1:(num_of_links*2+n)))); % zeros(size(1:(num_of_links*2+n))) -> every rate should be positive
-% for i = 1:length(opt_results)
-%     if i<=num_of_links*2
-%         sprintf("x%i= %e",[i,opt_results(i)])
-%     else
-%         sprintf("s%i= %e",[i-num_of_links*2,opt_results(i)])
+% for i = 1:length(opt_results) % Print in a 'nicer' format. Only prints non zero values
+%     if opt_results(i)>1
+%         if i<=num_of_links*2
+%             sprintf("x%i= %e",[i,opt_results(i)])
+%         else
+%             sprintf("s%i= %e",[i-num_of_links*2,opt_results(i)])
+%         end    
 %     end
 % end
 disp('---------- OPT_RESULTS ----------------------------------------------------------------------------')
 disp(opt_results)
 disp('---------------------------------------------------------------------------------------------------')
+
+%% Plot 2D world map and links
+%{
+ THIS SCRIPT IS FOR THE VISUALIZATION OF THE SATELITE ORBITS ON A 2D MAP
+ OF THE EARTH. BEFORE CONTINUING IT SHOULD BE CONSIDERED THAT THERE IS NO 
+ COMPLETE MATCHING OF THE 3D ORBITS TO THE 2D MAPPING BECAUSE STATIONS 
+ SHOULD BE REGARDED AS STATIONARY (ROTATION OF THE EARTH WILL BE IGNORED) 
+ TO KEEP THE VELOCITY CALCULATIONS OF EACH SATELITE SIMPLE.
+%}
+
 
 
 
@@ -230,6 +243,7 @@ function out = euclidean_dist(vec1, vec2)
     out = sqrt(sum((vec1 - vec2) .^ 2));
 end
 
+%{
 function out = xijvec(i,x,num_nodes,num_sats,num_stats)
 % This function is used for the creation of kirchoff matrix.
 % However, each time it is called, one row of kirchoff matrix is created
@@ -260,6 +274,47 @@ function out = xijvec(i,x,num_nodes,num_sats,num_stats)
                temp(it+length(x)) = 0;%... ignore one direction (i.e. xi->xj but not xi<=>xj)
             else
                 temp(it) = 0; 
+                temp(it+length(x)) = 0;
+            end
+        end
+ 
+    end
+    % Adding si: (where every si = -1)
+    temp2 = diag(ones(1,num_nodes));
+    out = [temp, -temp2(i,:)];
+end
+}%
+
+function out = xijvec(i,x,num_nodes,num_sats,num_stats)
+% This function is used for the creation of kirchoff matrix.
+% However, each time it is called, one row of kirchoff matrix is created
+% (regarding link i).
+% Therefore, the output is a vector of A_kirchhoff matrix's row (fianl_Aeq).
+% Parameters: - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+% i = current position of outter iterator
+% x = xij where xij is a cell array. xij{i} contains value, parent_node_1, parent_node2 of link i 
+% num_nodes = number of nodes
+% num_sats = number of satelites
+
+    temp = zeros(1,length(x)*2);
+    for it = 1:length(x)
+        if  x{it}(2)<(num_sats+num_stats) && x{it}(3)<(num_sats+num_stats)% if inter-satelite communication
+            if x{it}(2)==i || x{it}(3)==i % if i is parent_node_1 or parent_node_2
+                if x{it}(2)==i % if it is the parent_node_1:
+                    temp(it) = x{it}(1); % get it's value
+                    temp(it+length(x)) = -(-(x{it}(1)));% (Aeq1 = - Aeq2) <=> 
+                else % if it is the parent_node_2:
+                    temp(it) = -x{it}(1);
+                    temp(it+length(x)) = -(-(-x{it}(1)));
+                end
+            end
+            
+        else % if its a station to satelite link...
+            if x{it}(2)==i || x{it}(3)==i
+               temp(it) = x{it}(1); 
+               temp(it+length(x)) = 0;%... ignore one direction (i.e. xi->xj but not xi<=>xj)
+            else
+                temp(it) = -x{it}(1); 
                 temp(it+length(x)) = 0;
             end
         end

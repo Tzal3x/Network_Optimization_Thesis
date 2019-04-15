@@ -243,6 +243,10 @@ function out = euclidean_dist(vec1, vec2)
     out = sqrt(sum((vec1 - vec2) .^ 2));
 end
 
+
+%Another version of xijvec that was working correctly, returning results
+%of 13 instead of 17 on the same optimization variables.
+
 function out = xijvec(i,x,num_nodes,num_sats,num_stats)
 % This function is used for the creation of kirchoff matrix.
 % However, each time it is called, one row of kirchoff matrix is created
@@ -282,3 +286,44 @@ function out = xijvec(i,x,num_nodes,num_sats,num_stats)
     temp2 = diag(ones(1,num_nodes));
     out = [temp, -temp2(i,:)];
 end
+
+
+% function out = xijvec(i,x,num_nodes,num_sats,num_stats)
+% % This function is used for the creation of kirchoff matrix.
+% % However, each time it is called, one row of kirchoff matrix is created
+% % (regarding link i).
+% % Therefore, the output is a vector of A_kirchhoff matrix's row (fianl_Aeq).
+% % Parameters: - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+% % i = current position of outter iterator
+% % x = xij where xij is a cell array. xij{i} contains value, parent_node_1, parent_node2 of link i 
+% % num_nodes = number of nodes
+% % num_sats = number of satelites
+% 
+%     temp = zeros(1,length(x)*2);
+%     for it = 1:length(x)
+%         if  x{it}(2)<(num_sats+num_stats) && x{it}(3)<(num_sats+num_stats)% if inter-satelite communication
+%             if x{it}(2)==i || x{it}(3)==i % if i is parent_node_1 or parent_node_2
+%                 if x{it}(2)==i % if it is the parent_node_1:
+%                     temp(it) = x{it}(1); % get it's value
+%                     temp(it+length(x)) = -(-(x{it}(1)));% (Aeq1 = - Aeq2) <=> 
+%                 else % if it is the parent_node_2:
+%                     temp(it) = -x{it}(1);
+%                     temp(it+length(x)) = -(-(-x{it}(1)));
+%                 end
+%             end
+%             
+%         else % if its a station to satelite link...
+%             if x{it}(2)==i || x{it}(3)==i
+%                temp(it) = x{it}(1); 
+%                temp(it+length(x)) = 0;%... ignore one direction (i.e. xi->xj but not xi<=>xj)
+%             else
+%                 temp(it) = -x{it}(1); 
+%                 temp(it+length(x)) = 0;
+%             end
+%         end
+%  
+%     end
+%     % Adding si: (where every si = -1)
+%     temp2 = diag(ones(1,num_nodes));
+%     out = [temp, -temp2(i,:)];
+% end
