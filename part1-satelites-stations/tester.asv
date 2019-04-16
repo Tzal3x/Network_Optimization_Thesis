@@ -7,6 +7,7 @@
 %}
 
 cd C:\Users\User\Documents\GitHub\Network_Optimization_Thesis\part1-satelites-stations
+addpath C:\Users\User\Documents\GitHub\Network_Optimization_Thesis\part1-satelites-stations\m_map %adding m_map package
 
 % Main parameters: - - - - -- - - - -- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 NUMBER_OF_SATELLITES = 9; % integer, default 9
@@ -206,6 +207,7 @@ function out = create_nodes(num_satelites, num_stations, sat_inverse_vel, stat_i
 % - stat_inverse_vel: vector, inverse velocity of satelites (every station has the
 % same value) (smaller values imply high velocity) use values around [80 80 80 ... 80]
 % - random_factor: boolean, if true it adds some random noise from uniform distribution in [-10,10] on the satelite velocities
+% - 
 
     earth_radius = 200;
     rounds = 10;
@@ -226,7 +228,7 @@ function out = create_nodes(num_satelites, num_stations, sat_inverse_vel, stat_i
     % Constructing satelites & stations:
     initializer_difs = (0:(num_satelites+num_stations-1))*27; %used to initialiaze satelites at different positions in order to not overlap each other
     for ii = 1:(num_satelites + num_stations)
-        if ii <= num_satelites
+        if ii <= num_satelites 
             matr = [matr, satelite3D(20, 20, earth_radius+50, 20 + initializer_difs(ii), rounds, inverse_velocities(ii), 'satelite')];
         else
             matr = [matr, satelite3D(20, 20, earth_radius, 200 + initializer_difs(ii)*4, rounds, inverse_velocities(ii), 'station')];
@@ -243,7 +245,10 @@ function out = euclidean_dist(vec1, vec2)
     out = sqrt(sum((vec1 - vec2) .^ 2));
 end
 
-%{
+
+%Another version of xijvec that was working correctly, returning results
+%of 13 instead of 17 on the same optimization variables.
+
 function out = xijvec(i,x,num_nodes,num_sats,num_stats)
 % This function is used for the creation of kirchoff matrix.
 % However, each time it is called, one row of kirchoff matrix is created
@@ -283,44 +288,44 @@ function out = xijvec(i,x,num_nodes,num_sats,num_stats)
     temp2 = diag(ones(1,num_nodes));
     out = [temp, -temp2(i,:)];
 end
-}%
 
-function out = xijvec(i,x,num_nodes,num_sats,num_stats)
-% This function is used for the creation of kirchoff matrix.
-% However, each time it is called, one row of kirchoff matrix is created
-% (regarding link i).
-% Therefore, the output is a vector of A_kirchhoff matrix's row (fianl_Aeq).
-% Parameters: - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-% i = current position of outter iterator
-% x = xij where xij is a cell array. xij{i} contains value, parent_node_1, parent_node2 of link i 
-% num_nodes = number of nodes
-% num_sats = number of satelites
 
-    temp = zeros(1,length(x)*2);
-    for it = 1:length(x)
-        if  x{it}(2)<(num_sats+num_stats) && x{it}(3)<(num_sats+num_stats)% if inter-satelite communication
-            if x{it}(2)==i || x{it}(3)==i % if i is parent_node_1 or parent_node_2
-                if x{it}(2)==i % if it is the parent_node_1:
-                    temp(it) = x{it}(1); % get it's value
-                    temp(it+length(x)) = -(-(x{it}(1)));% (Aeq1 = - Aeq2) <=> 
-                else % if it is the parent_node_2:
-                    temp(it) = -x{it}(1);
-                    temp(it+length(x)) = -(-(-x{it}(1)));
-                end
-            end
-            
-        else % if its a station to satelite link...
-            if x{it}(2)==i || x{it}(3)==i
-               temp(it) = x{it}(1); 
-               temp(it+length(x)) = 0;%... ignore one direction (i.e. xi->xj but not xi<=>xj)
-            else
-                temp(it) = -x{it}(1); 
-                temp(it+length(x)) = 0;
-            end
-        end
- 
-    end
-    % Adding si: (where every si = -1)
-    temp2 = diag(ones(1,num_nodes));
-    out = [temp, -temp2(i,:)];
-end
+% function out = xijvec(i,x,num_nodes,num_sats,num_stats)
+% % This function is used for the creation of kirchoff matrix.
+% % However, each time it is called, one row of kirchoff matrix is created
+% % (regarding link i).
+% % Therefore, the output is a vector of A_kirchhoff matrix's row (fianl_Aeq).
+% % Parameters: - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+% % i = current position of outter iterator
+% % x = xij where xij is a cell array. xij{i} contains value, parent_node_1, parent_node2 of link i 
+% % num_nodes = number of nodes
+% % num_sats = number of satelites
+% 
+%     temp = zeros(1,length(x)*2);
+%     for it = 1:length(x)
+%         if  x{it}(2)<(num_sats+num_stats) && x{it}(3)<(num_sats+num_stats)% if inter-satelite communication
+%             if x{it}(2)==i || x{it}(3)==i % if i is parent_node_1 or parent_node_2
+%                 if x{it}(2)==i % if it is the parent_node_1:
+%                     temp(it) = x{it}(1); % get it's value
+%                     temp(it+length(x)) = -(-(x{it}(1)));% (Aeq1 = - Aeq2) <=> 
+%                 else % if it is the parent_node_2:
+%                     temp(it) = -x{it}(1);
+%                     temp(it+length(x)) = -(-(-x{it}(1)));
+%                 end
+%             end
+%             
+%         else % if its a station to satelite link...
+%             if x{it}(2)==i || x{it}(3)==i
+%                temp(it) = x{it}(1); 
+%                temp(it+length(x)) = 0;%... ignore one direction (i.e. xi->xj but not xi<=>xj)
+%             else
+%                 temp(it) = -x{it}(1); 
+%                 temp(it+length(x)) = 0;
+%             end
+%         end
+%  
+%     end
+%     % Adding si: (where every si = -1)
+%     temp2 = diag(ones(1,num_nodes));
+%     out = [temp, -temp2(i,:)];
+% end

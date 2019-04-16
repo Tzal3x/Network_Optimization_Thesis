@@ -17,15 +17,10 @@ classdef satelite3D < handle
                     steps = -linspace(arg_init_pos, arg_init_pos + arg_periods*360, -arg_vel);
                 end
             end
-            sat_obj.name = arg_name;
-            
+            sat_obj.name = arg_name;  
             sat_obj.lifetime_coordinates = [(arg_alt)*sind(steps+arg_theta).*cosd(ones(1,length(steps))*arg_phi);
                                             (arg_alt)*sind(ones(1,length(steps))*arg_theta).*sind(steps+arg_phi);
-                                            (arg_alt)*cosd(steps+arg_theta) ];
-% EXPERIMENTAL:                                          
-%             sat_obj.lifetime_coordinates = [(arg_alt)*sind(steps+arg_theta).*cosd(ones(1,length(steps))*arg_phi);
-%                                             (arg_alt)*sind(ones(1,length(steps))*arg_theta).*sind(steps+arg_phi);
-%                                             (arg_alt)*cosd(steps+arg_theta) ];
+                                            (arg_alt)*cosd(steps+arg_) ];
                                           
        end       
    end 
