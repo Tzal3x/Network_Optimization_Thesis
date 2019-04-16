@@ -7,6 +7,7 @@
 %}
 
 cd C:\Users\User\Documents\GitHub\Network_Optimization_Thesis\part1-satelites-stations
+addpath C:\Users\User\Documents\GitHub\Network_Optimization_Thesis\part1-satelites-stations\m_map %adding m_map package
 
 % Main parameters: - - - - -- - - - -- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 NUMBER_OF_SATELLITES = 9; % integer, default 9
