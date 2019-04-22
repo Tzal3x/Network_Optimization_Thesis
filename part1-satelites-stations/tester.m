@@ -1,5 +1,8 @@
 %% Space 3D:--------------------------------------------------------
 %{
+
+MATLAB R2018a
+
  Note that this is not a very robust implementation of the creation of the
  network. Only a simple version (everyones orbit exists in the same circle) of the problem is being tested.
  I should consider adding THETA, PHI and ALTITUDE vectors on the
@@ -10,7 +13,7 @@ cd C:\Users\User\Documents\GitHub\Network_Optimization_Thesis\part1-satelites-st
 addpath C:\Users\User\Documents\GitHub\Network_Optimization_Thesis\part1-satelites-stations\m_map %adding m_map package
 
 % Main parameters: - - - - -- - - - -- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-NUMBER_OF_SATELLITES = 20; % integer, default 9
+NUMBER_OF_SATELLITES = 2; % integer, default 9
 NUMBER_OF_STATIONS = 1; % integer, default 2
 RANDOM_VELOCITIES = false; % boolean, default false
 INVERSE_VELOCITIES_SATEL = ones(1,NUMBER_OF_SATELLITES) * 3; % smaller value -> faster, it can be a vector of the wanted speeds [v1 v2 ... vn], where n == NUMBER_OF_SATELLITES
@@ -147,21 +150,21 @@ for i = 1:n
     end
 end
 
-disp('|Aeq1:-------------------------------------------|')
+disp('|Aeq:-------------------------------------------|')
 disp(A_kirchhoff)
 disp('|------------------------------------------------|')
 
 % Constructing A, beq
 A = diag(ones(1,length(A_kirchhoff(1,:)))); % each optimization variable must be equal or greater than zero.
-% disp('|A:-----------------------------------------------|')
-% disp(A)
-% disp('|------------------------------------------------|')
+disp('|A:-----------------------------------------------|')
+disp(A)
+disp('|------------------------------------------------|')
 
 b_eq = zeros(1,length(A_kirchhoff(:,1)));
 b = zeros(1,length(A(:,1)))+20;
-% disp('|b_eq = b :------------------------------------------------|')
-% disp(b_eq)
-% disp('|------------------------------------------------|')
+disp('|b_eq = b :------------------------------------------------|')
+disp(b_eq)
+disp('|------------------------------------------------|')
 
 
 

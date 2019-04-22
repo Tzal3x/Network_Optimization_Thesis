@@ -1,5 +1,6 @@
 %% Space 3D:--------------------------------------------------------
 %{
+MATLAB 
  Note that this is not a very robust implementation of the creation of the
  network. Only a simple version (everyones orbit exists in the same circle) of the problem is being tested.
  I should consider adding THETA, PHI and ALTITUDE vectors on the
@@ -10,16 +11,17 @@ cd C:\Users\User\Documents\GitHub\Network_Optimization_Thesis\part1-satelites-st
 addpath C:\Users\User\Documents\GitHub\Network_Optimization_Thesis\part1-satelites-stations\m_map %adding m_map package
 
 % Main parameters: - - - - -- - - - -- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-NUMBER_OF_SATELLITES = 9; % integer, default 9
-NUMBER_OF_STATIONS = 2; % integer, default 2
+NUMBER_OF_SATELLITES = 20; % integer, default 9
+NUMBER_OF_STATIONS = 1; % integer, default 2
 RANDOM_VELOCITIES = false; % boolean, default false
 INVERSE_VELOCITIES_SATEL = ones(1,NUMBER_OF_SATELLITES) * 3; % smaller value -> faster, it can be a vector of the wanted speeds [v1 v2 ... vn], where n == NUMBER_OF_SATELLITES
 INVERSE_VELOCITIES_STATIONS = ones(1,NUMBER_OF_STATIONS) * 80; % larger value -> slower, >> >> >> >> >> >> >> >> >> >> >> >> 
-STOP_AT_TIME = 300; % integer, declares when the time should be stopped
+STOP_AT_TIME = 30; % integer, declares when the time should be stopped
+THETA_PHI = [200  200];
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
 nodes = create_nodes(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, INVERSE_VELOCITIES_SATEL, ... 
-                     INVERSE_VELOCITIES_STATIONS, RANDOM_VELOCITIES); 
+                     INVERSE_VELOCITIES_STATIONS, RANDOM_VELOCITIES, THETA_PHI); 
 
 % Setting up figure display options: - - - - - - - - - - - - - - - - -
 figure('Name','3D Simulation of satelite orbits');
@@ -197,7 +199,7 @@ disp('--------------------------------------------------------------------------
 % - - - - - - - - - - - - - - - - - - - - F U N C T I O N S - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
-function out = create_nodes(num_satelites, num_stations, sat_inverse_vel, stat_inverse_vel, random_factor)
+function out = create_nodes(num_satelites, num_stations, sat_inverse_vel, stat_inverse_vel, random_factor, theta_phi)
 % Creates a list of nodes in the form of [satelite_objects .... station_objects]
 %
 % - num_satelites: number of satelites (set default as 9)
@@ -207,7 +209,8 @@ function out = create_nodes(num_satelites, num_stations, sat_inverse_vel, stat_i
 % - stat_inverse_vel: vector, inverse velocity of satelites (every station has the
 % same value) (smaller values imply high velocity) use values around [80 80 80 ... 80]
 % - random_factor: boolean, if true it adds some random noise from uniform distribution in [-10,10] on the satelite velocities
-% - 
+% - theta_phi: arg_theta and arg_phi values. In order to be a circle they
+% should be equal
 
     earth_radius = 200;
     rounds = 10;
@@ -229,9 +232,9 @@ function out = create_nodes(num_satelites, num_stations, sat_inverse_vel, stat_i
     initializer_difs = (0:(num_satelites+num_stations-1))*27; %used to initialiaze satelites at different positions in order to not overlap each other
     for ii = 1:(num_satelites + num_stations)
         if ii <= num_satelites 
-            matr = [matr, satelite3D(20, 20, earth_radius+50, 20 + initializer_difs(ii), rounds, inverse_velocities(ii), 'satelite')];
+            matr = [matr, satelite3D(theta_phi(1), theta_phi(2), earth_radius+50, 20 + initializer_difs(ii), rounds, inverse_velocities(ii), 'satelite')];
         else
-            matr = [matr, satelite3D(20, 20, earth_radius, 200 + initializer_difs(ii)*4, rounds, inverse_velocities(ii), 'station')];
+            matr = [matr, satelite3D(theta_phi(1), theta_phi(2), earth_radius, 200 + initializer_difs(ii)*4, rounds, inverse_velocities(ii), 'station')];
         end
     end
     
