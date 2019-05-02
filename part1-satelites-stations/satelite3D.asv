@@ -13,8 +13,9 @@ classdef satelite3D < handle
            sat_obj.name = arg_name;
  
            if arg_vel>=0
+               disp("!!!!!!)
                 steps = linspace(arg_init_pos, arg_init_pos + arg_periods*360, arg_vel);
-           else 
+            else 
                 if arg_vel<0
                     steps = -linspace(arg_init_pos, arg_init_pos + arg_periods*360, -arg_vel);
                 end
@@ -28,11 +29,11 @@ classdef satelite3D < handle
                   0 sin(arg_phi) cos(arg_phi)];
             R = R1 * R2;
             steps = deg2rad(steps);
-
+            disp(length(steps)) %debug
             x = arg_alt * cos(steps); 
             y = arg_alt * sin(steps);
             z = zeros(1,length(steps));
-            sat_obj.lifetime_coordinates = R * [x;y;z]; 
+            lifetime_coordinates = R * [x;y;z]; %#ok<NASGU>
             % lifetime_coordinates: 3xn where 1st row is x, 2nd is y and
             % 3rd is z.
        end       

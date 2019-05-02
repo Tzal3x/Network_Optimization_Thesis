@@ -17,8 +17,8 @@ NUMBER_OF_STATIONS = 1; %2 integer, default 1
 RANDOM_VELOCITIES = false; % boolean, default false
 INVERSE_VELOCITIES_SATEL = ones(1,NUMBER_OF_SATELLITES) * 3; % smaller value -> faster, it can be a vector of the wanted speeds [v1 v2 ... vn], where n == NUMBER_OF_SATELLITES
 INVERSE_VELOCITIES_STATIONS = ones(1,NUMBER_OF_STATIONS) * 80; % larger value -> slower, >> >> >> >> >> >> >> >> >> >> >> >> 
-STOP_AT_TIME = 30; % integer, declares when the time should be stopped
-THETA_PHI = [100  100];
+STOP_AT_TIME = 30;% integer, declares when the time should be stopped
+THETA_PHI = [30  60];
 LINK_CAPACITY = 10; % WARING! LINK_CAPACITY must be equal to 
 PRINT_DETAILS = true; % true/false: Displays optimization problem's details (distance matrix, parameters (Aeq, beq, A, b, l, ...) etc)
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
