@@ -1,5 +1,5 @@
 # Network_Optimization_Thesis
-This is my work regarding my thesis at Computer Science M.Sc. of Athen's University of Economics and Business.
+This is my work regarding my thesis at Computer Science M.Sc. at School of Informatics of Athen's University of Economics and Business.
 It is important to record every step of progress done in the span of those months.
 Therefore, this README contains two-in-one: a record of progress and a description of my work's contents.
 
@@ -7,12 +7,13 @@ Therefore, this README contains two-in-one: a record of progress and a descripti
 Before diving into a specific subject, it is required to understand the basic concepts of network optimization theory and to experiment with some hypothetical/artificial problem(s).
 
 ### Satelite-Stations problem:
-Let N satelites orbiting the earth and M stations on the planet's surface.
-xs denotes rate of information transmited by satelite s to another satelite or station.
+Let N satellites orbiting the earth and M stations on the planet's surface.
+xs denotes rate of information transmited by satellite s to another satellite or station.
 
 maximize ΣU(Si)  
 subject to: Kirchhoff law  
 |xs| <= Capacity  
+xs >= 0
 ++some_other_constraints  
         
-Formulate and solve this problem using MATLAB's optimization package.  
+The objective is to formulate and solve this problem using MATLAB's optimization toolbox.  
