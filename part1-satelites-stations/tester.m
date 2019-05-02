@@ -12,23 +12,40 @@ addpath C:\Users\User\Documents\GitHub\Network_Optimization_Thesis\part1-satelit
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 % - - - - - - - - - - - + + + + + + \ M E N U / + + + + + + - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 % Main parameters (if you want to experiment with program's parameters just change ONLY the following): - - -  
-NUMBER_OF_SATELLITES = 2; % integer, default 9
-NUMBER_OF_STATIONS = 1; % integer, default 2
+NUMBER_OF_SATELLITES = 2; %5 integer, default 2
+NUMBER_OF_STATIONS = 1; %2 integer, default 1
 RANDOM_VELOCITIES = false; % boolean, default false
 INVERSE_VELOCITIES_SATEL = ones(1,NUMBER_OF_SATELLITES) * 3; % smaller value -> faster, it can be a vector of the wanted speeds [v1 v2 ... vn], where n == NUMBER_OF_SATELLITES
 INVERSE_VELOCITIES_STATIONS = ones(1,NUMBER_OF_STATIONS) * 80; % larger value -> slower, >> >> >> >> >> >> >> >> >> >> >> >> 
 STOP_AT_TIME = 30; % integer, declares when the time should be stopped
 THETA_PHI = [100  100];
+LINK_CAPACITY = 10; % WARING! LINK_CAPACITY must be equal to 
 PRINT_DETAILS = true; % true/false: Displays optimization problem's details (distance matrix, parameters (Aeq, beq, A, b, l, ...) etc)
-LINK_CAPACITY = 20;
-
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
+disp(' ')% line-break to seperate previous runs of the programm.
+disp(' ')
+disp(' ')
+disp(' ')
 disp("|======== S T A R T ========|")
 nodes = create_nodes(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, INVERSE_VELOCITIES_SATEL, ... 
                      INVERSE_VELOCITIES_STATIONS, RANDOM_VELOCITIES, THETA_PHI); 
+prompt = '[~I/O:] Display the program''s main parameters? 1/0 (one=yes, zero=no)...';
+PRINT_MAIN_PARAMETERS = input(prompt); % Boolean; If true, displays each one of the above parameters
+
+
+if PRINT_MAIN_PARAMETERS
+   disp("NUMBER_OF_SATELLITES: " + string(NUMBER_OF_SATELLITES))
+   disp("NUMBER_OF_STATIONS: " + string(NUMBER_OF_STATIONS))
+   disp("RANDOM_VELOCITIES: " + string(RANDOM_VELOCITIES))
+   disp("INVERSE_VELOCITIES_SATEL: " + print_list(INVERSE_VELOCITIES_SATEL))
+   disp("INVERSE_VELOCITIES_STATIONS: " + print_list(INVERSE_VELOCITIES_STATIONS))
+   disp("STOP_AT_TIME: " + string(STOP_AT_TIME))
+   disp("THETA_PHI: " + print_list(THETA_PHI))
+   disp("LINK_CAPACITY: " + string(LINK_CAPACITY))
+   disp("PRINT_DETAILS: " + string(PRINT_DETAILS))
+end
 
 % Setting up figure display options: - - - - - - - - - - - - - - - - -
 figure('Name','3D Simulation of satelite orbits');
@@ -83,7 +100,7 @@ end
 % hold off %not necessary(?)
 disp('[~Report:] Time stopped! A network has been created.')
 
-%% Creating objective function and constraints:
+% Creating objective function and constraints: ========================================================================================================================================================================================================================================================
 disp('Creating objective function and constraints...')
 n = NUMBER_OF_SATELLITES + NUMBER_OF_STATIONS;% number of total nodes
 DISTANCES = zeros(n,n); %(N+M)x(N+M) , N: #sats, M: #stats
@@ -121,7 +138,7 @@ if PRINT_DETAILS
     disp('|=================================================================================|')
 end
 
-%% Constructing fmincon parameters (objective function, contraints: Aeq, beq, A, b)
+% Constructing fmincon parameters (objective function, contraints: Aeq, beq, A, b) ========================================================================================================================================================================================================================================================
 %%%% Constructing the function
 disp('Constructing optimization parameters...')
 % Generate capacities:
@@ -162,13 +179,13 @@ for i = 1:n
     end
 end
 
-A = diag(ones(1,length(A_kirchhoff(1,:))));
-
+A_kirchhoff = [A_kirchhoff ; [zeros(1,num_of_links*2), ones(1,NUMBER_OF_SATELLITES + NUMBER_OF_STATIONS)]]; % Adding sum(divergencies)==0 (everything that goes in must go out)
 beq = zeros(1,length(A_kirchhoff(:,1))); % OTHER KIRCHOFF EQUALITY PART
-
+A = diag(ones(1,length(A_kirchhoff(1,:))));
 b = [zeros(1,num_of_links*2)+LINK_CAPACITY,zeros(1,NUMBER_OF_SATELLITES)+100, zeros(1,NUMBER_OF_STATIONS)]; % CAPACITIES (UPPER BOUNDS)
 lbsi = 5;%lower bound of sources
 lower_bounds = [zeros(1,(num_of_links*2)) zeros(1,NUMBER_OF_SATELLITES)+lbsi (1:NUMBER_OF_STATIONS)*(-inf)]; % zeros for rates (and sources(?)), -inf for sinks
+
 disp('Done!')
 % Prints: ------------------------------------------------------------
 if PRINT_DETAILS
@@ -178,15 +195,15 @@ if PRINT_DETAILS
     disp(beq)
     disp('|- - -------\ (A) INEQUALITY MATRIX /---------------- - -|')
     disp(A)
-    disp('|- - -------\ (b) CAPACITIES /----------------------- - -|')
+    disp('|- - -------\ (b) CAPACITIES (UPPER BOUNDS)/--------- - -|')
     disp(b)
     disp('|- - -------\ (lower_bounds) LOWER BOUNDS /---------- - -|')
     disp(lower_bounds)
 end
 % --------------------------------------------------------------------
-%% Using fmincon!
+% Using fmincon! ========================================================================================================================================================================================================================================================
 %%%%--------- fmincon(fun,x0,A,b,Aeq,beq) % x0 is the initial point used by the optimizer
-opt_results = fmincon(objective_function, 1:(num_of_links*2+n), A, b, A_kirchhoff, beq, lower_bounds); % zeros(size(1:(num_of_links*2+n))) -> every rate should be positive
+opt_results = fmincon(objective_function, (1:(num_of_links*2+n))*0, A, b, A_kirchhoff, beq, lower_bounds); % zeros(size(1:(num_of_links*2+n))) -> every rate should be positive
 % for i = 1:length(opt_results) % Print in a 'nicer' format. Only prints non zero values
 %     if opt_results(i)>1
 %         if i<=num_of_links*2
@@ -257,6 +274,7 @@ function out = create_nodes(num_satelites, num_stations, sat_inverse_vel, stat_i
     out = matr;
 end
 
+
 function out = euclidean_dist(vec1, vec2)
 % Definition: euclidean_dist(vec1, vec2)
 % Calculates euclidean distance of two vectors
@@ -264,59 +282,22 @@ function out = euclidean_dist(vec1, vec2)
 end
 
 
-%Another version of xijvec that was working correctly, returning results
-%of 13 instead of 17 on the same optimization variables.
-
-% function out = xijvec(i,x,num_nodes,num_sats,num_stats)
-% % This function is used for the creation of A_kirchoff matrix.
-% % However, each time it is called, one row of kirchoff matrix is created
-% % (regarding link i).
-% % Therefore, the output is a vector of A_kirchhoff matrix's row (fianl_Aeq).
-% % Parameters: - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-% % i = current position of outter iterator
-% % x = xij where xij is a cell array. xij{i} contains value, parent_node_1, parent_node2 of link i 
-% % num_nodes = number of nodes
-% % num_sats = number of satelites
-% 
-%     temp = zeros(1,length(x)*2);
-%     for it = 1:length(x)
-%         if  x{it}(2)<(num_sats+num_stats) && x{it}(3)<(num_sats+num_stats)% if inter-satelite communication
-%             if x{it}(2)==i || x{it}(3)==i % if i is parent_node_1 or parent_node_2
-%                 if x{it}(2)==i % if it is the parent_node_1:
-%                     temp(it) = x{it}(1); % get it's value
-%                     temp(it+length(x)) = -(x{it}(1));% (Aeq1 = - Aeq2) <=> 
-%                 else % if it is the parent_node_2:
-%                     temp(it) = x{it}(1);
-%                     temp(it+length(x)) = -(-x{it}(1));
-%                 end
-%             end
-%             
-%         else % a.k.a if its station-station link...
-%             if x{it}(2)==i || x{it}(3)==i
-%                temp(it) = x{it}(1); 
-%                temp(it+length(x)) = 0;%... ignore one direction (i.e. xi->xj but not xi<=>xj)
-%             else
-%                 temp(it) = 0; 
-%                 temp(it+length(x)) = 0;
-%             end
-%         end
-%  
-%     end
-%     % Adding si: (where every si = -1)
-%     temp2 = diag(ones(1,num_nodes));
-%     out = [temp, -temp2(i,:)];
-% end
-
-
+function out = print_list(lista)
+    temp = '';
+    for i = 1:length(lista)
+        temp = [temp  ' '  convertStringsToChars(string(lista(i)))];
+    end
+    out = temp;
+end
 
 
 function out = xijvec(i,x,num_nodes,num_sats)
 % This function is used for the creation of A_kirchoff matrix.
 % However, each time it is called, one row of kirchoff matrix is created
-% (regarding link i).
-% Therefore, the output is a vector of A_kirchhoff matrix's row (fianl_Aeq).
-% Parameters: - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-% i = current position of outter iterator
+% (regarding link i). Therefore the matrix is created in the main script.
+% The output is a vector of A_kirchhoff matrix's row (fianl_Aeq).
+% INPUTS: - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+% i = current position of outter iterator (used in main script at assemblying)
 % x = xij where xij is a cell array. xij{i} contains value, parent_node_1, parent_node2 of link i 
 % num_nodes = number of nodes
 % num_sats = number of satelites
@@ -335,15 +316,33 @@ function out = xijvec(i,x,num_nodes,num_sats)
             end
         end
     end
+    % Aeq 2: - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    
+    temp2 = zeros(1,length(x));
+    for it =1:length(x) % for every link, check if any edge is node i
+        value = x{it}(1);
+        parent1 = x{it}(2);
+        parent2 = x{it}(3);
+        
+        if parent1 == i  % if node i is parent 1 of the link
+           temp2(it) = value;
+        else %elif:
+            if parent2 == i % if node i is parent 2 of the link
+                temp2(it) = value;
+            end
+        end
+        
+        if parent1 > num_sats || parent2 > num_sats % if it is a satellite-station link
+            temp2(it) = 0;
+        end
+        
+    end
+    
     
     %$ Final step: out == [Aeq1 Aeq2 si]
-    temp2 = diag(ones(1,num_nodes));
+    temp3 = diag(ones(1,num_nodes));
+    
     is_satellite = i<=num_sats;
-    temp3 = is_satellite*temp;
-    for iterator = 1:length(temp3) %preserve one-wayness
-        if temp3(iterator) == -1
-            temp3(iterator) = 0;
-        end
-    end
-    out = [temp, temp3, -temp2(i,:)];
+    temp2 = is_satellite*temp2; % if node-i is a station then set Aeq2 to 0
+    out = [temp, temp2, -temp3(i,:)];
 end
