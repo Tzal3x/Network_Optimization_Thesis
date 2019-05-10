@@ -187,11 +187,12 @@ end
 %A_kirchhoff = [A_kirchhoff ; [zeros(1,num_of_links*2), ones(1,NUMBER_OF_SATELLITES + NUMBER_OF_STATIONS)]]; % Adding sum(divergencies)==0 (NOT NECESSARY, IT SHOULD HOLD NEVERTHELESS)
 
 beq = zeros(1,length(A_kirchhoff(:,1))); % OTHER KIRCHOFF EQUALITY PART
-A = diag(ones(1,length(A_kirchhoff(1,:))));
-b = [zeros(1,num_of_links*2-num_station_links)+LINK_CAPACITY,zeros(1,NUMBER_OF_SATELLITES)+inf, zeros(1,NUMBER_OF_STATIONS)]; %zerosNUMBER_OF_SATELLITES+100 % CAPACITIES (UPPER BOUNDS)
+A = [];% A = diag(ones(1,length(A_kirchhoff(1,:))));
+b = [];% b = [zeros(1,num_of_links*2-num_station_links)+LINK_CAPACITY,zeros(1,NUMBER_OF_SATELLITES)+inf, zeros(1,NUMBER_OF_STATIONS)]; %zerosNUMBER_OF_SATELLITES+100 % CAPACITIES (UPPER BOUNDS)
+upper_bounds = [zeros(1,num_of_links*2-num_station_links)+LINK_CAPACITY, zeros(1,NUMBER_OF_SATELLITES+NUMBER_OF_STATIONS)+inf];
 lbsi = 0;%lower bound of sources
-lower_bounds = [zeros(1,(num_of_links*2-num_station_links)) zeros(1,NUMBER_OF_SATELLITES)+lbsi (1:NUMBER_OF_STATIONS)*(-inf)]; % zeros for rates (and sources(?)), -inf for sinks
-
+% lower_bounds = [zeros(1,(num_of_links*2-num_station_links)) zeros(1,NUMBER_OF_SATELLITES)+lbsi (1:NUMBER_OF_STATIONS)*(-inf)]; % zeros for rates (and sources(?)), -inf for sinks
+lower_bounds = zeros(1,length(A_kirchhoff(1,:)));
 disp('Done!')
 % Prints: ------------------------------------------------------------
 if PRINT_DETAILS
@@ -199,20 +200,21 @@ if PRINT_DETAILS
     disp(A_kirchhoff)
     disp('|- - -------\ (beq) EQUALITY VECTOR /---------------- - -|')
     disp(beq)
-    disp('|- - -------\ (A) INEQUALITY MATRIX /---------------- - -|')
-    disp(A)
+%     disp('|- - -------\ (A) INEQUALITY MATRIX /---------------- - -|')
+%     disp(A)
     disp('|- - -------\ (b) CAPACITIES (UPPER BOUNDS)/--------- - -|')
-    disp(b)
+%     disp(b)
+    disp(upper_bounds)
     disp('|- - -------\ (lower_bounds) LOWER BOUNDS /---------- - -|')
     disp(lower_bounds)
 end
 % --------------------------------------------------------------------
 % Using fmincon! ========================================================================================================================================================================================================================================================
 %%%%--------- fmincon(fun,x0,A,b,Aeq,beq) % x0 is the initial point used by the optimizer
-objective_function = @(xs)[zeros(1,num_of_links*2 - num_station_links), zeros(1,NUMBER_OF_SATELLITES),ones(1,NUMBER_OF_STATIONS)]*xs'; %xs is the optimization vector. xs = [x1,x2,...,x(links_num),x(links_num+1),...,x(2*links_num),s1,s2,...,sn]
+objective_function = @(xs)[(10^(-3))*ones(1,num_of_links*2 - num_station_links), zeros(1,NUMBER_OF_SATELLITES),-ones(1,NUMBER_OF_STATIONS)]*xs'; %xs is the optimization vector. xs = [x1,x2,...,x(links_num),x(links_num+1),...,x(2*links_num),s1,s2,...,sn]
 x0 = zeros(1,(num_of_links*2-num_station_links+n));
 % x0 = [ones(1,(num_of_links*2-num_station_links + n - 3)) 1 2 -100]; % debug
-opt_results = fmincon(objective_function, x0, A, b', A_kirchhoff, beq', lower_bounds); % zeros(size(1:(num_of_links*2+n))) -> every rate should be positive
+opt_results = fmincon(objective_function, x0, A, b', A_kirchhoff, beq', lower_bounds, upper_bounds); % zeros(size(1:(num_of_links*2+n))) -> every rate should be positive
 % for i = 1:length(opt_results) % Print in a 'nicer' format. Only prints non zero values
 %     if opt_results(i)>1
 %         if i<=num_of_links*2
@@ -325,9 +327,9 @@ function out = xijvec(i,x,num_nodes,num_station_links,NUMBER_OF_SATELLITES)  %#o
     end
     % Final step: out == [Aeq1 Aeq2 si]
     temp3 = diag(ones(1,num_nodes));
-%     if i > NUMBER_OF_SATELLITES
-%        temp3 = -temp3; 
-%     end
+    if i > NUMBER_OF_SATELLITES
+       temp3 = -temp3; 
+    end
     temp2 = temp(1:(length(temp)-num_station_links)); % se periptwsh pou den valoume tis sthles
     out = [temp, -temp2, -temp3(i,:)];
 end
