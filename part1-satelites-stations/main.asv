@@ -21,6 +21,8 @@ STOP_AT_TIME = 30;% integer, declares when the time should be stopped
 THETA_PHI = [30  60];
 LINK_CAPACITY = 100; % WARING! LINK_CAPACITY must be equal to 
 PRINT_DETAILS = true; % true/false: Displays optimization problem's details (distance matrix, parameters (Aeq, beq, A, b, l, ...) etc)
+function out = main(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELOCITIES, INVERSE_VELOCITIES_SATEL,...
+                    INVERSE_VELOCITIES_SATEL, STOP_AT_TIME, THETA_PHI, LINK_CAPACITY, PRINT_DETAILS)
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -211,7 +213,7 @@ end
 % --------------------------------------------------------------------
 % Using fmincon! ========================================================================================================================================================================================================================================================
 %%%%--------- fmincon(fun,x0,A,b,Aeq,beq) % x0 is the initial point used by the optimizer
-objective_function = @(xs)[(10^(-6))*ones(1,num_of_links*2 - num_station_links), zeros(1,NUMBER_OF_SATELLITES),ones(1,NUMBER_OF_STATIONS)]*xs'; %xs is the optimization vector. xs = [x1,x2,...,x(links_num),x(links_num+1),...,x(2*links_num),s1,s2,...,sn]
+objective_function = @(xs)[(10^(-3))*ones(1,num_of_links*2 - num_station_links), zeros(1,NUMBER_OF_SATELLITES),-ones(1,NUMBER_OF_STATIONS)]*xs'; %xs is the optimization vector. xs = [x1,x2,...,x(links_num),x(links_num+1),...,x(2*links_num),s1,s2,...,sn]
 x0 = zeros(1,(num_of_links*2-num_station_links+n));
 % x0 = [ones(1,(num_of_links*2-num_station_links + n - 3)) 1 2 -100]; % debug
 opt_results = fmincon(objective_function, x0, A, b', A_kirchhoff, beq', lower_bounds, upper_bounds); % zeros(size(1:(num_of_links*2+n))) -> every rate should be positive
