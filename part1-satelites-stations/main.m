@@ -12,22 +12,23 @@ addpath C:\Users\User\Documents\GitHub\Network_Optimization_Thesis\part1-satelit
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 % - - - - - - - - - - - + + + + + + \ M E N U / + + + + + + - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 % Main parameters (if you want to experiment with program's parameters just change ONLY the following): - - -  
-NUMBER_OF_SATELLITES = 2; %5 integer, default 2
-NUMBER_OF_STATIONS = 1; %2 integer, default 1
+NUMBER_OF_SATELLITES = 1; %5 integer, default 2
+NUMBER_OF_STATIONS = 2; %2 integer, default 1
 RANDOM_VELOCITIES = false; % boolean, default false
 INVERSE_VELOCITIES_SATEL = ones(1,NUMBER_OF_SATELLITES) * 3; % smaller value -> faster, it can be a vector of the wanted speeds [v1 v2 ... vn], where n == NUMBER_OF_SATELLITES
 INVERSE_VELOCITIES_STATIONS = ones(1,NUMBER_OF_STATIONS) * 80; % larger value -> slower, >> >> >> >> >> >> >> >> >> >> >> >> 
 STOP_AT_TIME = 30;% integer, declares when the time should be stopped
 THETA_PHI = [30  60];
 LINK_CAPACITY = 100; % WARING! LINK_CAPACITY must be equal to 
-PRINT_DETAILS = false; % true/false: Displays optimization problem's details (distance matrix, parameters (Aeq, beq, A, b, l, ...) etc)
-PRINT_MAIN_PARAMETERS = false;
+PRINT_DETAILS = true; % true/false: Displays optimization problem's details (distance matrix, parameters (Aeq, beq, A, b, l, ...) etc)
+PRINT_MAIN_PARAMETERS = true;
+SHOW_TOPOLOGY = true;
 
 ena = kyria(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELOCITIES, INVERSE_VELOCITIES_SATEL,...
-                    INVERSE_VELOCITIES_STATIONS, STOP_AT_TIME, THETA_PHI, LINK_CAPACITY, PRINT_DETAILS, PRINT_MAIN_PARAMETERS);
+                    INVERSE_VELOCITIES_STATIONS, STOP_AT_TIME, THETA_PHI, LINK_CAPACITY, PRINT_DETAILS, PRINT_MAIN_PARAMETERS,SHOW_TOPOLOGY);
 
 function out = kyria(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELOCITIES, INVERSE_VELOCITIES_SATEL,...
-                    INVERSE_VELOCITIES_STATIONS, STOP_AT_TIME, THETA_PHI, LINK_CAPACITY, PRINT_DETAILS, PRINT_MAIN_PARAMETERS)
+                    INVERSE_VELOCITIES_STATIONS, STOP_AT_TIME, THETA_PHI, LINK_CAPACITY, PRINT_DETAILS, PRINT_MAIN_PARAMETERS,SHOW_TOPOLOGY)
     % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
     % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
     % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -35,7 +36,7 @@ function out = kyria(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELOCITIES
     disp(' ')
     disp(' ')
     disp(' ')
-    disp("|======== S T A R T ========|")
+    disp("|========================================= S T A R T =============================================|")
     nodes = create_nodes(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, INVERSE_VELOCITIES_SATEL, ... 
                          INVERSE_VELOCITIES_STATIONS, RANDOM_VELOCITIES, THETA_PHI); 
 %     prompt = '[~I/O:] Display the program''s main parameters? 1/0 (one=yes, zero=no)...';
@@ -55,53 +56,55 @@ function out = kyria(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELOCITIES
     end
 
     % Setting up figure display options: - - - - - - - - - - - - - - - - -
+    earth_radius = 200;
+    if SHOW_TOPOLOGY
     figure('Name','3D Simulation of satelite orbits');
     title("satelites:"+string(NUMBER_OF_SATELLITES)+...
           ", stations:"+string(NUMBER_OF_STATIONS)+...
           ", random velocities:"+string(RANDOM_VELOCITIES)+...
           ", stop:"+string(STOP_AT_TIME));
-
-    hold on; % keep plotting on the existing figure
-    earth_radius = 200;
+        hold on; % keep plotting on the existing figure
+        axis equal
+        view(30,0)% setting azemuth and elevation angles of camera for nicer visualization 
     axis([-earth_radius-200 earth_radius+200 -earth_radius-200 earth_radius+200 -earth_radius-200 earth_radius+200]); %setting up figure size
-    axis equal
-    view(30,0)% setting azemuth and elevation angles of camera for nicer visualization 
-
+    end    
+    
     %%%% WARNING! 'times' must be always < lesser from linspace length of all satelites and stations (avoiding index out of bounds error)
     stop = STOP_AT_TIME; % 30
     times = 10000; % upper bound of iterations
-    [x,y,z] = sphere();%get coordinates in order to create 3D spheres. A sphere can be the earth, a satelite or a station.
+    [x,y,z] = sphere();%get coordinates in order to create 3D spheres. A sphere can be the earth, a satelite or a station.   
     for i = 1:times
-
        %Coordinates ---------------------------
        coords = [];
        for j = 1:length(nodes)
           coords = [coords; nodes(j).lifetime_coordinates(:,i)' ];
        end
-
-       %Visualize ---------------------------
-       earth = surf( earth_radius*x, earth_radius*y, earth_radius*z );
-       displays = [];
-       for j = 1:length(nodes)
-          if j <= NUMBER_OF_SATELLITES
-            displays = [displays, surf(coords(j,1)+10*x,coords(j,2)+10*y,coords(j,3)+10*z)]; 
-          else
-            displays = [displays, surf(coords(j,1)+20*x,coords(j,2)+20*y,coords(j,3)+20*z)]; 
-          end
+       
+       if SHOW_TOPOLOGY
+           %Visualize ---------------------------
+           earth = surf( earth_radius*x, earth_radius*y, earth_radius*z );
+           displays = [];
+           for j = 1:length(nodes)
+              if j <= NUMBER_OF_SATELLITES
+                displays = [displays, surf(coords(j,1)+10*x,coords(j,2)+10*y,coords(j,3)+10*z)]; 
+              else
+                displays = [displays, surf(coords(j,1)+20*x,coords(j,2)+20*y,coords(j,3)+20*z)]; 
+              end
+           end
        end
-
-       % Placing here the 'stop' break for the figure to stay active with all
-       % objects:
-       if i == stop
-           break
+           % Placing here the 'stop' break for the figure to stay active with all
+           % objects:
+           if i == stop
+               break
+           end
+       if SHOW_TOPOLOGY
+           %Delete (to create the animation illusion)
+           pause(0.01) %WARNING: all 'delete' (for graphic objects) functions must be after the 'pause' function 
+           for j = 1:length(displays)
+              delete(displays(j))
+           end
+           delete(earth)
        end
-
-       %Delete (to create the animation illusion)
-       pause(0.01) %WARNING: all 'delete' (for graphic objects) functions must be after the 'pause' function 
-       for j = 1:length(displays)
-          delete(displays(j))
-       end
-       delete(earth)
     end
     % hold off %not necessary(?)
     disp('[~Report:] Time stopped! A network has been created.')
@@ -134,14 +137,14 @@ function out = kyria(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELOCITIES
     %Each row concerns -> a satelite, last 2 rows -> stations
 
     if PRINT_DETAILS
-        disp('|=================================================================================|')
+        disp('|=================================================================================================|')
         disp('Distance matrix:------------------------------------------------------------------')
         disp(DISTANCES)
         disp('Link matrix:----------------------------------------------------------------------')
         disp(LINKS)%should I include the diagonal elements (selfs)?
         disp('-- [1] = satelite to satelite connection, [-1] = satelite to station -------------')
         disp('-- Number of links: '+string(num_of_links))
-        disp('|=================================================================================|')
+        disp('|=================================================================================================|')
     end
 
     % Constructing fmincon parameters (objective function, contraints: Aeq, beq, A, b) ========================================================================================================================================================================================================================================================
@@ -227,9 +230,9 @@ function out = kyria(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELOCITIES
     %         end    
     %     end
     % end
-    disp('---------- OPTIMIZATION RESULTS -------------------------------------------------------------------')
+    disp('---------- OPTIMIZATION RESULTS ----------------------------------------------------------------')
     disp(opt_results)
-    disp('---------------------------------------------------------------------------------------------------')
+    disp('------------------------------------------------------------------------------------------------')
     out = opt_results;
 end% end of main function
 
@@ -286,7 +289,7 @@ function out = create_nodes(num_satelites, num_stations, sat_inverse_vel, stat_i
         end
     end
     
-    disp('[~Report:] Satelites and stations successfully created')
+    disp('[~Report:] Satellites and stations successfully created')
     out = matr;
 end
 
