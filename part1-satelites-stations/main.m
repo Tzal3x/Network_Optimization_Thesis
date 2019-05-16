@@ -12,17 +12,17 @@ addpath C:\Users\User\Documents\GitHub\Network_Optimization_Thesis\part1-satelit
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 % - - - - - - - - - - - + + + + + + \ M E N U / + + + + + + - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 % Main parameters (if you want to experiment with program's parameters just change ONLY the following): - - -  
-NUMBER_OF_SATELLITES = 1; %5 integer, default 2
-NUMBER_OF_STATIONS = 2; %2 integer, default 1
+NUMBER_OF_SATELLITES = 2; %5 integer, default 2
+NUMBER_OF_STATIONS = 1; %2 integer, default 1
 RANDOM_VELOCITIES = false; % boolean, default false
 INVERSE_VELOCITIES_SATEL = ones(1,NUMBER_OF_SATELLITES) * 3; % smaller value -> faster, it can be a vector of the wanted speeds [v1 v2 ... vn], where n == NUMBER_OF_SATELLITES
 INVERSE_VELOCITIES_STATIONS = ones(1,NUMBER_OF_STATIONS) * 80; % larger value -> slower, >> >> >> >> >> >> >> >> >> >> >> >> 
 STOP_AT_TIME = 30;% integer, declares when the time should be stopped
 THETA_PHI = [30  60];
 LINK_CAPACITY = 100; % WARING! LINK_CAPACITY must be equal to 
-PRINT_DETAILS = true; % true/false: Displays optimization problem's details (distance matrix, parameters (Aeq, beq, A, b, l, ...) etc)
-PRINT_MAIN_PARAMETERS = true;
-SHOW_TOPOLOGY = true;
+PRINT_DETAILS = false; % true/false: Displays optimization problem's details (distance matrix, parameters (Aeq, beq, A, b, l, ...) etc)
+PRINT_MAIN_PARAMETERS = false;
+SHOW_TOPOLOGY = false;
 
 ena = kyria(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELOCITIES, INVERSE_VELOCITIES_SATEL,...
                     INVERSE_VELOCITIES_STATIONS, STOP_AT_TIME, THETA_PHI, LINK_CAPACITY, PRINT_DETAILS, PRINT_MAIN_PARAMETERS,SHOW_TOPOLOGY);
