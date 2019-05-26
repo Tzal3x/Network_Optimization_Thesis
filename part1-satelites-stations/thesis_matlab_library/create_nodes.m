@@ -1,5 +1,5 @@
 function out = create_nodes(num_satelites, num_stations, sat_inverse_vel, stat_inverse_vel, random_factor, theta_phi)
-% Creates a list of nodes in the form of [satelite_objects .... station_objects]
+% Creates a list of node objects in the form of [satelite_objects .... station_objects]
 %
 % - num_satelites: number of satelites (set default as 9)
 % - num_stations: number of stations (set default as 2)

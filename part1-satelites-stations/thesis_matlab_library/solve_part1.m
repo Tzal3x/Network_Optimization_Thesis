@@ -1,48 +1,27 @@
-%% Space 3D:--------------------------------------------------------
-%{
-
-MATLAB R2018a
-
-%}
-
-cd C:\Users\User\Documents\GitHub\Network_Optimization_Thesis\part1-satelites-stations
-addpath C:\Users\User\Documents\GitHub\Network_Optimization_Thesis\part1-satelites-stations\m_map %adding m_map package
-addpath C:\Users\User\Documents\GitHub\Network_Optimization_Thesis\part1-satelites-stations\thesis_matlab_library
-
-% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-% - - - - - - - - - - - + + + + + + \ M E N U / + + + + + + - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-% Main parameters (if you want to experiment with program's parameters just change ONLY the following): - - -  
-NUMBER_OF_SATELLITES = 2; %5 integer, default 2
-NUMBER_OF_STATIONS = 1; %2 integer, default 1
-RANDOM_VELOCITIES = false; % boolean, default false
-INVERSE_VELOCITIES_SATEL = ones(1,NUMBER_OF_SATELLITES) * 3; % smaller value -> faster, it can be a vector of the wanted speeds [v1 v2 ... vn], where n == NUMBER_OF_SATELLITES
-INVERSE_VELOCITIES_STATIONS = ones(1,NUMBER_OF_STATIONS) * 80; % larger value -> slower, >> >> >> >> >> >> >> >> >> >> >> >> 
-STOP_AT_TIME = 30;% integer, declares when the time should be stopped
-THETA_PHI = [30  60];
-LINK_CAPACITY = 100; % WARING! LINK_CAPACITY must be equal to 
-PRINT_DETAILS = false; % true/false: Displays optimization problem's details (distance matrix, parameters (Aeq, beq, A, b, l, ...) etc)
-PRINT_MAIN_PARAMETERS = false;
-SHOW_TOPOLOGY = false;
-
-ena = kyria(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELOCITIES, INVERSE_VELOCITIES_SATEL,...
-                    INVERSE_VELOCITIES_STATIONS, STOP_AT_TIME, THETA_PHI, LINK_CAPACITY, PRINT_DETAILS, PRINT_MAIN_PARAMETERS,SHOW_TOPOLOGY);
-
-function out = kyriasol(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELOCITIES, INVERSE_VELOCITIES_SATEL,...
+function out = solve_part1(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELOCITIES, INVERSE_VELOCITIES_SATEL,...
                     INVERSE_VELOCITIES_STATIONS, STOP_AT_TIME, THETA_PHI, LINK_CAPACITY, PRINT_DETAILS, PRINT_MAIN_PARAMETERS,SHOW_TOPOLOGY)
-    % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-    % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-    % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-    disp(' ')% line-break to seperate previous runs of the programm.
-    disp(' ')
-    disp(' ')
-    disp(' ')
-    disp("|========================================= S T A R T =============================================|")
+    % Solves the first (and simplest) version of a network flow utility maximization problem 
+    %
+    % Input parameters:
+    % NUMBER_OF_SATELLITES = integer, number of satellites 
+    % NUMBER_OF_STATIONS = integer, number of stations 
+    % RANDOM_VELOCITIES = boolean, true if a random factor should be added at the satellite velocities
+    % INVERSE_VELOCITIES_SATEL = vector, each element is the inverse velocity of a satellite
+    % INVERSE_VELOCITIES_STATIONS = vector, each element is the inverse
+    % velocity of a station. Shouldl be the same for all, since it coincide
+    % with earths angular speed around itself
+    % STOP_AT_TIME = integer, time when the optimization should take place
+    % THETA_PHI = vector, consisting of 2 elements [azimuth elevation]
+    % LINK_CAPACITY = float, maximum link capacity
+    % PRINT_DETAILS = boolean
+    %
+    % Output:
+    % A vector consisting of optimal values
+    % ---------------------------------------------------------------------
+   
+    disp("|========================================= INSIDE PART 1 =============================================|")
     nodes = create_nodes(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, INVERSE_VELOCITIES_SATEL, ... 
                          INVERSE_VELOCITIES_STATIONS, RANDOM_VELOCITIES, THETA_PHI); 
-%     prompt = '[~I/O:] Display the program''s main parameters? 1/0 (one=yes, zero=no)...';
-%     PRINT_MAIN_PARAMETERS = input(prompt); % Boolean; If true, displays each one of the above parameters
-
 
     if PRINT_MAIN_PARAMETERS
        disp("NUMBER_OF_SATELLITES: " + string(NUMBER_OF_SATELLITES))
@@ -236,15 +215,3 @@ function out = kyriasol(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELOCIT
     disp('------------------------------------------------------------------------------------------------')
     out = opt_results;
 end% end of main function
-
-%% Plot 2D world map and links
-%{
- THIS SCRIPT IS FOR THE VISUALIZATION OF THE SATELITE ORBITS ON A 2D MAP
- OF THE EARTH. BEFORE CONTINUING IT SHOULD BE CONSIDERED THAT THERE IS NO 
- COMPLETE MATCHING OF THE 3D ORBITS TO THE 2D MAPPING BECAUSE STATIONS 
- SHOULD BE REGARDED AS STATIONARY (ROTATION OF THE EARTH WILL BE IGNORED) 
- TO KEEP THE VELOCITY CALCULATIONS OF EACH SATELITE SIMPLE.
-%}
-
-
-

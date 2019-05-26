@@ -1,14 +1,16 @@
 function out = xijvec(i,x,num_nodes,num_station_links,NUMBER_OF_SATELLITES) 
-% This function is used for the creation of A_kirchoff matrix.
-% However, each time it is called, one row of kirchoff matrix is created
-% (regarding link i). Therefore the matrix is created in the main script.
+% - Used in solve_part1.m -
+% This function is used for the creation of A_kirchoff matrix (see solve_part1 function).
+% Each time it is called, one row of kirchoff matrix is created
+% (regarding link i).
 % The output is a vector of A_kirchhoff matrix's row (fianl_Aeq).
-% INPUTS: - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+%
+% Input parameters: 
 % i = current position of outter iterator (used in main script at assemblying)
 % x = xij where xij is a cell array. xij{i} contains value, parent_node_1, parent_node2 of link i 
 % num_nodes = number of nodes
 % num_sats = number of satelites
-
+% ----------------------------------------------------------------------------------------------- 
     temp = zeros(1,length(x));
     for it =1:length(x) % for every link, check if any edge is node i
         parent1 = x{it}(2);
