@@ -70,9 +70,13 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     for i = 1:(n*STOP_AT_TIME) % every 'n' rows there is a new epoch
         aeq_rows{i}={};
     end % end of aeq_rows initialization
+    epoch_link_list = get_list_num_links(STOP_AT_TIME, nodes); % number of links per epoch 
     
-    epoch_link_list = get_list_num_links(STOP_AT_TIME, nodes); % number of 
-    
+%===================================================================================================================================================
+%===================================================================================================================================================
+%===================================================================================================================================================
+%===================================================================================================================================================
+%===================================================================================================================================================
     for epoch = 1:times
        %Coordinates ---------------------------
        coords = [];
@@ -81,18 +85,12 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
        end
        
        % Links and Aeq rows are created here: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-       LINKS = create_LINKS(coords, nodes, n);
-       xij = create_flow_info(LINKS,n); 
-       num_station_links = get_nstat_links(xij, NUMBER_OF_SATELLITES); 
-       
-       for i = epoch:(epoch + n) % for every node in the given epoch:
-           row =  create_Aeq_row(epoch, epoch_link_list, i, xij, n, num_station_links, NUMBER_OF_SATELLITES);
-           if isempty(aeq_rows{i})
-               aeq_rows{i} = row;
-           else
-               aeq_rows{i} = [aeq_rows{i}; row]; % MIGHT REMOVE LATER
-           end
+       LINKS = abs(create_LINKS(coords, nodes, n));
+       for j = 1:n
+          
        end
+%        xij = create_flow_info(LINKS, n); 
+%        num_station_links = get_nstat_links(xij, NUMBER_OF_SATELLITES);    
        %-------------------------------------------------------------------
        
        if SHOW_TOPOLOGY
@@ -121,19 +119,21 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
            delete(earth)
        end
     end
-    disp('[~Report:] Time has stopped!')
-    num_of_links = length(xij);
+%===================================================================================================================================================
+%===================================================================================================================================================
+%===================================================================================================================================================
+%===================================================================================================================================================
+%===================================================================================================================================================
+%===================================================================================================================================================
+    disp('[~Report:] Final epoch reached!')
+%     num_of_links = length(xij);
     
     Aeq = assemble_Aeq(aeq_rows);
     
     if PRINT_DETAILS
         disp('|=================================================================================================|')
-%         disp('Distance matrix:------------------------------------------------------------------')
-%         disp(DISTANCES)
         disp('Link matrix:----------------------------------------------------------------------')
-        disp(LINKS)%should I include the diagonal elements (selfs)?
-        disp('-- [1] = satelite to satelite connection, [-1] = satelite to station -------------')
-        disp('-- Number of links: '+string(num_of_links))
+        disp(abs(LINKS))%should I include the diagonal elements (selfs)?
         disp('|=================================================================================================|')
     end
 
@@ -152,12 +152,12 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
        
     A_kirchhoff = Aeq;
     beq = zeros(1,length(A_kirchhoff(:,1))); % OTHER KIRCHOFF EQUALITY PART
-    A = [];% A = diag(ones(1,length(A_kirchhoff(1,:))));
-    b = [];% b = [zeros(1,num_of_links*2-num_station_links)+LINK_CAPACITY,zeros(1,NUMBER_OF_SATELLITES)+inf, zeros(1,NUMBER_OF_STATIONS)]; %zerosNUMBER_OF_SATELLITES+100 % CAPACITIES (UPPER BOUNDS)
+    A = [];
+    b = [];
     upper_bounds = [zeros(1,num_of_links*2-num_station_links)+LINK_CAPACITY, zeros(1,NUMBER_OF_SATELLITES+NUMBER_OF_STATIONS)+inf];
-    % lower_bounds = [zeros(1,(num_of_links*2-num_station_links)) zeros(1,NUMBER_OF_SATELLITES)+lbsi (1:NUMBER_OF_STATIONS)*(-inf)]; % zeros for rates (and sources(?)), -inf for sinks
     lower_bounds = zeros(1,length(A_kirchhoff(1,:)));
     disp('Done!')
+    
     % Prints: ------------------------------------------------------------
     if PRINT_DETAILS
         disp('|- - -------\ (Aeq) K I R C H H O F F /-------------- - -|')
@@ -173,6 +173,7 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
         disp(lower_bounds)
     end
     % --------------------------------------------------------------------
+    
     % Using fmincon! ========================================================================================================================================================================================================================================================
     %%%%--------- fmincon(fun,x0,A,b,Aeq,beq) % x0 is the initial point used by the optimizer
     objective_function = @(xs)[(10^(-3))*ones(1,num_of_links*2 - num_station_links), zeros(1,NUMBER_OF_SATELLITES),-ones(1,NUMBER_OF_STATIONS)]*xs'; %xs is the optimization vector. xs = [x1,x2,...,x(links_num),x(links_num+1),...,x(2*links_num),s1,s2,...,sn]
