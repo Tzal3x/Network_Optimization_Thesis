@@ -1,11 +1,11 @@
-function out = get_list_num_links(epochs, nodes)
+function out = get_list_num_links(total_epochs, nodes)
 % Syntax: get_list_num_links(epochs,nodes)
 % Saves in a list the number of links existing in the network in every
 % epoch.
-% epochs: integer, number of epochs
+% total_epochs: integer, total number of epochs
 % nodes: list of satellite/station objects 
     n = length(nodes);
-    stop = epochs; % epochs, keep it low like 30
+    stop = total_epochs; % epochs, keep it low like 30
     times = 10000; % upper bound of iterations
     list_num_links = [];
     for epoch = 1:times

@@ -6,7 +6,7 @@ function out = xijvec(i,x,num_nodes,num_station_links,NUMBER_OF_SATELLITES)
 % The output is a vector of A_kirchhoff matrix's row (fianl_Aeq).
 %
 % Input parameters: 
-% i = current position of outter iterator (used in main script at assemblying)
+% i = link == current position of outter iterator (used in main script at assemblying)
 % x = xij where xij is a cell array. xij{i} contains value, parent_node_1, parent_node2 of link i 
 % num_nodes = number of nodes
 % num_sats = number of satelites

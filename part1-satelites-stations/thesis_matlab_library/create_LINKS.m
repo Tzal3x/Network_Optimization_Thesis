@@ -1,4 +1,7 @@
 function out = create_LINKS(coords, nodes, n)
+    % Creates the LINK matrix. If LINK(i,j)!=0 it means that node i has a
+    % link/edge connecting it with node j.
+    
     DISTANCES = zeros(n,n); %(N+M)x(N+M) , N: #sats, M: #stats
     LINKS = zeros(n,n); %(N+M)x(N+M)^2
     communication_range = 150; % links exist at a distance smaller or equal of communication_range

@@ -15,7 +15,7 @@
 % END: TESTING create_Aeq_row
 disp(create_Aeq_ro(1,3,2,LINKS, 1))
 function out = create_Aeq_ro(epoch, total_epochs, node, LINKS, NUMBER_OF_SATELLITES) % ALLAKSE THS TO ONOMA
-% - Used in solve_part2.m - !!!
+% IT IS WRONG! DO NOT USE IT! - Was about to be used in solve_part2.m -  
     num_nodes = length(LINKS(1, :));
     final_result = (1:(((num_nodes-1)*2 + num_nodes*2 ) * total_epochs)) *0;
     % Estw o LINKS matrix:
