@@ -162,14 +162,10 @@ function out = solve_part1(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
         end
     end
 
-    A_kirchhoff = zeros(0,num_of_links*2+n); % Each row is a node. Each column until column[num of satellites] expresses which links belong to the node. Multiplying A_kirchhoff with optimization vector creates all the kirchhoff equalities that must hold.
+    A_kirchhoff = null(1,1); % Each row is a node. Each column until column[num of satellites] expresses which links belong to the node. Multiplying A_kirchhoff with optimization vector creates all the kirchhoff equalities that must hold.
     for i = 1:n
-        temp = xijvec(i,xij,n,num_station_links,NUMBER_OF_SATELLITES);%,NUMBER_OF_STATIONS); % DEBUG , I WAS PREVIOUSLY USING xijvec()
-        if isempty(A_kirchhoff)
-            A_kirchhoff = [A_kirchhoff , temp]; %column bind
-        else
-            A_kirchhoff = [A_kirchhoff ; temp]; %row bind
-        end
+        temp = xijvec(i,xij,n,NUMBER_OF_SATELLITES);%,NUMBER_OF_STATIONS); % DEBUG , I WAS PREVIOUSLY USING xijvec()
+        A_kirchhoff = [A_kirchhoff ; temp]; %row bind
     end
     %A_kirchhoff = [A_kirchhoff ; [zeros(1,num_of_links*2), ones(1,NUMBER_OF_SATELLITES + NUMBER_OF_STATIONS)]]; % Adding sum(divergencies)==0 (NOT NECESSARY, IT SHOULD HOLD NEVERTHELESS)
 

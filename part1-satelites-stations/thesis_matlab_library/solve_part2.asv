@@ -83,9 +83,9 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
           coords = [coords; nodes(j).lifetime_coordinates(:,epoch)' ];
        end
        
-       LINKS = create_LINKS(coords, nodes, n);
+       LINKS = abs(create_LINKS(coords, nodes, n));
        xij = create_flow_info(LINKS, n); % get xij (parent1 parent2 vector)
-       LINKS = abs(LINKS);
+       
        num_links = length(xij); % number of undirectional links
        list_num_links = [list_num_links, num_links];
        
@@ -109,14 +109,14 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
            disp('') % break line
        end
        
-%        num_station_links = get_nstat_links(xij, NUMBER_OF_SATELLITES);   % number of satellite-station undirectional links
+       num_station_links = get_nstat_links(xij, NUMBER_OF_SATELLITES);   % number of satellite-station undirectional links
        temp_aeq_rows = {}; % contains rows of "unfinished" Aeq of epoch i
        for node = 1:n
-           temp_aeq_rows{node} = xijvec3(node, xij, n, NUMBER_OF_SATELLITES);
+           temp_aeq_rows{node} = xijvec3(node, xij, n, num_station_links, NUMBER_OF_SATELLITES);
        end
        Aeqs_cell_array{epoch} = assemble_Aeq(temp_aeq_rows);
        if PRINT_DETAILS
-          disp('| Aeq of epoch '+string(epoch)+' (missing previous epoch buffers):____________________________________________________|')
+          disp('| Aeq of epoch '+string(epoch)+' (missing previous epoch buffersfor now):____________________________________________________|')
           disp(Aeqs_cell_array{epoch})
        end
        
@@ -191,8 +191,14 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     if PRINT_DETAILS
        disp('|- - -------\ Initial Point x0: /--------- - -|')
        disp(x0)
+       disp('| Sizes:___________ ')
+       disp(size(Aeq))
+       disp(size(beq))
+       disp(size(upper_bounds))
+       disp(size(coefs))
+       disp(size(x0))
     end
-    opt_results = fmincon(objective_function, x0, A, b, Aeq, beq', lower_bounds', upper_bounds'); % zeros(size(1:(num_of_links*2+n))) -> every rate should be positive
+    opt_results = fmincon(objective_function, x0, A, b, Aeq, beq', lower_bounds, upper_bounds); % zeros(size(1:(num_of_links*2+n))) -> every rate should be positive
    
     disp('---------- OPTIMIZATION RESULTS ----------------------------------------------------------------')
     disp(opt_results)
