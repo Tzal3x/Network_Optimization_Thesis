@@ -38,5 +38,5 @@ function out = xijvec3(node, xij, num_nodes, NUMBER_OF_SATELLITES)
        divergencies = -divergencies; 
     end
     buffers = -diag(ones(1,num_nodes)); % current buffer
-    out = [flows, -divergencies(node,:), buffers(node,:)]; % [flows-1st_half, flows-2nd_half, divergencies, current_buffer]
+    out = [flows, -divergencies(node,:), buffers(node,:)]; % [flows_1st_half, flows_2nd_half, divergencies, current_buffer]
 end
