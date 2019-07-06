@@ -210,4 +210,6 @@ function out = solve_part1(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     disp(opt_results)
     disp('------------------------------------------------------------------------------------------------')
     out = opt_results;
+    
+    createGraph(NUMBER_OF_SATELLITES, xij, opt_results, nodes, 0)
 end% end of main function

@@ -73,7 +73,7 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
 %===================================================================================================================================================
     Aeqs_cell_array = {} ; % each element is the Aeq corresponding to an epoch.
     list_num_station_links = null(1,1); % number of station undirectional links per epoch (used later at upper bound calculation)
-    xij_ca = {}; % xij cell array containing the xij vector of every epoch
+    xij_ca = {} % xij cell array containing the xij vector of every epoch
     list_num_links = null(1,1); % number of undirectional links per epoch
     for epoch = 1:times
        disp(''); disp(''); % break 2 lines
@@ -86,7 +86,7 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
        
        LINKS = create_LINKS(coords, nodes, n);
        xij = create_flow_info(LINKS, n); % get xij (parent1 parent2 vector)
-       xij_ca{epoch} = xij;
+
        LINKS = abs(LINKS);
        num_links = length(xij); % number of undirectional links
        list_num_links = [list_num_links, num_links];
@@ -200,8 +200,6 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     disp(opt_results)
     disp('------------------------------------------------------------------------------------------------')
     out = opt_results;
-    
-    
     % Constructing graph:
     total_epochs = length(Aeqs_cell_array);
     ncols = null(1,1); % number of columns of Aeq at epoch i
@@ -210,11 +208,11 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     end
     for i = 1:total_epochs
        if i ~= 1
-           temp_opt_results = opt_results((ncols(i-1) + 1):(ncols(i-1) + ncols(i) - n));
+           temp_opt_results = opt_results((ncols(i-1)+1):(ncols(i-1)+ncols(i)));
        elseif i == 1
-           temp_opt_results = opt_results(1:(ncols(i) - n));
+           temp_opt_results = opt_results(1:ncols(i));
        end
-       createGraph(NUMBER_OF_SATELLITES, xij_ca{i}, temp_opt_results, nodes, i)
+       createGraph(num_satellites, xij, opt_results, nodes, epoch_name)
     end
     
 end% end of main function

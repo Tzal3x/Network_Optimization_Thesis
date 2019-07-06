@@ -1,13 +1,4 @@
-%________ CREATE GRAPH FUNCTION ________
-num_satellites = 2;
-nodes = 1:3;
-xij = {}; % Tha dinetai san paragraphos ths synarthshs
-xij{1} = [ 1     1     2];
-xij{2} = [-1     1     3];
-xij{3} = [-1     2     3];
-opt_results = [0.0004  100.0000  100.0000  0.0004 , 100.0000  100.0000  200.0000]; % edge weights
-%%% ____________________________________
-
+function createGraph(num_satellites, xij, opt_results, nodes, epoch_name)
 outgoing1 = null(1,1); outgoing2 = null(1,1);
 incoming1 = null(1,1); incoming2 = null(1,1);
 node_names = {}; % graph parameter
@@ -45,20 +36,23 @@ for i = 1:(length(nodes)*2) % *2 to add divergencies
 end
 
 node_names = cellstr(node_names);
-% sanity-check:
-disp('outgoing:') 
-disp(outgoing)
-disp('incoming:') 
-disp(incoming)
+% % sanity-check:
+% disp('outgoing:') 
+% disp(outgoing)
+% disp('incoming:') 
+% disp(incoming)
 
 G = digraph(outgoing , incoming, opt_results);
 LWidths = 4*G.Edges.Weight/max(G.Edges.Weight);
-plot(G, 'EdgeLabel', G.Edges.Weight, 'EdgeColor', 'k', 'NodeLabel', node_names, 'Marker', markers, 'LineWidth', LWidths, 'MarkerSize',6,'NodeColor',[1 0 0])
+f = figure;
+plot(G, 'EdgeLabel', G.Edges.Weight, 'EdgeColor', 'k', 'NodeLabel', node_names,...
+    'Marker', markers, 'LineWidth', LWidths, 'MarkerSize',6,'NodeColor',[1 0 0],...
+    'ArrowSize',17)
 
+if epoch_name ~= 0
+    title('DTNUM Graph (epoch '+string(epoch_name)+')')
+else
+    title('DTNUM Graph')
+end
 
-
-
-
-
-
-
+end

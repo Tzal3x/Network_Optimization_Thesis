@@ -29,8 +29,6 @@ function out = xijvec3(node, xij, num_nodes, NUMBER_OF_SATELLITES)
            flows(length(xij)+it) = 1; 
         end
     end
-    disp("inside xijvec3")
-    disp(sat_to_stat_positions)
     flows(length(xij) + sat_to_stat_positions) = [];
     % Final step: out == [Aeq1 Aeq2 si]
     divergencies = diag(ones(1,num_nodes));
