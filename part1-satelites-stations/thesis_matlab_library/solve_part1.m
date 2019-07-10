@@ -211,5 +211,9 @@ function out = solve_part1(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     disp('------------------------------------------------------------------------------------------------')
     out = opt_results;
     
+    %%% Create Simple Graph (figure): _____________________________________
     createGraph(NUMBER_OF_SATELLITES, xij, opt_results, nodes, 0)
+    
+    % Create Graph on Earth's map (figure):________________________________
+    
 end% end of main function

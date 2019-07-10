@@ -73,20 +73,23 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
 %===================================================================================================================================================
     Aeqs_cell_array = {} ; % each element is the Aeq corresponding to an epoch.
     list_num_station_links = null(1,1); % number of station undirectional links per epoch (used later at upper bound calculation)
-    xij_ca = {} % xij cell array containing the xij vector of every epoch
+    xij_ca = {}; % xij cell array containing the xij vector of every epoch
+    coords_ca = {}; % coords cell array containing the coords matrix of every epoch
     list_num_links = null(1,1); % number of undirectional links per epoch
     for epoch = 1:times
        disp(''); disp(''); % break 2 lines
        disp('> EPOCH ' + string(epoch) + ' ===============================================================================================|')
        %Coordinates ---------------------------
        coords = [];
-       for j = 1:length(nodes)
-          coords = [coords; nodes(j).lifetime_coordinates(:,epoch)' ];
+       for j = 1:length(nodes) % [longitude][latitude][altitude]
+          coords = [coords; ...
+                    nodes(j).lifetime_coordinates(:,epoch)' ];
        end
+       coords_ca{epoch} = coords;
        
        LINKS = create_LINKS(coords, nodes, n);
        xij = create_flow_info(LINKS, n); % get xij (parent1 parent2 vector)
-
+       xij_ca{epoch} = xij;
        LINKS = abs(LINKS);
        num_links = length(xij); % number of undirectional links
        list_num_links = [list_num_links, num_links];
@@ -200,7 +203,27 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     disp(opt_results)
     disp('------------------------------------------------------------------------------------------------')
     out = opt_results;
-    % Constructing graph:
+    
+    
+    %%% Create Simple Graph (figure): _____________________________________
+%     total_epochs = length(Aeqs_cell_array);
+%     ncols = null(1,1); % number of columns of Aeq at epoch i
+%     for i = 1:total_epochs
+%        ncols = [ncols, length(Aeqs_cell_array{i}(1,:))];
+%     end
+%     for i = 1:total_epochs
+%        if i ~= 1
+%            temp_opt_results = opt_results((ncols(i-1) + 1):(ncols(i-1) + ncols(i) - n));
+%        elseif i == 1
+%            temp_opt_results = opt_results(1:(ncols(i) - n));
+%        end
+%        createGraph(NUMBER_OF_SATELLITES, xij_ca{i}, temp_opt_results, nodes, i)
+%     end
+%     
+
+
+    % Seperating optimization results by epoch:
+    opt_results_ca = {}; % vectors, optimization results per epoch
     total_epochs = length(Aeqs_cell_array);
     ncols = null(1,1); % number of columns of Aeq at epoch i
     for i = 1:total_epochs
@@ -208,11 +231,22 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     end
     for i = 1:total_epochs
        if i ~= 1
-           temp_opt_results = opt_results((ncols(i-1)+1):(ncols(i-1)+ncols(i)));
+           temp_opt_results = opt_results((ncols(i-1) + 1):(ncols(i-1) + ncols(i) - n));
        elseif i == 1
-           temp_opt_results = opt_results(1:ncols(i));
+           temp_opt_results = opt_results(1:(ncols(i) - n));
        end
-       createGraph(num_satellites, xij, opt_results, nodes, epoch_name)
+       opt_results_ca{i} = temp_opt_results;
     end
     
+    % Create Graph on Earth's map (figure):________________________________
+%     disp("[!] Press <space> to show next figure...")
+%     for i = 1:total_epochs
+%        disp(string(i)+"/"+string(total_epochs))
+%        createGraph(NUMBER_OF_SATELLITES, xij_ca{i}, opt_results_ca{i}, nodes, i)
+%        pause;
+%     end
+        
+    % GraphOnMap(coords_ca, opt_results_ca)
+    
+
 end% end of main function
