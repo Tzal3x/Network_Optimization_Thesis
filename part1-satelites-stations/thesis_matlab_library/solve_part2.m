@@ -75,6 +75,7 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     list_num_station_links = null(1,1); % number of station undirectional links per epoch (used later at upper bound calculation)
     xij_ca = {}; % xij cell array containing the xij vector of every epoch
     coords_ca = {}; % coords cell array containing the coords matrix of every epoch
+    distances_ca = {}; % euclidean distances between entities cell array
     list_num_links = null(1,1); % number of undirectional links per epoch
     for epoch = 1:times
        disp(''); disp(''); % break 2 lines
@@ -86,7 +87,7 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
                     nodes(j).lifetime_coordinates(:,epoch)' ];
        end
        coords_ca{epoch} = coords;
-       
+       distances_ca{epoch} = create_DISTANCES(coords,n);
        LINKS = create_LINKS(coords, nodes, n);
        xij = create_flow_info(LINKS, n); % get xij (parent1 parent2 vector)
        xij_ca{epoch} = xij;
@@ -103,6 +104,8 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
        list_num_station_links = [list_num_station_links, num_station_links];
        
        if PRINT_DETAILS
+           disp('| Distance matrix '+string(epoch)+':____________________________________________________________________________________________|')
+           disp(distances_ca{epoch}); % debug
            disp('| Link matrix '+string(epoch)+':____________________________________________________________________________________________|')
            disp(abs(LINKS))
            disp('| xij '+string(epoch)+':____________________________________________________________________________________________________|')
@@ -188,6 +191,8 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     %%%%--------- fmincon(fun,x0,A,b,Aeq,beq) % x0 is the initial point used by the optimizer
     coefs = objective_function_coefs_2(list_num_links, list_num_station_links, n, STOP_AT_TIME, NUMBER_OF_SATELLITES);
     objective_function = @(xs)coefs*xs'; %xs is the optimization vector. xs = [x1,x2,...,x(links_num),x(links_num+1),...,x(2*links_num),s1,s2,...,sn]
+%     objective_function2 = @(xs)coefs*log(xs+0.05)'; 
+    
     if PRINT_DETAILS
        disp('|- - -------\ Objective Function Coefficients /--------- - -|')
        disp(coefs)
@@ -223,8 +228,10 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
 
 
     % Seperating optimization results by epoch:
-    opt_results_ca = {}; % vectors, optimization results per epoch
-    total_epochs = length(Aeqs_cell_array);
+    opt_results_ca = {}; % vectors, optimization results per epoch without buffers
+    opt_buffers_ca = {}; % optimal buffers per epoch
+    opt_divergencies_ca = {}; % optimal divergencies per epoch
+    total_epochs = length(Aeqs_cell_array); 
     ncols = null(1,1); % number of columns of Aeq at epoch i
     for i = 1:total_epochs
        ncols = [ncols, length(Aeqs_cell_array{i}(1,:))];
@@ -232,21 +239,28 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     for i = 1:total_epochs
        if i ~= 1
            temp_opt_results = opt_results((ncols(i-1) + 1):(ncols(i-1) + ncols(i) - n));
+           temp_buffers = opt_results((ncols(i-1) + ncols(i) - n + 1):(ncols(i-1) + ncols(i)));
        elseif i == 1
            temp_opt_results = opt_results(1:(ncols(i) - n));
+           temp_buffers = opt_results((ncols(i) - n + 1):ncols(i));
        end
        opt_results_ca{i} = temp_opt_results;
+       opt_divergencies_ca{i} = temp_opt_results((length(temp_opt_results)-n+1):length(temp_opt_results));
+       opt_buffers_ca{i} = temp_buffers;
     end
     
     % Create Graph on Earth's map (figure):________________________________
 %     disp("[~Report:] Creating simple graph figures:")
 %     disp("[!] Press <space> to show next figure...")
-%     for i = 1:total_epochs
+    for i = 1:total_epochs
 %        disp(string(i)+"/"+string(total_epochs))
 %        createGraph(NUMBER_OF_SATELLITES, xij_ca{i}, opt_results_ca{i}, nodes, i)
+%        disp(coords_ca{i}) %debug
+       if i == total_epochs
+           break
+       end
 %        pause;
-%     end
+    end
     
-    % Constructing the corresponding graph on the earths map:______________
-%     GraphOnMap(coords_ca, xij_ca, opt_results_ca, nodes)
+    GraphDists(NUMBER_OF_SATELLITES,opt_buffers_ca,opt_divergencies_ca, coords_ca, xij_ca, opt_results_ca, nodes, STOP_AT_TIME)   
 end% end of main function

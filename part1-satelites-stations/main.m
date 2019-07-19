@@ -30,12 +30,12 @@ addpath C:\Users\User\Documents\GitHub\Network_Optimization_Thesis\part1-satelit
 %                     INVERSE_VELOCITIES_STATIONS, STOP_AT_TIME, THETA_PHI, LINK_CAPACITY, PRINT_DETAILS, PRINT_MAIN_PARAMETERS,SHOW_TOPOLOGY);
 
  
-NUMBER_OF_SATELLITES = 2; % integer, default 2
-NUMBER_OF_STATIONS = 1; % integer, default 1
+NUMBER_OF_SATELLITES = 5; % integer, default 2
+NUMBER_OF_STATIONS = 2; % integer, default 1
 RANDOM_VELOCITIES = false; % boolean, default false
 INVERSE_VELOCITIES_SATEL = ones(1,NUMBER_OF_SATELLITES) * 3; % smaller value -> faster, it can be a vector of the desirable speeds [v1 v2 ... vn], where n == NUMBER_OF_SATELLITES
 INVERSE_VELOCITIES_STATIONS = ones(1,NUMBER_OF_STATIONS) * 80; % larger value -> slower, >> >> >> >> >> >> >> >> >> >> >> >> 
-STOP_AT_TIME = 3;% == EPOCHS integer, declares when the time should be stopped
+STOP_AT_TIME = 5;% == EPOCHS integer, declares when the time should be stopped
 THETA_PHI = [30  60];
 LINK_CAPACITY = 100; % WARNING! LINK_CAPACITY must be equal to ...
 PRINT_DETAILS = true; % true/false: Displays optimization problem's details (distance matrix, parameters (Aeq, beq, A, b, l, ...) etc)
@@ -48,7 +48,7 @@ dyo = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELOCITIES, I
 
 
                 
-%% Plot 2D world map and links
+% Plot 2D world map and links
 %{
  /!\ UNDER CONSTRUCTION ...
 
@@ -59,6 +59,6 @@ dyo = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELOCITIES, I
  TO KEEP THE VELOCITY CALCULATIONS OF EACH SATELITE SIMPLE. 
  m_map PACKAGE SHOULD BE USEFUL FOR THIS KIND OF JOB.
 %}
-
+ 
 
 

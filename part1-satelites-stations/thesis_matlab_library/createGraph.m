@@ -1,15 +1,16 @@
-function createGraph(num_satellites, xij, opt_results, nodes, epoch_name)
+function createGraph(num_satellites, xij_ca, opt_results_ca, nodes, epoch_name)
+% Version 1
 outgoing1 = null(1,1); outgoing2 = null(1,1);
 incoming1 = null(1,1); incoming2 = null(1,1);
 node_names = {}; % graph parameter
 markers = {}; % graph parameter
 unwanted = null(1,1);
-for i = 1:length(xij)
-    outgoing1 = [outgoing1, xij{i}(2)];
-    incoming1 = [incoming1, xij{i}(3)];
-    outgoing2 = [outgoing2, xij{i}(3)];
-    incoming2 = [incoming2, xij{i}(2)];
-    if xij{i}(1) == -1
+for i = 1:length(xij_ca)
+    outgoing1 = [outgoing1, xij_ca{i}(2)];
+    incoming1 = [incoming1, xij_ca{i}(3)];
+    outgoing2 = [outgoing2, xij_ca{i}(3)];
+    incoming2 = [incoming2, xij_ca{i}(2)];
+    if xij_ca{i}(1) == -1
        unwanted = [unwanted, i]; 
     end
 end
@@ -42,7 +43,7 @@ node_names = cellstr(node_names);
 % disp('incoming:') 
 % disp(incoming)
 
-G = digraph(outgoing , incoming, opt_results);
+G = digraph(outgoing , incoming, opt_results_ca);
 LWidths = 4*G.Edges.Weight/max(G.Edges.Weight);
 f = figure;
 plot(G, 'EdgeLabel', G.Edges.Weight, 'EdgeColor', 'k', 'NodeLabel', node_names,...
