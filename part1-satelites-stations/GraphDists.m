@@ -2,7 +2,6 @@ function GraphDists(num_satellites, opt_buffers_ca, opt_divergencies_ca, coords_
 % Creates a graph with the connecting nodes having the corresponding edge length     
     n = length(nodes);
     for epoch = 1:total_epochs
-        
         % Get the current epoch's data:
         xij =  xij_ca{epoch};
         coords = coords_ca{epoch};
@@ -36,7 +35,7 @@ function GraphDists(num_satellites, opt_buffers_ca, opt_divergencies_ca, coords_
         
         % Adding nodes to graph:
         temp_scatter = scatter(coords(:,1),coords(:,2),'filled');
-        earth_circle = viscircles([0 0], 200,'LineStyle','--','LineWidth',0.8,'Color',[1 0 0]); % WARNING! radius = 200 might be wrong!
+%         earth_circle = viscircles([0 0], 200,'LineStyle','--','LineWidth',0.8,'Color',[1 0 0]); % WARNING! radius = 200 might be wrong!
         axis([-300, 300, -300, 300]);
         axis equal
         title('2D Graph of solved DTNUM problem')

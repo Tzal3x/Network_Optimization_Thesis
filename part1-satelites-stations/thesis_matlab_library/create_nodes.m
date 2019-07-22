@@ -8,8 +8,7 @@ function out = create_nodes(num_satelites, num_stations, sat_inverse_vel, stat_i
 % - stat_inverse_vel: vector, inverse velocity of satelites (every station has the
 % same value) (smaller values imply high velocity) use values around [80 80 80 ... 80]
 % - random_factor: boolean, if true it adds some random noise from uniform distribution in [-10,10] on the satelite velocities
-% - theta_phi: arg_theta and arg_phi values. In order to be a circle they
-% should be equal
+% - theta_phi: arg_theta and arg_phi values.
 
     earth_radius = 200;
     rounds = 10;
