@@ -39,7 +39,7 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
        disp("INVERSE_VELOCITIES_SATEL: " + print_list(INVERSE_VELOCITIES_SATEL))
        disp("INVERSE_VELOCITIES_STATIONS: " + print_list(INVERSE_VELOCITIES_STATIONS))
        disp("STOP_AT_TIME: " + string(STOP_AT_TIME))
-       disp("THETA_PHI: " + print_list(THETA_PHI))
+%        disp("THETA_PHI: " + print_list(THETA_PHI))
        disp("LINK_CAPACITY: " + string(LINK_CAPACITY))
        disp("PRINT_DETAILS: " + string(PRINT_DETAILS))
     end
@@ -266,6 +266,6 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     
 %     GraphDists(NUMBER_OF_SATELLITES,opt_buffers_ca,opt_divergencies_ca, coords_ca, xij_ca, opt_results_ca, nodes, STOP_AT_TIME) % Creates agraph that the distances and other info are shown
     
-    GraphMap(NUMBER_OF_STATIONS, NUMBER_OF_SATELLITES, coords_ca, opt_buffers_ca, opt_divergencies_ca, xij_ca, nodes);
+    GraphMap(NUMBER_OF_STATIONS, NUMBER_OF_SATELLITES, coords_ca, opt_results_ca, opt_buffers_ca, opt_divergencies_ca, xij_ca, nodes);
         
 end% end of main function

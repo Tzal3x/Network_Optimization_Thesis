@@ -34,7 +34,7 @@ classdef satelite3D < handle
             x = arg_rho * cos(steps); 
             y = arg_rho * sin(steps);
             z = zeros(1,length(steps));
-            sat_obj.lifetime_coordinates = R * [x;y;z] 
+            sat_obj.lifetime_coordinates = R * [x;y;z];
             % lifetime_coordinates: 3xn where 1st row is x, 2nd is y and
             % 3rd is z.
        end       

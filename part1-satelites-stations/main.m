@@ -30,24 +30,32 @@ addpath C:\Users\User\Documents\GitHub\Network_Optimization_Thesis\part1-satelit
 %                     INVERSE_VELOCITIES_STATIONS, STOP_AT_TIME, THETA_PHI, LINK_CAPACITY, PRINT_DETAILS, PRINT_MAIN_PARAMETERS,SHOW_TOPOLOGY);
 
  
-NUMBER_OF_SATELLITES = 10; % integer, default 2
+NUMBER_OF_SATELLITES = 2; % integer, default 2
 NUMBER_OF_STATIONS = 1; % integer, default 1
 RANDOM_VELOCITIES = false; % boolean, default false
 INVERSE_VELOCITIES_SATEL = ones(1,NUMBER_OF_SATELLITES) * 3; % smaller value -> faster, it can be a vector of the desirable speeds [v1 v2 ... vn], where n == NUMBER_OF_SATELLITES
 INVERSE_VELOCITIES_STATIONS = ones(1,NUMBER_OF_STATIONS) * 80; % larger value -> slower, >> >> >> >> >> >> >> >> >> >> >> >> 
 STOP_AT_TIME = 10;% == EPOCHS integer, declares when the time should be stopped
-THETA_PHI = [0  20]; % 30, 60
+% THETA_PHI = [0  20]; % 30, 60
 LINK_CAPACITY = 100; % WARNING! LINK_CAPACITY must be equal to ...
 PRINT_DETAILS = true; % true/false: Displays optimization problem's details (distance matrix, parameters (Aeq, beq, A, b, l, ...) etc)
 PRINT_MAIN_PARAMETERS = true;
-SHOW_TOPOLOGY = true;
+SHOW_TOPOLOGY = false;
+
+THETA_PHI_ca = {};
+for i = 1:(NUMBER_OF_SATELLITES + NUMBER_OF_STATIONS)
+    if i <= NUMBER_OF_SATELLITES
+       THETA_PHI_ca{i} = [-10 20]; % set satellite orbits. It's not necessary to be the same for everyone.
+    else
+       THETA_PHI_ca{i} = [0 10]; % set station "orbits". Necessary to be the same.
+    end
+
+end
 
 dyo = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELOCITIES, INVERSE_VELOCITIES_SATEL,...
-                    INVERSE_VELOCITIES_STATIONS, STOP_AT_TIME, THETA_PHI, LINK_CAPACITY, PRINT_DETAILS, PRINT_MAIN_PARAMETERS, SHOW_TOPOLOGY);
+                    INVERSE_VELOCITIES_STATIONS, STOP_AT_TIME, THETA_PHI_ca, LINK_CAPACITY, PRINT_DETAILS, PRINT_MAIN_PARAMETERS, SHOW_TOPOLOGY);
 
   
-
-                
 % Plot 2D world map and links
 %{
  /!\ UNDER CONSTRUCTION ...

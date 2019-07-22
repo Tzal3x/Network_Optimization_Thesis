@@ -1,4 +1,4 @@
-function out = create_nodes(num_satelites, num_stations, sat_inverse_vel, stat_inverse_vel, random_factor, theta_phi)
+function out = create_nodes(num_satelites, num_stations, sat_inverse_vel, stat_inverse_vel, random_factor, theta_phi_ca)
 % Creates a list of node objects in the form of [satelite_objects .... station_objects]
 %
 % - num_satelites: number of satelites (set default as 9)
@@ -28,11 +28,11 @@ function out = create_nodes(num_satelites, num_stations, sat_inverse_vel, stat_i
     % Remember: satelite3D(arg_theta,arg_phi, arg_alt, arg_init_pos, arg_periods, arg_vel, arg_name)
     % Constructing satelites & stations:
     initializer_difs = (0:(num_satelites+num_stations-1))*27; %used to initialiaze satelites at different positions in order to not overlap each other
-    for ii = 1:(num_satelites + num_stations)
-        if ii <= num_satelites 
-            matr = [matr, satelite3D(theta_phi(1), theta_phi(2), earth_radius+50, 20 + initializer_difs(ii), rounds, inverse_velocities(ii), 'satelite')];
+    for i = 1:(num_satelites + num_stations)
+        if i <= num_satelites 
+            matr = [matr, satelite3D(theta_phi_ca{i}(1), theta_phi_ca{i}(2), earth_radius+50, 20 + initializer_difs(i), rounds, inverse_velocities(i), 'satelite')];
         else
-            matr = [matr, satelite3D(theta_phi(1), theta_phi(2), earth_radius, 200 + initializer_difs(ii)*4, rounds, inverse_velocities(ii), 'station')];
+            matr = [matr, satelite3D(theta_phi_ca{i}(1), theta_phi_ca{i}(2), earth_radius, 200 + initializer_difs(i)*4, rounds, inverse_velocities(i), 'station')];
         end
     end
     
