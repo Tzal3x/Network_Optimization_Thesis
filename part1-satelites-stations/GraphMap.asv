@@ -1,4 +1,5 @@
-function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buffers_ca, opt_divergencies_ca, xij_ca, nodes)
+function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca
+, opt_buffers_ca, opt_divergencies_ca, xij_ca, nodes)
     % Create a Graph projected on the World Map. Similar to GraphDists
  
     n = length(nodes);
@@ -35,10 +36,10 @@ function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buf
         disp('>> Epoch ' + string(epoch) + '- - - - - - - - - - - - - - - - - -|')
 
         xij =  xij_ca{epoch};
-        opt_flows = opt_flows_ca{epoch};%(1:(length(opt_flows_ca{epoch})-n)) ; % (leaving this here for later)
+        opt_results = %opt_results_ca{epoch}(1:(length(opt_results_ca{epoch})-n)) ; % (leaving this here for later)
         opt_buffers = opt_buffers_ca{epoch}; % buffers of nodes of given epoch
         opt_divergencies = opt_divergencies_ca{epoch}; % divergencies of nodes of given epoch
-        disp('> opt_flows:'); disp(opt_flows);
+        disp('> opt_results:'); disp(opt_results);
         disp('> opt_divergencies:'); disp(opt_divergencies);
         disp('> opt_buffers:'); disp(opt_buffers);
 
@@ -168,10 +169,10 @@ function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buf
         
         % Adding edge flow rates: - - - - - - - - -
         edge_texts_ca = {};
-        for i = 1:length(opt_flows)
+        for i = 1:length(opt_results)
             pos_x = edge_label_pos{i}(1);
-            pos_y = edge_label_pos{i}(2);
-            edge_label = "["+string(outgoing(i))+"->"+string(incoming(i))+"]:"+string(round(opt_flows(i),2));
+            pos_y= edge_label_pos{i}(2);
+            edge_label = "["+string(outgoing(i))+"->"+string(incoming(i))+"]:"+string(round(opt_results(i),2));
 
             if outgoing(i) < incoming(i)
                 edge_texts_ca{i} = textm(pos_x, pos_y, edge_label,'color',[.5 0 .5]);
