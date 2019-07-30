@@ -5,7 +5,7 @@
 %}
 
 function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELOCITIES, INVERSE_VELOCITIES_SATEL,...
-                    INVERSE_VELOCITIES_STATIONS, STOP_AT_TIME, THETA_PHI, LINK_CAPACITY, PRINT_DETAILS, PRINT_MAIN_PARAMETERS,SHOW_TOPOLOGY)
+                    INVERSE_VELOCITIES_STATIONS, STOP_AT_TIME, THETA_PHI, LINK_CAPACITY, PRINT_DETAILS, PRINT_MAIN_PARAMETERS, SHOW_TOPOLOGY, COMMUNICATION_RANGE)
     % Solves the second version of the problem Delay-Tolerant Network
     % Utility Maximization Problem [Problem I: DTNUM]
     % Having added data buffers
@@ -27,11 +27,36 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     % Output:
     % A vector consisting of optimal values
     % ---------------------------------------------------------------------
-   
+    
+    % Setting up figure display options: - - - - - - - - - - - - - - - - -
+    earth_radius = 200;
+    if SHOW_TOPOLOGY
+    figure('Name','3D Simulation of satelite orbits');
+    title("satelites:"+string(NUMBER_OF_SATELLITES)+...
+          ", stations:"+string(NUMBER_OF_STATIONS)+...
+          ", random velocities:"+string(RANDOM_VELOCITIES)+...
+          ", total epochs:"+string(STOP_AT_TIME));
+        hold on; % keep plotting on the existing figure
+        axis equal
+        view(30,0)% setting azemuth and elevation angles of camera for nicer visualization 
+    axis([-earth_radius-200 earth_radius+200 -earth_radius-200 earth_radius+200 -earth_radius-200 earth_radius+200]); %setting up figure size
+    end       
+
     disp("|========================================= INSIDE PART 2 =============================================|")
     nodes = create_nodes(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, INVERSE_VELOCITIES_SATEL, ... 
                          INVERSE_VELOCITIES_STATIONS, RANDOM_VELOCITIES, THETA_PHI); 
-
+%     for node = 1:length(nodes)
+%         temp = nodes(node).lifetime_coordinates; 
+% %         disp(temp)
+% %         pause
+%         for j = 1:(length(temp(1,:))-1)
+%             x = [temp(1,j), temp(1,j+1)];
+%             y = [temp(2,j), temp(2,j+1)];
+%             z = [temp(3,j), temp(3,j+1)];
+%             line(x,y,z,'LineStyle','--')
+%         end
+%     end
+    
     if PRINT_MAIN_PARAMETERS
        disp("NUMBER_OF_SATELLITES: " + string(NUMBER_OF_SATELLITES))
        disp("NUMBER_OF_STATIONS: " + string(NUMBER_OF_STATIONS))
@@ -45,20 +70,6 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     end
     
     n = NUMBER_OF_SATELLITES + NUMBER_OF_STATIONS; % number of total nodes (#sats + #stats)
-
-    % Setting up figure display options: - - - - - - - - - - - - - - - - -
-    earth_radius = 200;
-    if SHOW_TOPOLOGY
-    figure('Name','3D Simulation of satelite orbits');
-    title("satelites:"+string(NUMBER_OF_SATELLITES)+...
-          ", stations:"+string(NUMBER_OF_STATIONS)+...
-          ", random velocities:"+string(RANDOM_VELOCITIES)+...
-          ", stop:"+string(STOP_AT_TIME));
-        hold on; % keep plotting on the existing figure
-        axis equal
-        view(30,0)% setting azemuth and elevation angles of camera for nicer visualization 
-    axis([-earth_radius-200 earth_radius+200 -earth_radius-200 earth_radius+200 -earth_radius-200 earth_radius+200]); %setting up figure size
-    end    
     
     %%%% WARNING! 'times' must be always < lesser from linspace length of all satelites and stations (avoiding index out of bounds error)
     stop = STOP_AT_TIME; % epochs, keep it low like 30
@@ -90,7 +101,7 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
        disp(coords) % debug
        
        distances_ca{epoch} = create_DISTANCES(coords,n);
-       LINKS = create_LINKS(coords, nodes, n);
+       LINKS = create_LINKS(coords, nodes, n, COMMUNICATION_RANGE);
        xij = create_flow_info(LINKS, n); % get xij (parent1 parent2 vector)
        xij_ca{epoch} = xij;
        LINKS = abs(LINKS);
@@ -204,8 +215,10 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
        disp('|- - -------\ Initial Point x0: /--------- - -|')
        disp(x0)
     end
-    opt_results = fmincon(objective_function, x0, A, b, Aeq, beq', lower_bounds', upper_bounds'); % zeros(size(1:(num_of_links*2+n))) -> every rate should be positive
+%     opt_results = fmincon(objective_function, x0, A, b, Aeq, beq', lower_bounds', upper_bounds'); % zeros(size(1:(num_of_links*2+n))) -> every rate should be positive
+    opt_results = linprog(coefs, A, b, Aeq, beq', lower_bounds', upper_bounds'); % zeros(size(1:(num_of_links*2+n))) -> every rate should be positive
    
+
     disp('---------- OPTIMIZATION RESULTS ----------------------------------------------------------------')
     disp(opt_results)
     disp('------------------------------------------------------------------------------------------------')
@@ -227,7 +240,6 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
 %        createGraph(NUMBER_OF_SATELLITES, xij_ca{i}, temp_opt_results, nodes, i)
 %     end
 %     
-
 
     % Seperating optimization results by epoch:
     opt_results_ca = {}; % vectors, optimization results per epoch without buffers
@@ -251,21 +263,10 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
        opt_buffers_ca{i} = temp_buffers;
     end
     
-    % Create Graph on Earth's map (figure):________________________________
-%     disp("[~Report:] Creating simple graph figures:")
-%     disp("[!] Press <space> to show next figure...")
-%     for i = 1:total_epochs
-%        disp(string(i)+"/"+string(total_epochs))
-%        createGraph(NUMBER_OF_SATELLITES, xij_ca{i}, opt_results_ca{i}, nodes, i)
-%        disp(coords_ca{i}) %debug
-%        if i == total_epochs
-%            break
-%        end
-%        pause;
-%     end
-    
 %     GraphDists(NUMBER_OF_SATELLITES,opt_buffers_ca,opt_divergencies_ca, coords_ca, xij_ca, opt_results_ca, nodes, STOP_AT_TIME) % Creates agraph that the distances and other info are shown
+
+%     heuristic_1(distances_ca, 10*ones(1,n), nodes, xij_ca, LINK_CAPACITY, COMMUNICATION_RANGE, NUMBER_OF_SATELLITES);
+
+    GraphMap(NUMBER_OF_STATIONS, NUMBER_OF_SATELLITES, coords_ca, opt_results_ca, opt_buffers_ca, opt_divergencies_ca, xij_ca, nodes); % using fmincon/linprog results
     
-    GraphMap(NUMBER_OF_STATIONS, NUMBER_OF_SATELLITES, coords_ca, opt_results_ca, opt_buffers_ca, opt_divergencies_ca, xij_ca, nodes);
-        
 end% end of main function

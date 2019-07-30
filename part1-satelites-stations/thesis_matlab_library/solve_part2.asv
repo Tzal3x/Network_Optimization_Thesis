@@ -31,7 +31,16 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     disp("|========================================= INSIDE PART 2 =============================================|")
     nodes = create_nodes(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, INVERSE_VELOCITIES_SATEL, ... 
                          INVERSE_VELOCITIES_STATIONS, RANDOM_VELOCITIES, THETA_PHI); 
-
+    for node = 1:length(nodes)
+        temp = nodes(node).lifetime_coordinates'; 
+        for j = 1:(length(temp(1,:))-1)
+            x = [temp(1,j), ;
+            y = temp(2,j);
+            z = temp(3,j);
+        
+        line(x,y,z,LineStyle','--')
+    end
+    
     if PRINT_MAIN_PARAMETERS
        disp("NUMBER_OF_SATELLITES: " + string(NUMBER_OF_SATELLITES))
        disp("NUMBER_OF_STATIONS: " + string(NUMBER_OF_STATIONS))
@@ -39,7 +48,7 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
        disp("INVERSE_VELOCITIES_SATEL: " + print_list(INVERSE_VELOCITIES_SATEL))
        disp("INVERSE_VELOCITIES_STATIONS: " + print_list(INVERSE_VELOCITIES_STATIONS))
        disp("STOP_AT_TIME: " + string(STOP_AT_TIME))
-       disp("THETA_PHI: " + print_list(THETA_PHI))
+%        disp("THETA_PHI: " + print_list(THETA_PHI))
        disp("LINK_CAPACITY: " + string(LINK_CAPACITY))
        disp("PRINT_DETAILS: " + string(PRINT_DETAILS))
     end
@@ -53,7 +62,7 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     title("satelites:"+string(NUMBER_OF_SATELLITES)+...
           ", stations:"+string(NUMBER_OF_STATIONS)+...
           ", random velocities:"+string(RANDOM_VELOCITIES)+...
-          ", stop:"+string(STOP_AT_TIME));
+          ", total epochs:"+string(STOP_AT_TIME));
         hold on; % keep plotting on the existing figure
         axis equal
         view(30,0)% setting azemuth and elevation angles of camera for nicer visualization 
@@ -205,7 +214,9 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
        disp(x0)
     end
     opt_results = fmincon(objective_function, x0, A, b, Aeq, beq', lower_bounds', upper_bounds'); % zeros(size(1:(num_of_links*2+n))) -> every rate should be positive
+%     opt_results = linprog(objective_function, x0, A, b, Aeq, beq', lower_bounds', upper_bounds'); % zeros(size(1:(num_of_links*2+n))) -> every rate should be positive
    
+
     disp('---------- OPTIMIZATION RESULTS ----------------------------------------------------------------')
     disp(opt_results)
     disp('------------------------------------------------------------------------------------------------')
@@ -266,6 +277,6 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     
 %     GraphDists(NUMBER_OF_SATELLITES,opt_buffers_ca,opt_divergencies_ca, coords_ca, xij_ca, opt_results_ca, nodes, STOP_AT_TIME) % Creates agraph that the distances and other info are shown
     
-    GraphMap(NUMBER_OF_STATIONS, NUMBER_OF_SATELLITES, coords_ca, opt_buffers_ca, opt_divergencies_ca, xij_ca, nodes);
+    GraphMap(NUMBER_OF_STATIONS, NUMBER_OF_SATELLITES, coords_ca, opt_results_ca, opt_buffers_ca, opt_divergencies_ca, xij_ca, nodes);
         
 end% end of main function

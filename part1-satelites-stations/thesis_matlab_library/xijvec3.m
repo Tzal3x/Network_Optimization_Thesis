@@ -22,19 +22,19 @@ function out = xijvec3(node, xij, num_nodes, NUMBER_OF_SATELLITES)
             sat_to_stat_positions = [sat_to_stat_positions, it];
         end
         if parent1 == node  % if node i is parent 1 of the link
-           flows(it) = 1;
-           flows(length(xij)+it) = -1; 
+           flows(it) = -1; % 1;
+           flows(length(xij)+it) = 1; %-1; 
         elseif parent2 == node % if node i is parent 2 of the link 
-           flows(it) = -1;
-           flows(length(xij)+it) = 1; 
+           flows(it) = 1; % -1
+           flows(length(xij)+it) = -1; % 1;
         end
     end
     flows(length(xij) + sat_to_stat_positions) = [];
     % Final step: out == [Aeq1 Aeq2 si]
     divergencies = diag(ones(1,num_nodes));
-    if node > NUMBER_OF_SATELLITES
+    buffers = -diag(ones(1,num_nodes)); % current buffer
+    if node > NUMBER_OF_SATELLITES % if it's a station
        divergencies = -divergencies; 
     end
-    buffers = -diag(ones(1,num_nodes)); % current buffer
-    out = [flows, -divergencies(node,:), buffers(node,:)]; % [flows_1st_half, flows_2nd_half, divergencies, current_buffer]
+    out = [flows, divergencies(node,:), buffers(node,:)]; % [flows_1st_half, flows_2nd_half, divergencies, current_buffer]
 end
