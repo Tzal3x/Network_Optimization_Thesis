@@ -98,10 +98,10 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
                     nodes(j).lifetime_coordinates(:,epoch)' ];
        end
        coords_ca{epoch} = coords;
-       disp(coords) % debug
        
        distances_ca{epoch} = create_DISTANCES(coords,n);
        LINKS = create_LINKS(coords, nodes, n, COMMUNICATION_RANGE);
+
        xij = create_flow_info(LINKS, n); % get xij (parent1 parent2 vector)
        xij_ca{epoch} = xij;
        LINKS = abs(LINKS);
@@ -119,7 +119,7 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
        if PRINT_DETAILS
            disp('| Distance matrix '+string(epoch)+':____________________________________________________________________________________________|')
            disp(distances_ca{epoch}); % debug
-           disp('| Link matrix '+string(epoch)+':____________________________________________________________________________________________|')
+           disp('|(abs) Link matrix '+string(epoch)+':____________________________________________________________________________________________|')
            disp(abs(LINKS))
            disp('| xij '+string(epoch)+':____________________________________________________________________________________________________|')
            disp('|[value][parent node 1][parent node 2]------|')
@@ -248,7 +248,7 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     total_epochs = length(Aeqs_cell_array); 
     ncols = null(1,1); % number of columns of Aeq at epoch i
     for i = 1:total_epochs
-       ncols = [ncols, length(Aeqs_cell_array{i}(1,:))];
+       ncols = [ncols, length(Aeqs_cell_array{i}(1,:))+n]; % +n because previous buffers of Aeq of every epoch are missing
     end
     for i = 1:total_epochs
        if i ~= 1
@@ -262,8 +262,11 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
        opt_divergencies_ca{i} = temp_opt_results((length(temp_opt_results)-n+1):length(temp_opt_results));
        opt_buffers_ca{i} = temp_buffers;
     end
-    
-%     GraphDists(NUMBER_OF_SATELLITES,opt_buffers_ca,opt_divergencies_ca, coords_ca, xij_ca, opt_results_ca, nodes, STOP_AT_TIME) % Creates agraph that the distances and other info are shown
+%     disp('>> Cross validating results:') % debug
+%     disp(Aeq*opt_results); % debug
+%     pause % debug
+
+%     GraphDists(NUMBER_OF_SATELLITES,opt_buffers_ca,opt_divergencies_ca, coords_ca, xij_ca, opt_results_ca, nodes, STOP_AT_TIME) % Creates a graph that the distances and other info are shown
 
 %     heuristic_1(distances_ca, 10*ones(1,n), nodes, xij_ca, LINK_CAPACITY, COMMUNICATION_RANGE, NUMBER_OF_SATELLITES);
 

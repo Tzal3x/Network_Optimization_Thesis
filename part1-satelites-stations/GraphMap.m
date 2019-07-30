@@ -5,13 +5,13 @@ function GraphMap(num_stations, num_satellites, coords_ca, opt_results_ca, opt_b
     figure;
     worldmap('World')
     load coastlines %#ok<LOAD>
-    plotm(coastlat,coastlon)
+    plotm(coastlat,coastlon,'Color',[0 0 1, 0.05]) % Transparent map for less visual complexity
     disp('[~Report:] Inside GraphMap: ========================================|')
     total_epochs = length(coords_ca);
 
 
     % Showing lifetime coordinates:
-    for node = 1:length(nodes)
+    for node = 1:num_satellites%length(nodes)
         node_coords = nodes(node).lifetime_coordinates';
         x = node_coords(:,1);
         y = node_coords(:,2);

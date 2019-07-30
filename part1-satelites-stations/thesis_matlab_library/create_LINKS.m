@@ -9,7 +9,7 @@ function out = create_LINKS(coords, nodes, n, communication_range)
         for j = 1:n
             DISTANCES(i,j) = euclidean_dist(coords(i,:),coords(j,:)); % calculating the distance between object's center point
             if euclidean_dist(coords(i,:),coords(j,:)) <= communication_range %200 is arbitrary
-                if strcmp(nodes(i).name,'satelite') && strcmp(nodes(j).name,'satelite')
+                if strcmp(nodes(i).name,'satellite') && strcmp(nodes(j).name,'satellite')
                     LINKS(i,j) = 1; %satelite to satelite link
                 else
                     LINKS(i,j) = -1; %satelite to station link, '-1' since stations are sinks in graph terms

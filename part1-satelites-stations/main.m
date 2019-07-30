@@ -30,12 +30,12 @@ addpath C:\Users\User\Documents\GitHub\Network_Optimization_Thesis\part1-satelit
 %                     INVERSE_VELOCITIES_STATIONS, STOP_AT_TIME, THETA_PHI, LINK_CAPACITY, PRINT_DETAILS, PRINT_MAIN_PARAMETERS,SHOW_TOPOLOGY);
 
  
-NUMBER_OF_SATELLITES = 2; %4; %10; % integer, default 2
-NUMBER_OF_STATIONS = 1; %2; %3; % integer, default 1
+NUMBER_OF_SATELLITES = 4; %4; %10; % integer, default 2
+NUMBER_OF_STATIONS = 2; %2; %3; % integer, default 1
 RANDOM_VELOCITIES = false; % boolean, default false
 INVERSE_VELOCITIES_SATEL = ones(1,NUMBER_OF_SATELLITES) * 1; % smaller value -> faster, it can be a vector of the desirable speeds [v1 v2 ... vn], where n == NUMBER_OF_SATELLITES
-INVERSE_VELOCITIES_STATIONS = ones(1,NUMBER_OF_STATIONS) * 80; % larger value -> slower, >> >> >> >> >> >> >> >> >> >> >> >> 
-STOP_AT_TIME = 2;%20; % == EPOCHS integer, declares when the time should be stopped
+INVERSE_VELOCITIES_STATIONS = ones(1,NUMBER_OF_STATIONS) * 800; %80=moving, 800=almost imovable % larger value -> slower, >> >> >> >> >> >> >> >> >> >> >> >> 
+STOP_AT_TIME = 3; %20; % == EPOCHS integer, declares when the time should be stopped
 % THETA_PHI = [0  20]; % 30, 60
 LINK_CAPACITY = 100; % WARNING! LINK_CAPACITY must be equal to ...
 COMMUNICATION_RANGE = 150;
@@ -45,27 +45,27 @@ SHOW_TOPOLOGY = false; % 3D topology with spheres
 THETA_PHI_ca = {}; % I have defined different inclinations of orbits for satellites and stations
 
 % Demo 1: (same orbits) -------------------------------------------------
-for i = 1:(NUMBER_OF_SATELLITES + NUMBER_OF_STATIONS)
-    if i <= NUMBER_OF_SATELLITES
-       THETA_PHI_ca{i} = [-10 20]; % set satellite orbits. It's not necessary to be the same for everyone.
-    else
-       THETA_PHI_ca{i} = [0 10]; % set station "orbits". Necessary to be the same.
-    end
-end
-% -----------------------------------------------------------------------
-
-% Demo 2: (different orbits) --------------------------------------------
-% seeds = 1:NUMBER_OF_SATELLITES; % satel = 10, stations = 3.
 % for i = 1:(NUMBER_OF_SATELLITES + NUMBER_OF_STATIONS)
 %     if i <= NUMBER_OF_SATELLITES
-%        rng(seeds(i))
-%        random_factor1 = ceil(rand()*100-50); % [-50, 50]
-%        random_factor2 = ceil(rand()*100-50); % [-50, 50]
-%        THETA_PHI_ca{i} = [-random_factor1  random_factor2]; % set satellite orbits. It's not necessary to be the same for everyone.
+%        THETA_PHI_ca{i} = [-10 20]; % set satellite orbits. It's not necessary to be the same for everyone.
 %     else
 %        THETA_PHI_ca{i} = [0 10]; % set station "orbits". Necessary to be the same.
 %     end
 % end
+% -----------------------------------------------------------------------
+
+% Demo 2: (different orbits) --------------------------------------------
+seeds = 1:NUMBER_OF_SATELLITES; % satel = 10, stations = 3.
+for i = 1:(NUMBER_OF_SATELLITES + NUMBER_OF_STATIONS)
+    if i <= NUMBER_OF_SATELLITES
+       rng(seeds(i))
+       random_factor1 = ceil(rand()*100-50); % [-50, 50]
+       random_factor2 = ceil(rand()*100-50); % [-50, 50]
+       THETA_PHI_ca{i} = [-random_factor1  random_factor2]; % set satellite orbits. It's not necessary to be the same for everyone.
+    else
+       THETA_PHI_ca{i} = [0 10]; % set station "orbits". Necessary to be the same.
+    end
+end
 % ----------------------------------------------------------------------
 
 % THETA_PHI_ca{1} = [-30 50];
