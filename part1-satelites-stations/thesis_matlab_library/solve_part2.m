@@ -250,18 +250,10 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     for i = 1:total_epochs
        ncols = [ncols, length(Aeqs_cell_array{i}(1,:))]; % +n because previous buffers of Aeq of every epoch are missing
     end
-    disp('columns per epoch') %debug  
-    disp(ncols) %debug
-    pause; %debug
+
     for i = 1:total_epochs
        if i ~= 1
            ncols_of_ALL_previous = sum(ncols(1:(i-1)));
-
-           disp('ooooooooooooooooooooooooooooooooo') %debug
-           disp((ncols_of_ALL_previous + 1):(ncols_of_ALL_previous + ncols(i) - 2*n)) %debug
-           disp((ncols_of_ALL_previous + ncols(i) - 2*n + 1):(ncols_of_ALL_previous + ncols(i)-n)) %debug
-           disp((ncols_of_ALL_previous + ncols(i) - n + 1):(ncols_of_ALL_previous + ncols(i))) %debug
-           
            temp_opt_flows = opt_results((ncols_of_ALL_previous + 1):(ncols_of_ALL_previous + ncols(i) - 2*n));
            temp_divergencies = opt_results((ncols_of_ALL_previous + ncols(i) - 2*n + 1):(ncols_of_ALL_previous + ncols(i)-n));
            temp_buffers = opt_results((ncols_of_ALL_previous + ncols(i) - n + 1):(ncols_of_ALL_previous + ncols(i)));
@@ -277,7 +269,8 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
 
 %     GraphDists(NUMBER_OF_SATELLITES,opt_buffers_ca,opt_divergencies_ca, coords_ca, xij_ca, opt_results_ca, nodes, STOP_AT_TIME) % Creates a graph that the distances and other info are shown
 
-%     heuristic_1(distances_ca, 10*ones(1,n), nodes, xij_ca, LINK_CAPACITY, COMMUNICATION_RANGE, NUMBER_OF_SATELLITES);
+    heuristic_1(distances_ca, nodes, xij_ca, LINK_CAPACITY, COMMUNICATION_RANGE, NUMBER_OF_SATELLITES);
+
     GraphMap(NUMBER_OF_STATIONS, NUMBER_OF_SATELLITES, coords_ca, opt_flows_ca, opt_buffers_ca, opt_divergencies_ca, xij_ca, nodes); % using fmincon/linprog results
-    
+
 end% end of main function
