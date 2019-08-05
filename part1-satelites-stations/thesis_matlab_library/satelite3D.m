@@ -13,9 +13,13 @@ classdef satelite3D < handle
    methods
        function sat_obj = satelite3D(arg_theta,arg_phi, arg_rho, arg_init_pos, arg_periods, arg_vel, arg_name) %constructor, arg_init_pos=initial position(degrees), arg_periods=(e.x. 2*360)
            sat_obj.name = arg_name;
- 
+           
+           %{
+           The bigger the second parameter of linspace is, the faster the
+           satellite moves (given a constant step (arg_vel).
+           %}
            if arg_vel >= 0
-                steps = linspace(arg_init_pos, arg_init_pos + arg_periods*360, arg_vel);
+                steps = linspace(arg_init_pos, arg_init_pos + arg_periods*360, arg_vel); % [+number] is the new thing
            elseif arg_vel < 0 
                 steps = -linspace(arg_init_pos, arg_init_pos + arg_periods*360, -arg_vel);
 %            elseif arg_vel == 0

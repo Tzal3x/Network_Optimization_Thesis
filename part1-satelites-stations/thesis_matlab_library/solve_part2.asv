@@ -5,7 +5,8 @@
 %}
 
 function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELOCITIES, INVERSE_VELOCITIES_SATEL,...
-                    INVERSE_VELOCITIES_STATIONS, STOP_AT_TIME, THETA_PHI, LINK_CAPACITY, PRINT_DETAILS, PRINT_MAIN_PARAMETERS, SHOW_TOPOLOGY, COMMUNICATION_RANGE)
+                    INVERSE_VELOCITIES_STATIONS, STOP_AT_TIME, THETA_PHI, LINK_CAPACITY, PRINT_DETAILS,...
+                    PRINT_MAIN_PARAMETERS, SHOW_TOPOLOGY, COMMUNICATION_RANGE, SOLVER)
     % Solves the second version of the problem Delay-Tolerant Network
     % Utility Maximization Problem [Problem I: DTNUM]
     % Having added data buffers
@@ -23,7 +24,9 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     % THETA_PHI = vector, consisting of 2 elements [azimuth elevation]
     % LINK_CAPACITY = float, maximum link capacity
     % PRINT_DETAILS = boolean
-    %
+    % COMMUNICATION_RANGE = maximum distance between nodes that a
+    % connection can be established.
+    % SOLVER = type of method used to solve DTNUM.'fmincon'/'linprog'/'heuristic_1'
     % Output:
     % A vector consisting of optimal values
     % ---------------------------------------------------------------------
@@ -88,7 +91,12 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     coords_ca = {}; % coords cell array containing the coords matrix of every epoch
     distances_ca = {}; % euclidean distances between entities cell array
     list_num_links = null(1,1); % number of undirectional links per epoch
+    count_epoch = 0
     for epoch = 1:times
+       if mod(epoch,10) ~= 0 % doing this to increase speed of satellites
+           count_epoch 
+           continue
+       end 
        disp(''); disp(''); % break 2 lines
        disp('> EPOCH ' + string(epoch) + ' ===============================================================================================|')
        %Coordinates ---------------------------
@@ -215,15 +223,23 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
        disp('|- - -------\ Initial Point x0: /--------- - -|')
        disp(x0)
     end
-%     opt_results = fmincon(objective_function, x0, A, b, Aeq, beq', lower_bounds', upper_bounds'); % zeros(size(1:(num_of_links*2+n))) -> every rate should be positive
-    opt_results = linprog(coefs, A, b, Aeq, beq', lower_bounds', upper_bounds'); % zeros(size(1:(num_of_links*2+n))) -> every rate should be positive
-   
+    
+    % Optimal results (using convex optimizasion)
+    if strcmp(SOLVER,'fminon')
+        opt_results = fmincon(objective_function, x0, A, b, Aeq, beq', lower_bounds', upper_bounds'); % zeros(size(1:(num_of_links*2+n))) -> every rate should be positive
+    elseif strcmp(SOLVER,'linprog')
+    % Optimal results (using linear programming)
+        opt_results = linprog(coefs, A, b, Aeq, beq', lower_bounds', upper_bounds'); % zeros(size(1:(num_of_links*2+n))) -> every rate should be positive
+    elseif strcmp(SOLVER,'heuristic_1')
+    % Heuristic results:
+        opt_results = heuristic_1(distances_ca, nodes, xij_ca, LINK_CAPACITY, NUMBER_OF_SATELLITES);
+    end
 
     disp('---------- OPTIMIZATION RESULTS ----------------------------------------------------------------')
     disp(opt_results)
     disp('------------------------------------------------------------------------------------------------')
     out = opt_results;
-    
+
     
     %%% Create Simple Graph (figure): _____________________________________
 %     total_epochs = length(Aeqs_cell_array);
@@ -250,19 +266,13 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     for i = 1:total_epochs
        ncols = [ncols, length(Aeqs_cell_array{i}(1,:))]; % +n because previous buffers of Aeq of every epoch are missing
     end
-    disp('columns per epoch') %debug  
-    disp(ncols) %debug
-    pause; %debug
+
     for i = 1:total_epochs
        if i ~= 1
-           disp('ooooooooooooooooooooooooooooooooo') %debug
-           disp((ncols(i-1) + 1):(ncols(i-1) + ncols(i) - 2*n)) %debug
-           disp((ncols(i-1) + ncols(i) - 2*n + 1):(ncols(i-1) + ncols(i)-n)) %debug
-           disp((ncols(i-1) + ncols(i) - n + 1):(ncols(i-1) + ncols(i))) %debug
-
-           temp_opt_flows = opt_results((ncols(i-1) + 1):(ncols(i-1) + ncols(i) - 2*n));
-           temp_divergencies = opt_results((ncols(i-1) + ncols(i) - 2*n + 1):(ncols(i-1) + ncols(i)-n));
-           temp_buffers = opt_results((ncols(i-1) + ncols(i) - n + 1):(ncols(i-1) + ncols(i)));
+           ncols_of_ALL_previous = sum(ncols(1:(i-1)));
+           temp_opt_flows = opt_results((ncols_of_ALL_previous + 1):(ncols_of_ALL_previous + ncols(i) - 2*n));
+           temp_divergencies = opt_results((ncols_of_ALL_previous + ncols(i) - 2*n + 1):(ncols_of_ALL_previous + ncols(i)-n));
+           temp_buffers = opt_results((ncols_of_ALL_previous + ncols(i) - n + 1):(ncols_of_ALL_previous + ncols(i)));
        elseif i == 1
            temp_opt_flows = opt_results(1:(ncols(i) - 2*n));
            temp_divergencies = opt_results((ncols(i) - 2*n + 1):(ncols(i)-n));
@@ -273,9 +283,6 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
        opt_buffers_ca{i} = temp_buffers;
     end
 
-%     GraphDists(NUMBER_OF_SATELLITES,opt_buffers_ca,opt_divergencies_ca, coords_ca, xij_ca, opt_results_ca, nodes, STOP_AT_TIME) % Creates a graph that the distances and other info are shown
+    GraphMap(NUMBER_OF_STATIONS, NUMBER_OF_SATELLITES, coords_ca, opt_flows_ca, opt_buffers_ca, opt_divergencies_ca, xij_ca, nodes,'dark'); % using fmincon/linprog results
 
-%     heuristic_1(distances_ca, 10*ones(1,n), nodes, xij_ca, LINK_CAPACITY, COMMUNICATION_RANGE, NUMBER_OF_SATELLITES);
-    GraphMap(NUMBER_OF_STATIONS, NUMBER_OF_SATELLITES, coords_ca, opt_flows_ca, opt_buffers_ca, opt_divergencies_ca, xij_ca, nodes); % using fmincon/linprog results
-    
 end% end of main function

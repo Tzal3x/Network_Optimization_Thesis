@@ -5,7 +5,8 @@
 %}
 
 function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELOCITIES, INVERSE_VELOCITIES_SATEL,...
-                    INVERSE_VELOCITIES_STATIONS, STOP_AT_TIME, THETA_PHI, LINK_CAPACITY, PRINT_DETAILS, PRINT_MAIN_PARAMETERS, SHOW_TOPOLOGY, COMMUNICATION_RANGE)
+                    INVERSE_VELOCITIES_STATIONS, STOP_AT_TIME, THETA_PHI, LINK_CAPACITY, PRINT_DETAILS,...
+                    PRINT_MAIN_PARAMETERS, SHOW_TOPOLOGY, COMMUNICATION_RANGE, SOLVER)
     % Solves the second version of the problem Delay-Tolerant Network
     % Utility Maximization Problem [Problem I: DTNUM]
     % Having added data buffers
@@ -23,7 +24,9 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     % THETA_PHI = vector, consisting of 2 elements [azimuth elevation]
     % LINK_CAPACITY = float, maximum link capacity
     % PRINT_DETAILS = boolean
-    %
+    % COMMUNICATION_RANGE = maximum distance between nodes that a
+    % connection can be established.
+    % SOLVER = type of method used to solve DTNUM.'fmincon'/'linprog'/'heuristic_1'
     % Output:
     % A vector consisting of optimal values
     % ---------------------------------------------------------------------
@@ -215,15 +218,23 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
        disp('|- - -------\ Initial Point x0: /--------- - -|')
        disp(x0)
     end
-%     opt_results = fmincon(objective_function, x0, A, b, Aeq, beq', lower_bounds', upper_bounds'); % zeros(size(1:(num_of_links*2+n))) -> every rate should be positive
-    opt_results = linprog(coefs, A, b, Aeq, beq', lower_bounds', upper_bounds'); % zeros(size(1:(num_of_links*2+n))) -> every rate should be positive
-   
+    
+    % Optimal results (using convex optimizasion)
+    if strcmp(SOLVER,'fminon')
+        opt_results = fmincon(objective_function, x0, A, b, Aeq, beq', lower_bounds', upper_bounds'); % zeros(size(1:(num_of_links*2+n))) -> every rate should be positive
+    elseif strcmp(SOLVER,'linprog')
+    % Optimal results (using linear programming)
+        opt_results = linprog(coefs, A, b, Aeq, beq', lower_bounds', upper_bounds'); % zeros(size(1:(num_of_links*2+n))) -> every rate should be positive
+    elseif strcmp(SOLVER,'heuristic_1')
+    % Heuristic results:
+        opt_results = heuristic_1(distances_ca, nodes, xij_ca, LINK_CAPACITY, NUMBER_OF_SATELLITES);
+    end
 
     disp('---------- OPTIMIZATION RESULTS ----------------------------------------------------------------')
     disp(opt_results)
     disp('------------------------------------------------------------------------------------------------')
     out = opt_results;
-    
+
     
     %%% Create Simple Graph (figure): _____________________________________
 %     total_epochs = length(Aeqs_cell_array);
@@ -267,10 +278,6 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
        opt_buffers_ca{i} = temp_buffers;
     end
 
-%     GraphDists(NUMBER_OF_SATELLITES,opt_buffers_ca,opt_divergencies_ca, coords_ca, xij_ca, opt_results_ca, nodes, STOP_AT_TIME) % Creates a graph that the distances and other info are shown
-
-    heuristic_1(distances_ca, nodes, xij_ca, LINK_CAPACITY, COMMUNICATION_RANGE, NUMBER_OF_SATELLITES);
-
-    GraphMap(NUMBER_OF_STATIONS, NUMBER_OF_SATELLITES, coords_ca, opt_flows_ca, opt_buffers_ca, opt_divergencies_ca, xij_ca, nodes); % using fmincon/linprog results
+    GraphMap(NUMBER_OF_STATIONS, NUMBER_OF_SATELLITES, coords_ca, opt_flows_ca, opt_buffers_ca, opt_divergencies_ca, xij_ca, nodes,'dark'); % using fmincon/linprog results
 
 end% end of main function

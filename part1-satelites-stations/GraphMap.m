@@ -1,14 +1,35 @@
-function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buffers_ca, opt_divergencies_ca, xij_ca, nodes)
-    % Create a Graph projected on the World Map. Similar to GraphDists
- 
+function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buffers_ca, opt_divergencies_ca, xij_ca, nodes, theme)
+    % Create a Graph projected on the World Map. Similar to GraphDists.
+    % theme == 'dark' turns figure to black and the corresponding colors
+    % 
+    %
+    
     n = length(nodes);
     figure;
+    if strcmp(theme, 'dark')
+        set(gcf,'color','black')
+        coastline_color = [0 1 1, 0.5];  % cyan, map's coastline color
+        satellite_color = 'white';
+        satellite_orbits_color = [1 1 1, 0.07];
+        station_color = 'magenta';
+        node_text_color_sat = 'white';
+        node_text_color_stat = station_color;
+        edge_color = 'yellow';
+    else % light theme
+        coastline_color = [0 0 1, 0.07]; % blue
+        satellite_color = 'blue';
+        satellite_orbits_color = [0 0 1, 0.07];
+        station_color = 'red';
+        node_text_color_sat = 'blue';
+        node_text_color_stat = 'red';
+        edge_color = [0.5 0 0.5];
+    end
     worldmap('World')
     load coastlines %#ok<LOAD>
-    plotm(coastlat,coastlon,'Color',[0 0 1, 0.05]) % Transparent map for less visual complexity
+    plotm(coastlat,coastlon,'Color',coastline_color) % Transparent map for less visual complexity
     disp('[~Report:] Inside GraphMap: ========================================|')
     total_epochs = length(coords_ca);
-
+%     a = annotation('textbox', [0, 0.2, 0, 0.2], 'string', 'My Text','Color','white');
 
     % Showing lifetime coordinates:
     for node = 1:num_satellites%length(nodes)
@@ -19,16 +40,12 @@ function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buf
         long = pi/2 - acos(z./sqrt(x.^2+y.^2+z.^2)); % polar - latitude
         lat = atan2(y,x); % polar - longitude
         if node <= num_satellites
-            color = [0 0 1,0.03];
+            color = satellite_orbits_color; % color  of orbits
         else
-            color = [1 0 0,0.03];
+            color = [1 0 0, 0.03];
         end            
         geoshow(rad2deg(long),rad2deg(lat),'LineStyle','--','displaytype','line','color',color,...
                       'markeredgecolor','r','marker','none');
-        
-%         geoshow(rad2deg(long), rad2deg(lat),'color',color,...
-%                       'markeredgecolor','r','marker','.'); % KOULO!
-
     end
 
     for epoch = 1:total_epochs
@@ -41,7 +58,11 @@ function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buf
         disp('> opt_flows:'); disp(opt_flows);
         disp('> opt_divergencies:'); disp(opt_divergencies);
         disp('> opt_buffers:'); disp(opt_buffers);
-
+        
+        % Find max flow to tune line width so that it's width is
+        % corresponding to the flow rate:
+        maxflow = max(opt_flows);
+        
         % Creating the edge flows (edge i starts from node X and ends to Y -parents-)
         outgoing1 = null(1,1); outgoing2 = null(1,1);
         incoming1 = null(1,1); incoming2 = null(1,1);
@@ -81,8 +102,8 @@ function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buf
         len = length(long);
 
         % Draw nodes
-        animation_ca{1} = scatterm(long(1:(len-num_stations)),lat(1:(len-num_stations)),'blue','filled'); % satellite nodes
-        animation_ca{2} = scatterm(long((len-num_stations+1):len),lat((len-num_stations+1):len),50,'red','filled'); % station nodes
+        animation_ca{1} = scatterm(long(1:(len-num_stations)),lat(1:(len-num_stations)),100,satellite_color,'filled'); % satellite nodes
+        animation_ca{2} = scatterm(long((len-num_stations+1):len),lat((len-num_stations+1):len),100,station_color,'filled'); % station nodes
         
         % Adding NODE info (divergence, and buffers at the end of current
         % and previous epoch. s(t) & s(t-1) respectively.
@@ -90,11 +111,11 @@ function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buf
         for i = 1:n
             if i <= num_satellites
                 onoma = "D"; % Satellite = (D)oryforos
-                colorr = 'blue';
+                colorr = node_text_color_sat;
                 AA = string(i);
             else
                 onoma = "S"; % Station = (S)tathmos
-                colorr = 'red';
+                colorr = node_text_color_stat;
                 AA = string(i - num_satellites);
             end
             % Adding previous buffer
@@ -129,19 +150,20 @@ function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buf
             [l,g] = gcwaypts(y1,x1,y2,x2,20);
             
             deviation = [linspace(0,2,20/2 + 1),linspace(2,0,20/2)];
-
+            
+            LineWidth = (opt_flows(i)/maxflow)*5 + 1;
+            
             if outgoing(i) < incoming(i)
                 temp1 = l+deviation'; temp2 = g+deviation';
-                
-                % Lines with arrows:
+                                
                 first_piece = 1:(length(temp1)-3); % body of arrow
                 second_piece = (length(temp1)-2):(length(temp1)-1); % arrow
                 counter = counter + 1;
-                lines_ca{counter} = geoshow(temp1(first_piece), temp2(first_piece),'displaytype','line','color',[.5 0 .5],...
-                          'markeredgecolor','r','marker','none');
+                lines_ca{counter} = geoshow(temp1(first_piece), temp2(first_piece),'LineWidth',LineWidth,'displaytype','line','color',edge_color,...
+                          'markeredgecolor',edge_color,'marker','none');
                 
                 counter = counter + 1;
-                lines_ca{counter} = geoshow(temp1(second_piece), temp2(second_piece),'displaytype','line','color',[.5 0 .5],...
+                lines_ca{counter} = geoshow(temp1(second_piece), temp2(second_piece),'LineWidth',LineWidth,'displaytype','line','color',edge_color,...
                           'markeredgecolor','r','marker','diamond');
 
                 edge_label_pos{i} = [temp1(ceil(length(temp1)/2)), temp2(ceil(length(temp2)/2))];
@@ -152,15 +174,15 @@ function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buf
                 second_piece = (length(temp1)-2):(length(temp1)-1); % arrow
                 
                 counter = counter + 1;
-                lines_ca{counter} = geoshow(temp1(first_piece),temp2(first_piece),'displaytype','line','color',[.5 0 .5],...
-                          'markeredgecolor','r','marker','none');
+                lines_ca{counter} = geoshow(temp1(first_piece),temp2(first_piece),'LineWidth',LineWidth,'displaytype','line','color',edge_color,...
+                          'markeredgecolor',edge_color,'marker','none');
                 
                 counter = counter + 1;
-                lines_ca{counter} = geoshow(temp1(second_piece),temp2(second_piece),'displaytype','line','color',[.5 0 .5],...
+                lines_ca{counter} = geoshow(temp1(second_piece),temp2(second_piece),'LineWidth',LineWidth,'displaytype','line','color',edge_color,...
                           'markeredgecolor','r','marker','diamond');
                 
 
-                edge_label_pos{i} = [temp1(ceil(length(temp1)/2)), temp2(ceil(length(temp2)/2))];
+                edge_label_pos{i} = [temp1(ceil(length(temp1)/2))-2, temp2(ceil(length(temp2)/2))];
             end
         
         end
@@ -174,9 +196,9 @@ function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buf
             edge_label = "["+string(outgoing(i))+"->"+string(incoming(i))+"]:"+string(round(opt_flows(i),2));
 
             if outgoing(i) < incoming(i)
-                edge_texts_ca{i} = textm(pos_x, pos_y, edge_label,'color',[.5 0 .5]);
+                edge_texts_ca{i} = textm(pos_x, pos_y, edge_label,'color',edge_color);
             else
-                edge_texts_ca{i} = textm(pos_x+2, pos_y, edge_label,'color',[.5 0 .5]);
+                edge_texts_ca{i} = textm(pos_x+2, pos_y, edge_label,'color',edge_color);
             end
         end
 
