@@ -91,12 +91,7 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     coords_ca = {}; % coords cell array containing the coords matrix of every epoch
     distances_ca = {}; % euclidean distances between entities cell array
     list_num_links = null(1,1); % number of undirectional links per epoch
-    count_epoch = 0
     for epoch = 1:times
-       if mod(epoch,10) ~= 0 % doing this to increase speed of satellites
-           count_epoch 
-           continue
-       end 
        disp(''); disp(''); % break 2 lines
        disp('> EPOCH ' + string(epoch) + ' ===============================================================================================|')
        %Coordinates ---------------------------
@@ -195,7 +190,7 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     b = [];
     
     % At upper_bounds vector, flows & buffers should have a bound. Divergencies not
-    upper_bounds = create_upper_bounds(list_num_links, list_num_station_links, n, STOP_AT_TIME);
+    upper_bounds = create_upper_bounds(NUMBER_OF_SATELLITES, list_num_links, list_num_station_links, nodes, STOP_AT_TIME, LINK_CAPACITY);
     lower_bounds = zeros(1,length(Aeq(1,:))); % remains the same as in PART_1
     
     disp('[~Report:] Done!')
@@ -230,6 +225,7 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     elseif strcmp(SOLVER,'linprog')
     % Optimal results (using linear programming)
         opt_results = linprog(coefs, A, b, Aeq, beq', lower_bounds', upper_bounds'); % zeros(size(1:(num_of_links*2+n))) -> every rate should be positive
+        opt_results = opt_results';
     elseif strcmp(SOLVER,'heuristic_1')
     % Heuristic results:
         opt_results = heuristic_1(distances_ca, nodes, xij_ca, LINK_CAPACITY, NUMBER_OF_SATELLITES);
@@ -282,7 +278,21 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
        opt_divergencies_ca{i} = temp_divergencies;
        opt_buffers_ca{i} = temp_buffers;
     end
-
-    GraphMap(NUMBER_OF_STATIONS, NUMBER_OF_SATELLITES, coords_ca, opt_flows_ca, opt_buffers_ca, opt_divergencies_ca, xij_ca, nodes,'dark'); % using fmincon/linprog results
+    
+    %{
+    Total utility gained by each solver is the sum of station divergencies.
+    Be careful to change this if you chose a different utility maximization
+    function (objective function) such as log(d1)+log(d2)+...+log(dn).
+    %}
+    total_utility = 0;
+    for i = 1:length(opt_divergencies_ca)
+        temp = length(opt_divergencies_ca{i});
+        total_utility = total_utility + sum(opt_divergencies_ca{i}((NUMBER_OF_SATELLITES+1):temp));
+    end
+    disp('+ + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +')
+    disp('+ + + '+ SOLVER + ' total utility (sum of station divs)(abs): ' + string(abs(total_utility)))
+    disp('+ + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +')
+    
+    GraphMap(NUMBER_OF_STATIONS, NUMBER_OF_SATELLITES, coords_ca, opt_flows_ca, opt_buffers_ca, opt_divergencies_ca, xij_ca, nodes,'dark',SOLVER); % using fmincon/linprog results
 
 end% end of main function

@@ -23,7 +23,7 @@ function out = create_nodes(num_satelites, num_stations, sat_inverse_vel, stat_i
         
         inverse_velocities = inverse_velocities + rands;
     end
-    inverse_velocities = inverse_velocities * 1000;
+%     inverse_velocities = inverse_velocities * 1000;
        
     % Remember: satelite3D(arg_theta,arg_phi, arg_alt, arg_init_pos, arg_periods, arg_vel, arg_name)
     % Constructing satelites & stations:

@@ -1,20 +1,21 @@
-function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buffers_ca, opt_divergencies_ca, xij_ca, nodes, theme)
+function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buffers_ca, opt_divergencies_ca, xij_ca, nodes, theme, SOLVER)
     % Create a Graph projected on the World Map. Similar to GraphDists.
     % theme == 'dark' turns figure to black and the corresponding colors
     % 
     %
     
     n = length(nodes);
-    figure;
+    figure('Name',SOLVER,'NumberTitle','off');
     if strcmp(theme, 'dark')
         set(gcf,'color','black')
         coastline_color = [0 1 1, 0.5];  % cyan, map's coastline color
         satellite_color = 'white';
-        satellite_orbits_color = [1 1 1, 0.07];
+        satellite_orbits_color = [1 1 1, 0.2];
         station_color = 'magenta';
         node_text_color_sat = 'white';
         node_text_color_stat = station_color;
         edge_color = 'yellow';
+        text_edge_color = 'red';
     else % light theme
         coastline_color = [0 0 1, 0.07]; % blue
         satellite_color = 'blue';
@@ -23,6 +24,7 @@ function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buf
         node_text_color_sat = 'blue';
         node_text_color_stat = 'red';
         edge_color = [0.5 0 0.5];
+        text_edge_color = 'black';
     end
     worldmap('World')
     load coastlines %#ok<LOAD>
@@ -33,7 +35,7 @@ function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buf
 
     % Showing lifetime coordinates:
     for node = 1:num_satellites%length(nodes)
-        node_coords = nodes(node).lifetime_coordinates';
+        node_coords = nodes(node).lifetime_coordinates'; 
         x = node_coords(:,1);
         y = node_coords(:,2);
         z = node_coords(:,3);
@@ -55,7 +57,14 @@ function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buf
         opt_flows = opt_flows_ca{epoch};%(1:(length(opt_flows_ca{epoch})-n)) ; % (leaving this here for later)
         opt_buffers = opt_buffers_ca{epoch}; % buffers of nodes of given epoch
         opt_divergencies = opt_divergencies_ca{epoch}; % divergencies of nodes of given epoch
-        disp('> opt_flows:'); disp(opt_flows);
+        
+        % Quality Control
+        disp('> xij:');
+        for i = 1:length(xij)
+            disp(xij{i});
+        end
+        disp('> opt_flows:');disp(opt_flows);
+        disp('> Nodes: '); disp(1:length(nodes));
         disp('> opt_divergencies:'); disp(opt_divergencies);
         disp('> opt_buffers:'); disp(opt_buffers);
         
@@ -108,6 +117,7 @@ function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buf
         % Adding NODE info (divergence, and buffers at the end of current
         % and previous epoch. s(t) & s(t-1) respectively.
         node_texts_ca = {};
+%         disp('> labels [divergence, previous buffer, current buffer]:') 
         for i = 1:n
             if i <= num_satellites
                 onoma = "D"; % Satellite = (D)oryforos
@@ -129,8 +139,7 @@ function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buf
             b2 = string(round(prev_buf,2));
             
             label = '  ' + onoma + AA + ':[' + d1 +', '+ b2 +', '+ b1 +']'; % text of node i
-            disp('> labels:')
-            disp(label)
+%             disp(label)
 
             x = long(i);
             y = lat(i);
@@ -151,7 +160,7 @@ function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buf
             
             deviation = [linspace(0,2,20/2 + 1),linspace(2,0,20/2)];
             
-            LineWidth = (opt_flows(i)/maxflow)*5 + 1;
+            LineWidth = (opt_flows(i)/(maxflow+0.1))*5 + 1;
             
             if outgoing(i) < incoming(i)
                 temp1 = l+deviation'; temp2 = g+deviation';
@@ -196,9 +205,9 @@ function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buf
             edge_label = "["+string(outgoing(i))+"->"+string(incoming(i))+"]:"+string(round(opt_flows(i),2));
 
             if outgoing(i) < incoming(i)
-                edge_texts_ca{i} = textm(pos_x, pos_y, edge_label,'color',edge_color);
+                edge_texts_ca{i} = textm(pos_x, pos_y, edge_label,'color',text_edge_color);
             else
-                edge_texts_ca{i} = textm(pos_x+2, pos_y, edge_label,'color',edge_color);
+                edge_texts_ca{i} = textm(pos_x+2, pos_y, edge_label,'color',text_edge_color);
             end
         end
 
@@ -206,6 +215,7 @@ function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buf
         if epoch == total_epochs
             break
         end
+        disp('<hit space>')
         pause; % Delete current displays:
         for j = 1:length(lines_ca)
             delete(lines_ca{j})

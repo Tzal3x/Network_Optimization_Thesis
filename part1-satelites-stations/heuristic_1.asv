@@ -123,7 +123,7 @@ function results = heuristic_1(DISTANCE_MATRIX_CA, nodes, XIJ_CA, LINK_CAPACITY,
             for sat = 1:NUMBER_OF_SATELLITES
                 % Checking first if self is connected with a station:
                 temp_osts = ordered_sat_to_stat(1:2,:); % temp_osts: temporary ordered_sat_to_stat
-                temp2 = ordered_sat_to_stat(1,:) == sat; % delete that column to avoid duplicates
+                temp2 = find(ordered_sat_to_stat(1,:) == sat); % delete that column to avoid duplicates
                 temp_osts(:,temp2) = [];
                 for k = (NUMBER_OF_SATELLITES+NUMBER_OF_STATIONS):-1:(NUMBER_OF_SATELLITES+1)
                     temp_osts = [[sat; k] ,temp_osts];

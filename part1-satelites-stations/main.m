@@ -32,17 +32,20 @@ addpath C:\Users\User\Documents\GitHub\Network_Optimization_Thesis\part1-satelit
 NUMBER_OF_SATELLITES = 4; %4; %10; % integer, default 2
 NUMBER_OF_STATIONS = 2; %2; %3; % integer, default 1
 RANDOM_VELOCITIES = false; % boolean, default false
-INVERSE_VELOCITIES_SATEL = ones(1,NUMBER_OF_SATELLITES) * 1; % smaller value -> faster, it can be a vector of the desirable speeds [v1 v2 ... vn], where n == NUMBER_OF_SATELLITES
-INVERSE_VELOCITIES_STATIONS = ones(1,NUMBER_OF_STATIONS) * 800; %80=moving, 800=almost imovable % larger value -> slower, >> >> >> >> >> >> >> >> >> >> >> >> 
-STOP_AT_TIME = 20; % == EPOCHS integer, declares when the time should be stopped
+INVERSE_VELOCITIES_SATEL = ones(1,NUMBER_OF_SATELLITES) * 1 * 100; % smaller value -> faster, it can be a vector of the desirable speeds [v1 v2 ... vn], where n == NUMBER_OF_SATELLITES
+% INVERSE_VELOCITIES_SATEL = [-1, 2, -1, 1]* 100;
+INVERSE_VELOCITIES_STATIONS = ones(1,NUMBER_OF_STATIONS) * 800 * 1000; %80=moving, 800=almost imovable % larger value -> slower, >> >> >> >> >> >> >> >> >> >> >> >> 
+STOP_AT_TIME = 1; % == EPOCHS integer, declares when the time should be stopped
 % THETA_PHI = [0  20]; % 30, 60
-LINK_CAPACITY = 100; % WARNING! LINK_CAPACITY must be equal to ...
+LINK_CAPACITY = 20; % WARNING! LINK_CAPACITY must be equal to ...
 COMMUNICATION_RANGE = 150; % Default: 150; (oldest)
-PRINT_DETAILS = true; % true/false: Displays optimization problem's details (distance matrix, parameters (Aeq, beq, A, b, l, ...) etc)
+PRINT_DETAILS = false; % true/false: Displays optimization problem's details (distance matrix, parameters (Aeq, beq, A, b, l, ...) etc)
 PRINT_MAIN_PARAMETERS = true;
 SHOW_TOPOLOGY = false; % 3D topology with spheres
 THETA_PHI_ca = {}; % I have defined different inclinations of orbits for satellites and stations
-SOLVER = 'heuristic_1'; % 'fmincon'/'linprog'/'heuristic_1'
+SOLVER = "heuristic_1"; % "fmincon"/"linprog"/"heuristic_1"
+% SOLVER = "linprog";
+% SOLVER = "fmincon";
 
 % Demo 1: (same orbits) -------------------------------------------------
 % for i = 1:(NUMBER_OF_SATELLITES + NUMBER_OF_STATIONS)
