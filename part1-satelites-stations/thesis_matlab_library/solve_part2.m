@@ -6,7 +6,7 @@
 
 function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELOCITIES, INVERSE_VELOCITIES_SATEL,...
                     INVERSE_VELOCITIES_STATIONS, STOP_AT_TIME, THETA_PHI, LINK_CAPACITY, PRINT_DETAILS,...
-                    PRINT_MAIN_PARAMETERS, SHOW_TOPOLOGY, COMMUNICATION_RANGE, SOLVER)
+                    PRINT_MAIN_PARAMETERS, SHOW_TOPOLOGY, COMMUNICATION_RANGE, SOLVER, INIT_POS)
     % Solves the second version of the problem Delay-Tolerant Network
     % Utility Maximization Problem [Problem I: DTNUM]
     % Having added data buffers
@@ -47,7 +47,7 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
 
     disp("|========================================= INSIDE PART 2 =============================================|")
     nodes = create_nodes(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, INVERSE_VELOCITIES_SATEL, ... 
-                         INVERSE_VELOCITIES_STATIONS, RANDOM_VELOCITIES, THETA_PHI); 
+                         INVERSE_VELOCITIES_STATIONS, RANDOM_VELOCITIES, THETA_PHI, INIT_POS); 
 %     for node = 1:length(nodes)
 %         temp = nodes(node).lifetime_coordinates; 
 % %         disp(temp)
@@ -293,6 +293,6 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     disp('+ + + '+ SOLVER + ' total utility (sum of station divs)(abs): ' + string(abs(total_utility)))
     disp('+ + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +')
     
-    GraphMap(NUMBER_OF_STATIONS, NUMBER_OF_SATELLITES, coords_ca, opt_flows_ca, opt_buffers_ca, opt_divergencies_ca, xij_ca, nodes,'dark',SOLVER); % using fmincon/linprog results
+    GraphMap(NUMBER_OF_STATIONS, NUMBER_OF_SATELLITES, coords_ca, opt_flows_ca, opt_buffers_ca, opt_divergencies_ca, xij_ca, nodes,'light',SOLVER); % using fmincon/linprog results
 
 end% end of main function

@@ -5,7 +5,8 @@ function out = objective_function_coefs_2(list_num_links, list_num_station_links
         coefficients = [ coefficients, ones(1, num_flows)*(10^(-3))];% flows
         coefficients = [ coefficients, zeros(1, NUMBER_OF_SATELLITES)]; % divergencies of satellites
         coefficients = [ coefficients, -ones(1, num_of_nodes - NUMBER_OF_SATELLITES)]; % divergencies of stations (should have negative coefficient in objective function)
-        coefficients = [ coefficients, zeros(1, num_of_nodes)]; % buffers
+%         coefficients = [ coefficients, zeros(1, num_of_nodes)]; % buffers <old version>
+        coefficients = [ coefficients, ones(1, num_of_nodes)*(10^(-3))]; % buffers <new version> added delay minimization
     end
     out = coefficients;  
 end

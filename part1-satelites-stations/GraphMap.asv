@@ -1,24 +1,26 @@
 function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buffers_ca, opt_divergencies_ca, xij_ca, nodes, theme, SOLVER)
     % Create a Graph projected on the World Map. Similar to GraphDists.
     % theme == 'dark' turns figure to black and the corresponding colors
+    % 
+    %
     
     n = length(nodes);
     figure('Name',SOLVER,'NumberTitle','off');
     if strcmp(theme, 'dark')
         set(gcf,'color','black')
         coastline_color = [0 1 1, 0.5];  % cyan, map's coastline color
-        satellite_color = [1 1 1];
+        satellite_color = 'white';
         satellite_orbits_color = [1 1 1, 0.2];
-        station_color = [1 0 1];
+        station_color = 'magenta';
         node_text_color_sat = 'white';
         node_text_color_stat = station_color;
         edge_color = 'yellow';
         text_edge_color = 'red';
     else % light theme
         coastline_color = [0 0 1, 0.07]; % blue
-        satellite_color = [0 0 1]; % blue
+        satellite_color = 'blue';
         satellite_orbits_color = [0 0 1, 0.07];
-        station_color = [1 0 0];% red
+        station_color = 'red';
         node_text_color_sat = 'blue';
         node_text_color_stat = 'red';
         edge_color = [0.5 0 0.5];
@@ -92,11 +94,13 @@ function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buf
 
         % Transform coordinates from cartesian to polar coordinates
         temp = null(1,1);
-        temp2  = null(1,1); % previous position
         for j = 1:length(coords_ca{epoch}) % for every node
             x = coords_ca{epoch}(j,1);
             y = coords_ca{epoch}(j,2);
             z = coords_ca{epoch}(j,3);
+            
+            
+            
             long = pi/2 - acos(z/sqrt(x^2+y^2+z^2)); % polar - latitude
             lat = atan2(y,x); % polar - longitude
             temp = [temp ; [lat, long]];

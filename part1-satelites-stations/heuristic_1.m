@@ -128,8 +128,6 @@ function results = heuristic_1(DISTANCE_MATRIX_CA, nodes, XIJ_CA, LINK_CAPACITY,
                 for k = (NUMBER_OF_SATELLITES+NUMBER_OF_STATIONS):-1:(NUMBER_OF_SATELLITES+1)
                     temp_osts = [[sat; k] ,temp_osts];
                 end
-                disp(temp_osts) % debug
-                pause; % debug
                 
                 for i = 1:length(temp_osts(1,:)) % checking for neighbors
                     sat2 = temp_osts(1,i); % candidate                    
@@ -141,7 +139,7 @@ function results = heuristic_1(DISTANCE_MATRIX_CA, nodes, XIJ_CA, LINK_CAPACITY,
 
                     if ~isempty(which_link)  % if they are neighbors there exists at least one conneting them
 %                         disp('neighbors: yes')
-                        if (INF_TR_VECTOR(sat) > 0) && (link_capacity_vector(which_link) > 0) && isempty(find(forbidden_links == str2num_link)) %#ok<EFIND> % if info can be transferred
+                        if (INF_TR_VECTOR(sat) > 0) && (link_capacity_vector(which_link) > 0) && isempty(find(forbidden_links == str2num_link)) %#ok<EFIND> % IF INFO CAN BE TRANSMITTED
                   
                             % Registering used link:
                             link2 = str2double(string(sat2) + string(sat)); % opposite direction (because if one link is used, the other should be silent
