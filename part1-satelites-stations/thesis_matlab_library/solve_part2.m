@@ -228,7 +228,7 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
         opt_results = opt_results';
     elseif strcmp(SOLVER,'heuristic_1')
     % Heuristic results:
-        opt_results = heuristic_1(distances_ca, nodes, xij_ca, LINK_CAPACITY, NUMBER_OF_SATELLITES);
+        opt_results = heuristic_1(distances_ca, nodes, xij_ca, LINK_CAPACITY, NUMBER_OF_SATELLITES, 30);
     end
 
     disp('---------- OPTIMIZATION RESULTS ----------------------------------------------------------------')
@@ -279,6 +279,7 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
        opt_buffers_ca{i} = temp_buffers;
     end
     
+    
     %{
     Total utility gained by each solver is the sum of station divergencies.
     Be careful to change this if you chose a different utility maximization
@@ -291,8 +292,9 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     end
     disp('+ + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +')
     disp('+ + + '+ SOLVER + ' total utility (sum of station divs)(abs): ' + string(abs(total_utility)))
+    disp('+ + +  Average total information received by stations per epoch: '+ string(calculate_delay_v1(opt_divergencies_ca, NUMBER_OF_SATELLITES)))
     disp('+ + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +')
     
     GraphMap(NUMBER_OF_STATIONS, NUMBER_OF_SATELLITES, coords_ca, opt_flows_ca, opt_buffers_ca, opt_divergencies_ca, xij_ca, nodes,'light',SOLVER); % using fmincon/linprog results
-
+    
 end% end of main function

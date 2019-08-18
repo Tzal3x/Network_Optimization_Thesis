@@ -27,7 +27,7 @@ function out = create_nodes(num_satelites, num_stations, sat_inverse_vel, stat_i
        
     % Constructing satelites & stations:
 %     initializer_difs = (0:(num_satelites+num_stations-1))*27; %used to initialiaze satelites at different positions in order to not overlap each other
-    initializer_difs = init_pos;
+    initializer_difs = init_pos; % UNCOMMENT THIS TO RUN THE SIMPLE COMPARISON EXAMPLE 
     for i = 1:(num_satelites + num_stations)
         if i <= num_satelites 
             matr = [matr, satelite3D(theta_phi_ca{i}(1), theta_phi_ca{i}(2), earth_radius+50, 20 + initializer_difs(i), rounds, inverse_velocities(i), 'satellite')];

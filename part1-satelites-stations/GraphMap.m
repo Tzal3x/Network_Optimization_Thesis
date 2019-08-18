@@ -57,14 +57,14 @@ function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buf
         opt_divergencies = opt_divergencies_ca{epoch}; % divergencies of nodes of given epoch
         
         % Quality Control
-        disp('> xij:');
-        for i = 1:length(xij)
-            disp(xij{i});
-        end
-        disp('> opt_flows:');disp(opt_flows);
-        disp('> Nodes: '); disp(1:length(nodes));
-        disp('> opt_divergencies:'); disp(opt_divergencies);
-        disp('> opt_buffers:'); disp(opt_buffers);
+%         disp('> xij:');
+%         for i = 1:length(xij)
+%             disp(xij{i});
+%         end
+%         disp('> opt_flows:'); disp(opt_flows);
+%         disp('> Nodes: '); disp(1:length(nodes));
+%         disp('> opt_divergencies:'); disp(opt_divergencies);
+%         disp('> opt_buffers:'); disp(opt_buffers);
         
         % Find max flow to tune line width so that it's width is
         % corresponding to the flow rate:
@@ -110,9 +110,9 @@ function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buf
         len = length(long);
 
         % Draw nodes:
-        animation_ca{1} = scatterm(long(1:(len-num_stations)),lat(1:(len-num_stations)),100,satellite_color,'filled'); % satellite nodes
+        animation_ca{1} = scatterm(long(1:(len-num_stations)),lat(1:(len-num_stations)),350,satellite_color,'filled'); % satellite nodes
         
-        animation_ca{2} = scatterm(long((len-num_stations+1):len),lat((len-num_stations+1):len),100,station_color,'filled'); % station nodes
+        animation_ca{2} = scatterm(long((len-num_stations+1):len),lat((len-num_stations+1):len),350,station_color,'filled'); % station nodes
         
         % Adding NODE info (divergence, and buffers at the end of current
         % and previous epoch. s(t) & s(t-1) respectively.
@@ -143,7 +143,7 @@ function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buf
 
             x = long(i);
             y = lat(i);
-            node_texts_ca{i} = textm(x,y,label,'Color',colorr);
+            node_texts_ca{i} = textm(x,y,label,'Color',colorr,'FontSize',30);
         end   
         
         % Adding edges (connecting lines):
