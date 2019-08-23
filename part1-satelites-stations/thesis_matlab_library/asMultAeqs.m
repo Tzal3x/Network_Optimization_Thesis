@@ -4,7 +4,7 @@ function out = asMultAeqs(Aeqs_cell_array)
 % the Aeq matrix of epoch i. Each Aeq contains the current buffer but not
 % the previous.
 % The final result is the generic Aeq used by the optimizer.
-    disp("[~Report:] Assembling Aeq matrixes...")
+%     disp("[~Report:] Assembling Aeq matrixes...")
     total_epochs = length(Aeqs_cell_array);
     ncols = null(1,1); % number of columns of Aeq at epoch i
     for i = 1:total_epochs
@@ -27,6 +27,6 @@ function out = asMultAeqs(Aeqs_cell_array)
         % step 4
         Aeq = [Aeq ; Aeq_at_i];
     end
-    disp("[~Report:] Done!")
+%     disp("[~Report:] Done!")
     out = Aeq;
 end

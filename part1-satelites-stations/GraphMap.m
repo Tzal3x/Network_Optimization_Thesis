@@ -92,7 +92,7 @@ function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buf
 
         % Transform coordinates from cartesian to polar coordinates
         temp = null(1,1);
-        temp2  = null(1,1); % previous position
+%         temp2  = null(1,1); % previous position
         for j = 1:length(coords_ca{epoch}) % for every node
             x = coords_ca{epoch}(j,1);
             y = coords_ca{epoch}(j,2);
@@ -110,9 +110,9 @@ function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buf
         len = length(long);
 
         % Draw nodes:
-        animation_ca{1} = scatterm(long(1:(len-num_stations)),lat(1:(len-num_stations)),350,satellite_color,'filled'); % satellite nodes
+        animation_ca{1} = scatterm(long(1:(len-num_stations)),lat(1:(len-num_stations)),100,satellite_color,'filled'); % satellite nodes
         
-        animation_ca{2} = scatterm(long((len-num_stations+1):len),lat((len-num_stations+1):len),350,station_color,'filled'); % station nodes
+        animation_ca{2} = scatterm(long((len-num_stations+1):len),lat((len-num_stations+1):len),100,station_color,'filled'); % station nodes
         
         % Adding NODE info (divergence, and buffers at the end of current
         % and previous epoch. s(t) & s(t-1) respectively.
@@ -143,7 +143,7 @@ function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buf
 
             x = long(i);
             y = lat(i);
-            node_texts_ca{i} = textm(x,y,label,'Color',colorr,'FontSize',30);
+            node_texts_ca{i} = textm(x,y,label,'Color',colorr);
         end   
         
         % Adding edges (connecting lines):

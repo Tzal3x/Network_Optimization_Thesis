@@ -1,4 +1,4 @@
-function results = heuristic_1(DISTANCE_MATRIX_CA, nodes, XIJ_CA, LINK_CAPACITY, NUMBER_OF_SATELLITES, BUFFER_BOUND)
+function results = heuristic_1(DISTANCE_MATRIX_CA, nodes, XIJ_CA, LINK_CAPACITY, NUMBER_OF_SATELLITES, BUFFER_BOUND, GREEDY_CRITERION)
 % Definition: heuristic_1(DISTANCE_MATRIX_CA, INF_TR_VECTOR, NODES, XIJ_CA, CAPACITY_BOUNDS, COMMUNICATION_RANGE)
 %  Heuristic (greedy-like) algorithm that aims to solve the satellite-station DTNUM
 %  problem. i.e. the same we were trying to solve at 'solve_part2.m'
@@ -28,19 +28,27 @@ function results = heuristic_1(DISTANCE_MATRIX_CA, nodes, XIJ_CA, LINK_CAPACITY,
 %
 %  COMMUNICATION_RANGE = the maximum distance between nodes that a
 %  connection can be established
-    disp('=======================================================================================================================================')
-    disp(' >>> Inside heuristic_1 !!! ==========================================================================================================')    
-    disp('=======================================================================================================================================')
+%
+%  BUFFER_BOUND = the upper limit of buffer values
+%
+%  GREEDY_CRITERION = 'closest'/'fastest'. 'closest' is the satellite that
+%  is closest to a station and 'fastest corresponds to the satellite that
+%  moves faster to the direction of a station
+
+%     disp('=======================================================================================================================================')
+%     disp(' >>> Inside heuristic_1_'+GREEDY_CRITERION+'!!! ==========================================================================================================')    
+%     disp('=======================================================================================================================================')
     NUMBER_OF_STATIONS = length(nodes) - NUMBER_OF_SATELLITES; 
     total_epochs = length(DISTANCE_MATRIX_CA); % get total epochs
     GENERATED_INFO = 10;
     % Results (each epochs results are an element of each cell array):
     flows_results_ca = {}; % contains each epoch's LINK_RATES_VECTOR
     buffer_results_ca = {};
+    tic
     for epoch = 1:total_epochs % for every epoch
-        disp('-----------------------------------------------------------------------------------------------------------')
-        disp(' >> epoch '+ string(epoch) + '-----------------------------------------------------------------------------')
-        disp('-----------------------------------------------------------------------------------------------------------')
+%         disp('-----------------------------------------------------------------------------------------------------------')
+%         disp(' >> epoch '+ string(epoch) + '-----------------------------------------------------------------------------')
+%         disp('-----------------------------------------------------------------------------------------------------------')
         current_distance_matrix = DISTANCE_MATRIX_CA{epoch}; % get distances between nodes
         
         current_xij = XIJ_CA{epoch}; % get current xij cell array
@@ -89,30 +97,53 @@ function results = heuristic_1(DISTANCE_MATRIX_CA, nodes, XIJ_CA, LINK_CAPACITY,
 %         divergence_results = INF_TR_VECTOR_START; % VERSION 1 
         
         % Report messages: (to asure that everything goes as planned)
-        disp('> Information Transmission Vector(INF_TR_VECTOR):')
-        disp(INF_TR_VECTOR);
-        disp('link_rates_vector:')
-        disp(link_rates_vector)
-        disp('link_capacity_vector:')
-        disp(link_capacity_vector)
+%         disp('> Information Transmission Vector(INF_TR_VECTOR):')
+%         disp(INF_TR_VECTOR);
+%         disp('link_rates_vector:')
+%         disp(link_rates_vector)
+%         disp('link_capacity_vector:')
+%         disp(link_capacity_vector)
         
         sat_to_stat_matrix = null(3,NUMBER_OF_SATELLITES);% 3xNUMBER_OF_SATELLITES (dimensions) matrix containing the distance to the closest station of each satellite
+        
         for node = 1:NUMBER_OF_SATELLITES
-            % Get nearest station of each satellite:
-            to_station_dist = min(current_distance_matrix(node,(NUMBER_OF_SATELLITES+1):length(nodes))); % find minimum distance between stations and other_node 
-            closest_station = find(current_distance_matrix(node,:) == to_station_dist);% which station is closer to other_node
-            sat_to_stat_matrix(1,node) = node;
-            sat_to_stat_matrix(2,node) = closest_station;  
-            sat_to_stat_matrix(3,node) = to_station_dist;
+            if strcmp(GREEDY_CRITERION, 'closest')
+                to_station_dist = min(current_distance_matrix(node,(NUMBER_OF_SATELLITES+1):length(nodes))); % find minimum distance between stations and other_node
+                closest_station = find(current_distance_matrix(node,:) == to_station_dist); % CRITERION 1, FIND CLOSEST STATION
+                sat_to_stat_matrix(1,node) = node;
+                sat_to_stat_matrix(2,node) = closest_station;  
+                sat_to_stat_matrix(3,node) = to_station_dist;
+            elseif strcmp(GREEDY_CRITERION, 'fastest')
+                if epoch > 1
+                    speed_matrix = DISTANCE_MATRIX_CA{epoch-1} - DISTANCE_MATRIX_CA{epoch};
+%                     disp('PREVIOUS DISTANCE MATRIX:');disp(DISTANCE_MATRIX_CA{epoch-1}); % debug
+                else
+                    speed_matrix = 0 - DISTANCE_MATRIX_CA{epoch}; % an na vrethei to -max = min twn apostasewn. alliws tha epelege th megalyterh apostash
+                end
+                    satel_to_station_speeds = speed_matrix(node,(NUMBER_OF_SATELLITES+1):length(nodes));
+                    max_speed_to_station = max(satel_to_station_speeds); % me poia taxythta kateuthinetai grigorotera pros tous stathmous
+                    which_station = find(speed_matrix(node,:) == max_speed_to_station); % se POION STATHMO katefthinetai pio grigora
+                    sat_to_stat_matrix(1,node) = node;
+                    sat_to_stat_matrix(2,node) = which_station;  
+                    sat_to_stat_matrix(3,node) = max_speed_to_station;
+%                     disp('CURRENT DISTANCE MATRIX:');disp(DISTANCE_MATRIX_CA{epoch});% debug
+%                     disp('SPEED MATRIX:');disp(speed_matrix); % debug
+%                     disp('sat_to_stat_matrix:');disp(sat_to_stat_matrix)
+            end
+%             pause % debug
         end   
 
 
         % "Neighbor" closest to station *increasing order*: (Could be a self, or the closest could not be a neighbor)
-        ordered_sat_to_stat =  sortrows(sat_to_stat_matrix',3)';% a little shady, MIGHT WANT TO INVESTIGATE WHILE DEBUGGING
-        disp('current_distance_matrix:');
-        disp(current_distance_matrix);
-        disp('ordered_sat_to_stat :');
-        disp(ordered_sat_to_stat );
+        if strcmp(GREEDY_CRITERION, 'closest')
+            ordered_sat_to_stat =  sortrows(sat_to_stat_matrix',3)';% a little shady, MIGHT WANT TO INVESTIGATE WHILE DEBUGGING
+        elseif strcmp(GREEDY_CRITERION, 'fastest')
+            ordered_sat_to_stat =  -sortrows(-sat_to_stat_matrix',3)'; % decreasing order! The fastest should be first in row!
+        end
+%         disp('current_distance_matrix:');
+%         disp(current_distance_matrix);
+%         disp('ordered_sat_to_stat :');
+%         disp(ordered_sat_to_stat );
 
         %{
          If minimum is a neighbor or self (a connection can be
@@ -125,7 +156,7 @@ function results = heuristic_1(DISTANCE_MATRIX_CA, nodes, XIJ_CA, LINK_CAPACITY,
         while(next_round_bool) % Rounds of algorithm start here
             round = round + 1;
             next_round_bool = false; % if no more info can be transferred it will remain <false> and algorithm will terminate
-            disp('> round '+string(round)+': \/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/')
+%             disp('> round '+string(round)+': \/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/')
             for sat = 1:NUMBER_OF_SATELLITES
                 % Checking first if self is connected with a station:
                 temp_osts = ordered_sat_to_stat(1:2,:); % temp_osts: temporary ordered_sat_to_stat
@@ -143,10 +174,10 @@ function results = heuristic_1(DISTANCE_MATRIX_CA, nodes, XIJ_CA, LINK_CAPACITY,
                     end
                     str2num_link = str2double(string(sat)+string(sat2)); % using this to spot which link will be used
                     which_link = find(new_xij == str2num_link);
-
                     if ~isempty(which_link)  % if they are neighbors there exists at least one conneting them
+                        which_link = which_link(1); %to avoid duplicates, get unique
 %                         disp('neighbors: yes')
-                        if (INF_TR_VECTOR(sat) > 0) && (link_capacity_vector(which_link) > 0) && isempty(find(forbidden_links == str2num_link)) %#ok<EFIND> % IF INFO CAN BE TRANSMITTED
+                        if (INF_TR_VECTOR(sat) > 0) & (link_capacity_vector(which_link) > 0) & isempty(find(forbidden_links == str2num_link)) %#ok<AND2,EFIND> % IF INFO CAN BE TRANSMITTED
                                                            
                             % Registering used link:
                             link2 = str2double(string(sat2) + string(sat)); % opposite direction (because if one link is used, the other should be silent
@@ -179,13 +210,13 @@ function results = heuristic_1(DISTANCE_MATRIX_CA, nodes, XIJ_CA, LINK_CAPACITY,
 %                             divergence_results(sat2) = divergence_results(sat2) + transmitted_info; % dektis, pairnei pliroforia
 
                               % Quality control report: ----------------
-                            disp(' ');
-                            disp('> Action:');
-                            disp('flow: '+string(sat)+' -> '+string(sat2)+': '+string(transmitted_info));
-                            disp('[~Report]: Main role vectors change to:');
-                            disp('INF_TR_VECTOR:'); disp(1:length(nodes)); disp(INF_TR_VECTOR);
-                            disp('link_capacity_vector:'); disp(new_xij); disp(link_capacity_vector);
-                            disp('link_rates_vector:'); disp(link_rates_vector);
+%                             disp(' ');
+%                             disp('> Action:');
+%                             disp('flow: '+string(sat)+' -> '+string(sat2)+': '+string(transmitted_info));
+%                             disp('[~Report]: Main role vectors change to:');
+%                             disp('INF_TR_VECTOR:'); disp(1:length(nodes)); disp(INF_TR_VECTOR);
+%                             disp('link_capacity_vector:'); disp(new_xij); disp(link_capacity_vector);
+%                             disp('link_rates_vector:'); disp(link_rates_vector);
                        elseif INF_TR_VECTOR(sat) == 0
 %                              disp('Outs of info');
                              break; % if there is no remaining info o obe transmitted for now, then move to next satellite
@@ -198,10 +229,10 @@ function results = heuristic_1(DISTANCE_MATRIX_CA, nodes, XIJ_CA, LINK_CAPACITY,
                end % end for closest to stations nodes
            end % end for every satellite
         end % end of rounds 
-        disp('> End of epoch results:')
-        disp('INF_TR_VECTOR:'); disp(INF_TR_VECTOR);
-        disp('link_capacity_vector:'); disp(link_capacity_vector);
-        disp('link_rates_vector:'); disp(link_rates_vector);
+%         disp('> End of epoch results:')
+%         disp('INF_TR_VECTOR:'); disp(INF_TR_VECTOR);
+%         disp('link_capacity_vector:'); disp(link_capacity_vector);
+%         disp('link_rates_vector:'); disp(link_rates_vector);
         
         buffer_results_ca{epoch} = [INF_TR_VECTOR(1:(length(INF_TR_VECTOR)-NUMBER_OF_STATIONS)), zeros(1,NUMBER_OF_STATIONS)]; % PETAW OTI INFO PERISSEPSE TWN STATIONS
         previous_buffer = 0;
@@ -218,9 +249,12 @@ function results = heuristic_1(DISTANCE_MATRIX_CA, nodes, XIJ_CA, LINK_CAPACITY,
     for i = 1:length(flows_results_ca)
         final = [final, flows_results_ca{i}];
     end
-    disp('[~Report:] End of heuristic_1.')
-    disp('Final result:');
-    disp(final); 
-    disp('________________________________________________________________________________________________________________________');
-    results = final ;
+%     disp('[~Report:] End of heuristic_1.')
+%     disp('Final result:');
+%     disp(final); 
+%     disp('________________________________________________________________________________________________________________________');
+    
+    results_ca{1} = final; % final result
+    results_ca{2} = toc; % time performance
+    results = results_ca ;
 end

@@ -45,7 +45,7 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     axis([-earth_radius-200 earth_radius+200 -earth_radius-200 earth_radius+200 -earth_radius-200 earth_radius+200]); %setting up figure size
     end       
 
-    disp("|========================================= INSIDE PART 2 =============================================|")
+%     disp("|========================================= INSIDE PART 2 =============================================|")
     nodes = create_nodes(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, INVERSE_VELOCITIES_SATEL, ... 
                          INVERSE_VELOCITIES_STATIONS, RANDOM_VELOCITIES, THETA_PHI, INIT_POS); 
 %     for node = 1:length(nodes)
@@ -92,10 +92,13 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     distances_ca = {}; % euclidean distances between entities cell array
     list_num_links = null(1,1); % number of undirectional links per epoch
     for epoch = 1:times
-       disp(''); disp(''); % break 2 lines
-       disp('> EPOCH ' + string(epoch) + ' ===============================================================================================|')
+%        disp(''); disp(''); % break 2 lines
+%        disp('> EPOCH ' + string(epoch) + ' ===============================================================================================|')
        %Coordinates ---------------------------
        coords = [];
+%        disp( length(nodes(1).lifetime_coordinates(1,:)) ) % debug
+%        pause % debug %  OUT OF BOUNDS ERROR:
+%        length(lifetime_coordinates) < total number of epochs
        for j = 1:length(nodes) % [longitude][latitude][altitude]
           coords = [coords; ...
                     nodes(j).lifetime_coordinates(:,epoch)' ];
@@ -170,7 +173,7 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
            delete(earth)
        end
     end
-    disp('[~Report:] Final epoch reached!')
+%     disp('[~Report:] Final epoch reached!')
     Aeq = asMultAeqs(Aeqs_cell_array);
     if PRINT_DETAILS
          disp('| FINAL Aeq: ____________________________________________________________________________________________|')
@@ -193,7 +196,7 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     upper_bounds = create_upper_bounds(NUMBER_OF_SATELLITES, list_num_links, list_num_station_links, nodes, STOP_AT_TIME, LINK_CAPACITY);
     lower_bounds = zeros(1,length(Aeq(1,:))); % remains the same as in PART_1
     
-    disp('[~Report:] Done!')
+%     disp('[~Report:] Done!')
     if PRINT_DETAILS
         disp('|- - -------\ (beq) EQUALITY VECTOR /---------------- - -|')
         disp(beq)
@@ -221,20 +224,31 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     
     % Optimal results (using convex optimizasion)
     if strcmp(SOLVER,'fmincon')
+        tic
         opt_results = fmincon(objective_function, x0, A, b, Aeq, beq', lower_bounds', upper_bounds'); % zeros(size(1:(num_of_links*2+n))) -> every rate should be positive
+        execution_time = toc;
     elseif strcmp(SOLVER,'linprog')
     % Optimal results (using linear programming)
+        tic
         opt_results = linprog(coefs, A, b, Aeq, beq', lower_bounds', upper_bounds'); % zeros(size(1:(num_of_links*2+n))) -> every rate should be positive
+        execution_time = toc;
         opt_results = opt_results';
-    elseif strcmp(SOLVER,'heuristic_1')
+    elseif strcmp(SOLVER,'heuristic_1_closest')
     % Heuristic results:
-        opt_results = heuristic_1(distances_ca, nodes, xij_ca, LINK_CAPACITY, NUMBER_OF_SATELLITES, 30);
+        heuristic_1_ca = heuristic_1(distances_ca, nodes, xij_ca, LINK_CAPACITY, NUMBER_OF_SATELLITES, 30, 'closest');
+        opt_results = heuristic_1_ca{1};
+        execution_time = heuristic_1_ca{2};
+    elseif strcmp(SOLVER,'heuristic_1_fastest')
+    % Heuristic results:
+        heuristic_1_ca = heuristic_1(distances_ca, nodes, xij_ca, LINK_CAPACITY, NUMBER_OF_SATELLITES, 30, 'fastest');
+        opt_results = heuristic_1_ca{1};
+        execution_time = heuristic_1_ca{2};
     end
 
-    disp('---------- OPTIMIZATION RESULTS ----------------------------------------------------------------')
-    disp(opt_results)
-    disp('------------------------------------------------------------------------------------------------')
-    out = opt_results;
+%     disp('---------- OPTIMIZATION RESULTS ----------------------------------------------------------------')
+%     disp(opt_results)
+%     disp('------------------------------------------------------------------------------------------------')
+%     out = opt_results;
 
     
     %%% Create Simple Graph (figure): _____________________________________
@@ -290,11 +304,16 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
         temp = length(opt_divergencies_ca{i});
         total_utility = total_utility + sum(opt_divergencies_ca{i}((NUMBER_OF_SATELLITES+1):temp));
     end
-    disp('+ + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +')
-    disp('+ + + '+ SOLVER + ' total utility (sum of station divs)(abs): ' + string(abs(total_utility)))
-    disp('+ + +  Average total information received by stations per epoch: '+ string(calculate_delay_v1(opt_divergencies_ca, NUMBER_OF_SATELLITES)))
-    disp('+ + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +')
-    
-    GraphMap(NUMBER_OF_STATIONS, NUMBER_OF_SATELLITES, coords_ca, opt_flows_ca, opt_buffers_ca, opt_divergencies_ca, xij_ca, nodes,'light',SOLVER); % using fmincon/linprog results
+    delay = calculate_delay_v1(opt_divergencies_ca, NUMBER_OF_SATELLITES);
+
+%     disp('+ + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +')
+%     disp('+ + + '+ SOLVER + ' total utility (sum of station divs)(abs): ' + string(abs(total_utility)))
+%     disp('+ + + Delay: '+ string(delay))
+%     disp('+ + + Time performance: '+ string(execution_time))
+%     disp('+ + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +')
+%     
+    out = [abs(total_utility), delay, execution_time];
+
+    %     GraphMap(NUMBER_OF_STATIONS, NUMBER_OF_SATELLITES, coords_ca, opt_flows_ca, opt_buffers_ca, opt_divergencies_ca, xij_ca, nodes,'dark',SOLVER); % using fmincon/linprog results
     
 end% end of main function

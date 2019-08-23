@@ -11,7 +11,7 @@ function out = create_nodes(num_satelites, num_stations, sat_inverse_vel, stat_i
 % - theta_phi: arg_theta and arg_phi values.
 
     earth_radius = 200;
-    rounds = 10;
+    periods = 10;
     matr = [ ];
     inverse_velocities = [sat_inverse_vel, stat_inverse_vel]; % the bigger the value the slower the velocity
     
@@ -26,16 +26,16 @@ function out = create_nodes(num_satelites, num_stations, sat_inverse_vel, stat_i
 %     inverse_velocities = inverse_velocities * 1000;
        
     % Constructing satelites & stations:
-%     initializer_difs = (0:(num_satelites+num_stations-1))*27; %used to initialiaze satelites at different positions in order to not overlap each other
-    initializer_difs = init_pos; % UNCOMMENT THIS TO RUN THE SIMPLE COMPARISON EXAMPLE 
+    initializer_difs = (0:(num_satelites+num_stations-1))*27; %used to initialiaze satelites at different positions in order to not overlap each other
+%     initializer_difs = init_pos; % UNCOMMENT THIS TO RUN THE SIMPLE COMPARISON EXAMPLE 
     for i = 1:(num_satelites + num_stations)
         if i <= num_satelites 
-            matr = [matr, satelite3D(theta_phi_ca{i}(1), theta_phi_ca{i}(2), earth_radius+50, 20 + initializer_difs(i), rounds, inverse_velocities(i), 'satellite')];
+            matr = [matr, satelite3D(theta_phi_ca{i}(1), theta_phi_ca{i}(2), earth_radius+50, 20 + initializer_difs(i), periods, inverse_velocities(i), 'satellite')];
         else
-            matr = [matr, satelite3D(theta_phi_ca{i}(1), theta_phi_ca{i}(2), earth_radius, 200 + initializer_difs(i)*4, rounds, inverse_velocities(i), 'station')];
+            matr = [matr, satelite3D(theta_phi_ca{i}(1), theta_phi_ca{i}(2), earth_radius, 200 + initializer_difs(i)*4, periods, inverse_velocities(i), 'station')];
         end
     end
     
-    disp('[~Report:] Satellites and stations successfully created')
+%     disp('[~Report:] Satellites and stations successfully created')
     out = matr;
 end
