@@ -1,5 +1,5 @@
 function out = asMultAeqs(Aeqs_cell_array)
-% Assembles the Aeqs_cell_array. 
+% Assembles the Aeqs_cell_array. -> (as)semble (Mult)iple Aeqs.
 % Each element of Aeqs_cell_array corresponds to a Aeq matrix containingf
 % the Aeq matrix of epoch i. Each Aeq contains the current buffer but not
 % the previous.

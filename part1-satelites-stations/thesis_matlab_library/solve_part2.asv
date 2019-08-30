@@ -189,10 +189,9 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
          disp('| FINAL Aeq: ____________________________________________________________________________________________|')
          disp(Aeq)
     end
-    beq = zeros(length(Aeq(:,1)),1); % OTHER KIRCHOFF EQUALITY PART
+    beq = zeros(1,length(Aeq(:,1))); % OTHER KIRCHOFF EQUALITY PART
     
-%     A = []; b=[];
-    A = create_R_capacity(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, xij_ca, Aeqs_cell_array, distances_ca,LINK_CAPACITY);
+    A = [];
     b = ones(length(A(:,1)),1);
 
     % At upper_bounds vector, flows & buffers should have a bound. Divergencies not
@@ -228,12 +227,12 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     % Optimal results (using convex optimizasion)
     if strcmp(SOLVER,'fmincon')
         tic
-        opt_results = fmincon(objective_function, x0, A, b, Aeq, beq, lower_bounds', upper_bounds'); % zeros(size(1:(num_of_links*2+n))) -> every rate should be positive
+        opt_results = fmincon(objective_function, x0, A, b, Aeq, beq', lower_bounds', upper_bounds'); % zeros(size(1:(num_of_links*2+n))) -> every rate should be positive
         execution_time = toc;
     elseif strcmp(SOLVER,'linprog')
     % Optimal results (using linear programming)
         tic
-        opt_results = linprog(coefs, A, b, Aeq, beq, lower_bounds', upper_bounds'); % zeros(size(1:(num_of_links*2+n))) -> every rate should be positive
+        opt_results = linprog(coefs, A, b, Aeq, beq', lower_bounds', upper_bounds'); % zeros(size(1:(num_of_links*2+n))) -> every rate should be positive
         execution_time = toc;
         opt_results = opt_results';
     elseif strcmp(SOLVER,'heuristic_1_closest')
