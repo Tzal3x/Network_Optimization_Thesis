@@ -191,9 +191,9 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     end
     beq = zeros(length(Aeq(:,1)),1); % OTHER KIRCHOFF EQUALITY PART
     
-%     A = []; b=[];
+%     A = []; b=[]; % if there arent any inequalities
     A = create_R_capacity(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, xij_ca, Aeqs_cell_array, distances_ca,LINK_CAPACITY);
-    b = ones(length(A(:,1)),1);
+    b = ones(length(A(:,1)),1); % iso me ton arithmo seirwn tou A
 
     % At upper_bounds vector, flows & buffers should have a bound. Divergencies not
     upper_bounds = create_upper_bounds(NUMBER_OF_SATELLITES, list_num_links, list_num_station_links, nodes, STOP_AT_TIME, LINK_CAPACITY);

@@ -1,12 +1,6 @@
-function out = create_R_capacity(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, xij_ca, Aeqs_cell_array, distances_ca,LINK_CAPACITY)
-% Creates A matrix. (Remember: Ax<=b)
-% Adding variable constraints relative to the distances between nodes.
-% Link capacities should have the form of x1/R1 + ... + xn/Rn <= 1 
-% Where x1 and xn are the *OUTFLOWS* of a node, and Ri the link capacities
-% that are calculated as a decreasing function with distance as output
-% (i.e. R(d) = -a*d + C, C <- max capacity, and 0 < a < 1)
-% e.g. R(d) = -0.5*log(d) + 20, we use log(d) because distances have large
-% values.
+function out = create_R_capacity(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, xij_ca, Aeqs_cell_array, distances_ca, LINK_CAPACITY)
+% Creates A matrix v.2.1 (Containing interference factor)
+
    total_epochs = length(xij_ca);
    num_nodes = NUMBER_OF_SATELLITES + NUMBER_OF_STATIONS;
    
@@ -19,13 +13,13 @@ function out = create_R_capacity(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, xij_c
    % Get all links per epoch:
    mat_xij = {};
    for epoch = 1:total_epochs
-       xij = xij_ca{epoch};
-       mat_xij{epoch} = zeros(length(xij),2);
+       links = xij_ca{epoch};
+       mat_xij{epoch} = zeros(length(links),2);
        unwanted = null(1,1); 
-       for i = 1:length(xij)
-           mat_xij{epoch}(i,1) = xij{i}(2);
-           mat_xij{epoch}(i,2) = xij{i}(3);
-           if xij{i}(1) == -1
+       for i = 1:length(links)
+           mat_xij{epoch}(i,1) = links{i}(2);
+           mat_xij{epoch}(i,2) = links{i}(3);
+           if links{i}(1) == -1
                unwanted = [unwanted, i];
            end
        end
@@ -39,48 +33,51 @@ function out = create_R_capacity(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, xij_c
        mat_xij{epoch} = [mat_xij{epoch};...  
                          temp]; 
    end
+   
    % Construct A matrix:
-   A = null(1,sum(lenAeqs));
+   A = null(1,1);
    for epoch = 1:total_epochs
-%         disp("EPOCH ______ "+ string(epoch))
-
        % Epoch's characteristics
-       links_parents = mat_xij{epoch}; % matrix
-       distances = distances_ca{epoch};
-              
-       Atemp = zeros(num_nodes,lenAeqs(epoch)); % (!)
-       for node = 1:num_nodes
-%            disp("NODE: "+string(node)); % DEBUG
-                    
-           links_in_use = links_parents(links_parents(:,1) == node,:); % select the links that the given node is a parent of.        
-           which_links = find(links_parents(:,1) == node); % which links are in use
-%            disp("links_parents")% debug
-%            disp(links_parents)% debug
-%            disp("links_in_use") % debug
-%            disp(links_in_use)% debug
-%            disp("which_links")% debug
-%            disp(which_links)% debug
+       links = mat_xij{epoch}; % matrix [parent 1, parent2 ; parent 1 parent2; ...]
+       if isempty(links)
+          continue;
+       end          
            
-           if ~isempty(links_in_use)
-               for i = 1:length(which_links)
-                   Atemp(node, which_links(i)) = (LINK_CAPACITY - 0.5 * log(distances(links_in_use(i,1),links_in_use(i,2))); % R(d)^(-1)
-               end % end for
-           end % end if
-       end % end for each node  
+       distances = distances_ca{epoch};
+       num_links = length(links(:,1));
+       
+       % Construct R(d) vector for every link:
+       Atemp = null(1); % (!)
+       for link1 = 1:num_links % for every link
+           par_1 = links(link1,1);
+           par_2 = links(link1,2);
+           temp_Rd_vector = zeros(1, num_links); % each row corresponds to a part of A matrix row.
+           for link2 = 1:num_links % iterate every other link and pick it if...
+              temp_par_1 = links(link2,1);
+              temp_par_2 = links(link2,2);
+              if (temp_par_1 == par_1) || (temp_par_1 == par_2) || (temp_par_2 == par_1) || (temp_par_2 == par_2)
+                 temp_Rd_vector(link2) = (LINK_CAPACITY - 0.5 * log( distances(temp_par_1, temp_par_2) ))^(-1); % R(d)^(-1)
+              end
+           end
+           Atemp = [Atemp; temp_Rd_vector];
+       end % end for each link 
+       disp("DEBUG PAUSE RD")
+       disp(Atemp);pause;% DEBUG
        
        % Add previous and future variable zero coefs
-%        disp("lenAeqs:") % DEBUG
-%        disp(lenAeqs) % DEBUG
+       disp("lenAeqs:") % DEBUG
+       disp(lenAeqs) % DEBUG
        if epoch == 1
-           right_pad = zeros(num_nodes,sum(lenAeqs(epoch+1:length(lenAeqs))));
+           right_pad = zeros(num_links,sum(lenAeqs(epoch+1:length(lenAeqs))));
 %            disp("right_pad size:")
 %            disp(size(right_pad))
 %            disp("Atemp size:")
 %            disp(size(Atemp))
+%            pause;
            Atemp = [Atemp, right_pad];
        elseif epoch < total_epochs
-           left_pad = zeros(num_nodes, sum(lenAeqs(1:(epoch-1))));
-           right_pad = zeros(num_nodes,sum(lenAeqs((epoch+1):length(lenAeqs))));
+           left_pad = zeros(num_links, sum(lenAeqs(1:(epoch-1))));
+           right_pad = zeros(num_links,sum(lenAeqs((epoch+1):length(lenAeqs))));
 %            disp("right_pad size:")
 %            disp(size(right_pad))
 %            disp("left_pad size:")
@@ -89,20 +86,19 @@ function out = create_R_capacity(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, xij_c
 %            disp(size(Atemp))
            Atemp = [left_pad, Atemp, right_pad];
        elseif epoch == total_epochs
-           left_pad = zeros(num_nodes, sum(lenAeqs(1:(epoch-1))));
+           left_pad = zeros(num_links, sum(lenAeqs(1:(epoch-1))));
+           right_pad = zeros(num_links, sum(lenAeqs(1:(epoch-1))));
 %            disp("left_pad size:")
 %            disp(size(left_pad))
 %            disp("Atemp size:")
 %            disp(size(Atemp))
            Atemp = [left_pad, Atemp];
        end
-       pause % debug
 
        % Row bind every A row:
         A = [A ; 
             Atemp];
    end % end for each epoch
    disp(A)
-   pause
    out = A;
 end % end function
