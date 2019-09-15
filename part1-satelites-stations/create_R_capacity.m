@@ -61,12 +61,8 @@ function out = create_R_capacity(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, xij_c
            end
            Atemp = [Atemp; temp_Rd_vector];
        end % end for each link 
-       disp("DEBUG PAUSE RD")
-       disp(Atemp);pause;% DEBUG
        
        % Add previous and future variable zero coefs
-       disp("lenAeqs:") % DEBUG
-       disp(lenAeqs) % DEBUG
        if epoch == 1
            right_pad = zeros(num_links, num_nodes*2 + sum(lenAeqs(epoch+1:length(lenAeqs))));
 %            disp("right_pad size:")
@@ -99,6 +95,6 @@ function out = create_R_capacity(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, xij_c
         A = [A ; 
             Atemp];
    end % end for each epoch
-   disp(A)
+%    disp(A)
    out = A;
 end % end function

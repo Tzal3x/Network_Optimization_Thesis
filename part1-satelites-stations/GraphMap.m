@@ -17,7 +17,7 @@ function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buf
     else % light theme
         coastline_color = [0 0 1, 0.07]; % blue
         satellite_color = [0 0 1]; % blue
-        satellite_orbits_color = [0 0 1, 0.07];
+        satellite_orbits_color = [0 0 1, 0.12];
         station_color = [1 0 0];% red
         node_text_color_sat = 'blue';
         node_text_color_stat = 'red';
@@ -45,7 +45,8 @@ function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buf
             color = [1 0 0, 0.03];
         end            
         geoshow(rad2deg(long),rad2deg(lat),'LineStyle','--','displaytype','line','color',color,...
-                      'markeredgecolor','r','marker','none');
+                      'markeredgecolor','r','marker','none'); % marker 'none'
+        
     end
 
     for epoch = 1:total_epochs

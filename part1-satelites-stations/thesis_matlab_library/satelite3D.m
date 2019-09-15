@@ -18,10 +18,11 @@ classdef satelite3D < handle
            The bigger the second parameter of linspace is, the faster the
            satellite moves (given a constant step (arg_vel).
            %}
+          
            if arg_vel >= 0
-                steps = linspace(arg_init_pos, arg_init_pos + arg_periods*360, arg_vel); % [+number] is the new thing
+                steps = linspace(arg_init_pos, arg_init_pos + arg_periods*360, arg_vel + 1); % [+number] is the new thing
            elseif arg_vel < 0 
-                steps = -linspace(arg_init_pos, arg_init_pos + arg_periods*360, -arg_vel);
+                steps = -linspace(arg_init_pos, arg_init_pos + arg_periods*360, -arg_vel + 1);
 %            elseif arg_vel == 0
 %                 steps = zeros(1,arg_periods);
            end

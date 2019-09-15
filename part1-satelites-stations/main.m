@@ -18,12 +18,12 @@ RANDOM_VELOCITIES = false; % boolean, default false
 INVERSE_VELOCITIES_SATEL = ones(1,NUMBER_OF_SATELLITES) * 1 * 100; % smaller value -> faster, it can be a vector of the desirable speeds [v1 v2 ... vn], where n == NUMBER_OF_SATELLITES
 % INVERSE_VELOCITIES_SATEL = [-1, 1]* 100; % 1000
 INVERSE_VELOCITIES_STATIONS = ones(1,NUMBER_OF_STATIONS) * 800 * 1000; %80=moving, 800=almost imovable % larger value -> slower, >> >> >> >> >> >> >> >> >> >> >> >> 
-STOP_AT_TIME = 2; % == EPOCHS integer, declares when the time should be stopped
+STOP_AT_TIME = 1; % == EPOCHS integer, declares when the time should be stopped
 % THETA_PHI = [0  20]; % 30, 60
 LINK_CAPACITY = 20; % WARNING! LINK_CAPACITY must be equal to ...
 COMMUNICATION_RANGE = 150; % Default: 150; (oldest)
-PRINT_DETAILS = true; % true/false: Displays optimization problem's details (distance matrix, parameter s (Aeq, beq, A, b, l, ...) etc)
-PRINT_MAIN_PARAMETERS = true;
+PRINT_DETAILS = false; % true/false: Displays optimization problem's details (distance matrix, parameter s (Aeq, beq, A, b, l, ...) etc)
+PRINT_MAIN_PARAMETERS = false;
 SHOW_TOPOLOGY = false; % 3D topology with spheres
 THETA_PHI_ca = {}; % I have defined different inclinations of orbits for satellites and stations
 
@@ -60,8 +60,8 @@ for i = 1:(NUMBER_OF_SATELLITES + NUMBER_OF_STATIONS)
     end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SOLVER = "heuristic_1_closest"; 
-SOLVER = "linprog";
+SOLVER = "heuristic_1_closest"; 
+% SOLVER = "linprog";
 % SOLVER = "fmincon";
 
 
@@ -94,11 +94,11 @@ end
 % disp('_____________________________')
 %%%%%%% ----------------------------------------------------------------------
 res_present_text = ["Utility score: ", "Delay: ","Execution time: "];
-dyo = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELOCITIES, INVERSE_VELOCITIES_SATEL,...
-                    INVERSE_VELOCITIES_STATIONS, STOP_AT_TIME, THETA_PHI_ca, LINK_CAPACITY, PRINT_DETAILS,...
-                    PRINT_MAIN_PARAMETERS, SHOW_TOPOLOGY, COMMUNICATION_RANGE, SOLVER, INIT_POS);
-disp(SOLVER + " results:")
-disp(res_present_text+string(dyo));
+% dyo = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELOCITIES, INVERSE_VELOCITIES_SATEL,...
+%                     INVERSE_VELOCITIES_STATIONS, STOP_AT_TIME, THETA_PHI_ca, LINK_CAPACITY, PRINT_DETAILS,...
+%                     PRINT_MAIN_PARAMETERS, SHOW_TOPOLOGY, COMMUNICATION_RANGE, SOLVER, INIT_POS);
+% disp(SOLVER + " results:")
+% disp(res_present_text+string(dyo));
 % disp("paused..."); pause;
 
 
