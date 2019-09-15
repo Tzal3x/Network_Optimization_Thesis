@@ -12,13 +12,13 @@ addpath C:\Users\User\Documents\GitHub\Network_Optimization_Thesis\part1-satelit
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 % - - - - - - - - - - - + + + + + + \ M E N U / + + + + + + - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
-NUMBER_OF_SATELLITES = 4; %4; %10; % integer, default 2
-NUMBER_OF_STATIONS = 2; %2; %3; % integer, default 1
+NUMBER_OF_SATELLITES = 3; %4; %10; % integer, default 2
+NUMBER_OF_STATIONS = 1; %2; %3; % integer, default 1
 RANDOM_VELOCITIES = false; % boolean, default false
 INVERSE_VELOCITIES_SATEL = ones(1,NUMBER_OF_SATELLITES) * 1 * 100; % smaller value -> faster, it can be a vector of the desirable speeds [v1 v2 ... vn], where n == NUMBER_OF_SATELLITES
 % INVERSE_VELOCITIES_SATEL = [-1, 1]* 100; % 1000
 INVERSE_VELOCITIES_STATIONS = ones(1,NUMBER_OF_STATIONS) * 800 * 1000; %80=moving, 800=almost imovable % larger value -> slower, >> >> >> >> >> >> >> >> >> >> >> >> 
-STOP_AT_TIME = 1; % == EPOCHS integer, declares when the time should be stopped
+STOP_AT_TIME = 20; % == EPOCHS integer, declares when the time should be stopped
 % THETA_PHI = [0  20]; % 30, 60
 LINK_CAPACITY = 20; % WARNING! LINK_CAPACITY must be equal to ...
 COMMUNICATION_RANGE = 150; % Default: 150; (oldest)
@@ -124,7 +124,7 @@ fprintf(fid3, '%s,%s,%s,%s,%s\n', ["Total_epochs","Node Group","heuristic_1_clos
 SATELLITE_VECTOR = [4,16,32,64]; % number of satellites per epoch
 STATION_VECTOR = ceil(log2(SATELLITE_VECTOR)); % number of stations per epoch = log2 of #sats
 for epoch = MAX_TOTAL_EPOCHS
-    for numnodes = 1:length(SATELLITE_VECTOR)
+    for numnodes = 2:2%1:length(SATELLITE_VECTOR)
         NUMBER_OF_SATELLITES = SATELLITE_VECTOR(numnodes); 
         NUMBER_OF_STATIONS =  STATION_VECTOR(numnodes);
         STOP_AT_TIME = epoch;
