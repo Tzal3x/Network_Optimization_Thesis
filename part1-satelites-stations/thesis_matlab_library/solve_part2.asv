@@ -31,18 +31,28 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     % A vector consisting of optimal values
     % ---------------------------------------------------------------------
     
+    record = false
+    
+    %%%% Create matlab video:
+    if record
+        writerObj = VideoWriter('C:\Users\User\Desktop\3D sphere rotation.avi'); % Name it.
+        writerObj.FrameRate = 10; % How many frames per second.
+        open(writerObj); 
+    end        
     % Setting up figure display options: - - - - - - - - - - - - - - - - -
     earth_radius = 200;
     if SHOW_TOPOLOGY
-    figure('Name','3D Simulation of satelite orbits');
-    title("satelites:"+string(NUMBER_OF_SATELLITES)+...
-          ", stations:"+string(NUMBER_OF_STATIONS)+...
-          ", random velocities:"+string(RANDOM_VELOCITIES)+...
-          ", total epochs:"+string(STOP_AT_TIME));
-        hold on; % keep plotting on the existing figure
-        axis equal
-        view(30,0)% setting azemuth and elevation angles of camera for nicer visualization 
-    axis([-earth_radius-200 earth_radius+200 -earth_radius-200 earth_radius+200 -earth_radius-200 earth_radius+200]); %setting up figure size
+%         figure('Name','3D Simulation of satelite orbits');
+%         title("satelites:"+string(NUMBER_OF_SATELLITES)+...
+%               ", stations:"+string(NUMBER_OF_STATIONS)+...
+%               ", random velocities:"+string(RANDOM_VELOCITIES)+...
+%               ", total epochs:"+string(STOP_AT_TIME));
+            hold on; % keep plotting on the existing figure
+            axis equal
+            axis off
+            view(120,0)% setting azemuth and elevation angles of camera for nicer visualization 
+        level = 70;
+        axis([-earth_radius-level earth_radius+level -earth_radius-level earth_radius+level -earth_radius-level earth_radius+level]); %setting up figure size
     end       
 
 %     disp("|========================================= INSIDE PART 2 =============================================|")
@@ -91,6 +101,7 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     coords_ca = {}; % coords cell array containing the coords matrix of every epoch
     distances_ca = {}; % euclidean distances between entities cell array
     list_num_links = null(1,1); % number of undirectional links per epoch
+    
     for epoch = 1:times
 %        disp(''); disp(''); % break 2 lines
 %        disp('> EPOCH ' + string(epoch) + ' ===============================================================================================|')
@@ -166,15 +177,23 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
                break
            end
        if SHOW_TOPOLOGY
+           if record
+               frame = getframe(gcf); % 'gcf' can handle if you zoom in to take a movie.
+               writeVideo(writerObj, frame);
+           end
            %Delete (to create the animation illusion)
-           pause(0.01) %WARNING: all 'delete' (for graphic objects) functions must be after the 'pause' function 
+           pause(0.001) %WARNING: all 'delete' (for graphic objects) functions must be after the 'pause' function 
            for j = 1:length(displays)
               delete(displays(j))
            end
            delete(earth)
        end
     end
-%     disp('[~Report:] Final epoch reached!')
+    if record
+        close(writerObj); % Saves the movie.
+    end
+    disp('[~Report:] Final epoch reached!')
+    pause 
 %===================================================================================================================================================
 %===================================================================================================================================================
 %===================================================================================================================================================
@@ -186,15 +205,16 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     %%%% Constructing the function
     Aeq = asMultAeqs(Aeqs_cell_array);
     if PRINT_DETAILS
-         disp('| FINAL Aeq: ____________________________________________________________________________________________|')
+         disp('|- - -------\ (Aeq) EQUALITY MATRIX /---------------- - -|')
          disp(Aeq)
     end
     beq = zeros(length(Aeq(:,1)),1); % OTHER KIRCHOFF EQUALITY PART
     
 %     A = []; b=[]; % if there arent any inequalities
-    A = create_R_capacity(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, xij_ca, Aeqs_cell_array, distances_ca,LINK_CAPACITY);
+    A = create_R_capacity(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, xij_ca, Aeqs_cell_array, distances_ca,LINK_CAPACITY);    
     b = ones(length(A(:,1)),1); % iso me ton arithmo seirwn tou A
 
+    
     % At upper_bounds vector, flows & buffers should have a bound. Divergencies not
     upper_bounds = create_upper_bounds(NUMBER_OF_SATELLITES, list_num_links, list_num_station_links, nodes, STOP_AT_TIME, LINK_CAPACITY);
     lower_bounds = zeros(1,length(Aeq(1,:))); % remains the same as in PART_1
@@ -203,6 +223,15 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     if PRINT_DETAILS
         disp('|- - -------\ (beq) EQUALITY VECTOR /---------------- - -|')
         disp(beq)
+        if ~isempty(A)
+            disp('|- - -------\ (A) INEQUALITY MATRIX /---------------- - -|')
+            disp(A.^(-1)) % .^(-1) -> debug 
+        end
+        
+        if ~isempty(b)
+            disp('|- - -------\ (b) INEQUALITY VECTOR /---------------- - -|')
+            disp(b)
+        end
         disp('|- - -------\ UPPER BOUNDS /--------- - -|')
         disp(upper_bounds)
         disp('|- - -------\ LOWER BOUNDS /---------- - -|')
@@ -318,6 +347,6 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     out = [abs(total_utility), delay, execution_time];
 
     % Comment this out if you want to do multiple runs: (multiple senario comparisons)
-%     GraphMap(NUMBER_OF_STATIONS, NUMBER_OF_SATELLITES, coords_ca, opt_flows_ca, opt_buffers_ca, opt_divergencies_ca, xij_ca, nodes,'light',SOLVER); % using fmincon/linprog results
+    GraphMap(NUMBER_OF_STATIONS, NUMBER_OF_SATELLITES, coords_ca, opt_flows_ca, opt_buffers_ca, opt_divergencies_ca, xij_ca, nodes,'light',SOLVER); % using fmincon/linprog results
     
 end% end of main function

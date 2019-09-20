@@ -56,7 +56,7 @@ function out = create_R_capacity(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, xij_c
               temp_par_1 = links(link2,1);
               temp_par_2 = links(link2,2);
               if (temp_par_1 == par_1) || (temp_par_1 == par_2) || (temp_par_2 == par_1) || (temp_par_2 == par_2)
-                 temp_Rd_vector(link2) = (LINK_CAPACITY - 0.5 * log( distances(temp_par_1, temp_par_2) ))^(-1); % R(d)^(-1)
+                 temp_Rd_vector(link2) = (LINK_CAPACITY - 0.5 * log( distances(temp_par_1, temp_par_2)+1 ))^(-1); % R(d)^(-1)
               end
            end
            Atemp = [Atemp; temp_Rd_vector];

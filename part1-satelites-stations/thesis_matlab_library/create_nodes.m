@@ -33,7 +33,7 @@ function out = create_nodes(num_satelites, num_stations, sat_inverse_vel, stat_i
         if i <= num_satelites 
             matr = [matr, satelite3D(theta_phi_ca{i}(1), theta_phi_ca{i}(2), earth_radius+50, 20 + initializer_difs(i), periods, inverse_velocities(i), 'satellite')];
         else
-            matr = [matr, satelite3D(theta_phi_ca{i}(1), theta_phi_ca{i}(2), earth_radius, initializer_difs(i-num_satelites)*4 + i, periods, inverse_velocities(i), 'station')];
+            matr = [matr, satelite3D(theta_phi_ca{i}(1), theta_phi_ca{i}(2), earth_radius, initializer_difs(i-num_satelites)*2 + i, periods, inverse_velocities(i), 'station')];
         end
     end
     

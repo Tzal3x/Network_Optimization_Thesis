@@ -2,6 +2,14 @@ function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buf
     % Create a Graph projected on the World Map. Similar to GraphDists.
     % theme == 'dark' turns figure to black and the corresponding colors
     
+    %%%% Creating a Matlab video when record = true
+    record = false;
+    if record
+        writerObj = VideoWriter('C:\Users\User\Desktop\2D_graph_matlab.avi'); % Name it.
+        writerObj.FrameRate = 10; % How many frames per second.
+        open(writerObj); 
+    end 
+    
     n = length(nodes);
     figure('Name',SOLVER,'NumberTitle','off');
     if strcmp(theme, 'dark')
@@ -218,6 +226,12 @@ function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buf
         end
         disp('<hit space>')
         pause; % Delete current displays:
+        
+        if record
+           frame = getframe(gcf); % 'gcf' can handle if you zoom in to take a movie.
+           writeVideo(writerObj, frame);
+        end
+        
         for j = 1:length(lines_ca)
             delete(lines_ca{j})
         end
@@ -230,4 +244,9 @@ function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buf
         delete(animation_ca{1}); % delete satellite nodes figures
         delete(animation_ca{2}); % delete station nodes figures
     end    
+    if record
+        close(writerObj); % Saves the movie.
+        disp('[~Report:] Final epoch reached!')
+        disp("Paused...");pause 
+    end
 end
