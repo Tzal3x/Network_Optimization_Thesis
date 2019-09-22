@@ -3,15 +3,15 @@ function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buf
     % theme == 'dark' turns figure to black and the corresponding colors
     
     %%%% Creating a Matlab video when record = true
-    record = false;
+    record = true;
     if record
         writerObj = VideoWriter('C:\Users\User\Desktop\2D_graph_matlab.avi'); % Name it.
-        writerObj.FrameRate = 10; % How many frames per second.
+        writerObj.FrameRate = 2; %10 % How many frames per second.
         open(writerObj); 
     end 
     
     n = length(nodes);
-    figure('Name',SOLVER,'NumberTitle','off');
+    figure('Name',SOLVER,'NumberTitle','off','units','normalized','outerposition',[0 0 1 1]);
     if strcmp(theme, 'dark')
         set(gcf,'color','black')
         coastline_color = [0 1 1, 0.5];  % cyan, map's coastline color
@@ -225,7 +225,7 @@ function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buf
             break
         end
         disp('<hit space>')
-        pause; % Delete current displays:
+        pause(0.01); % Delete current displays:
         
         if record
            frame = getframe(gcf); % 'gcf' can handle if you zoom in to take a movie.
@@ -247,6 +247,7 @@ function GraphMap(num_stations, num_satellites, coords_ca, opt_flows_ca, opt_buf
     if record
         close(writerObj); % Saves the movie.
         disp('[~Report:] Final epoch reached!')
-        disp("Paused...");pause 
+        disp("Paused..."); 
     end
+    
 end

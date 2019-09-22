@@ -192,7 +192,7 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     if record
         close(writerObj); % Saves the movie.
         disp('[~Report:] Final epoch reached!')
-        disp("Paused...");pause 
+%         disp("Paused...");pause 
     end
 
 %===================================================================================================================================================
@@ -348,6 +348,6 @@ function out = solve_part2(NUMBER_OF_SATELLITES, NUMBER_OF_STATIONS, RANDOM_VELO
     out = [abs(total_utility), delay, execution_time];
 
     % Comment this out if you want to do multiple runs: (multiple senario comparisons)
-%     GraphMap(NUMBER_OF_STATIONS, NUMBER_OF_SATELLITES, coords_ca, opt_flows_ca, opt_buffers_ca, opt_divergencies_ca, xij_ca, nodes,'light',SOLVER); % using fmincon/linprog results
+    GraphMap(NUMBER_OF_STATIONS, NUMBER_OF_SATELLITES, coords_ca, opt_flows_ca, opt_buffers_ca, opt_divergencies_ca, xij_ca, nodes,'dark',SOLVER); % using fmincon/linprog results
     
 end% end of main function

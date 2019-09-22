@@ -12,20 +12,24 @@ addpath C:\Users\User\Documents\GitHub\Network_Optimization_Thesis\part1-satelit
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 % - - - - - - - - - - - + + + + + + \ M E N U / + + + + + + - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
-NUMBER_OF_SATELLITES = 2 ; %4; %10; % integer, default 2
-NUMBER_OF_STATIONS = 1; %2; %3; % integer, default 1
+NUMBER_OF_SATELLITES = 10; %4; %10; % integer, default 2
+NUMBER_OF_STATIONS = 4; %2; %3; % integer, default 1
 RANDOM_VELOCITIES = false; % boolean, default false
 INVERSE_VELOCITIES_SATEL = ones(1,NUMBER_OF_SATELLITES) * 1 * 100; % smaller value -> faster, it can be a vector of the desirable speeds [v1 v2 ... vn], where n == NUMBER_OF_SATELLITES
 % INVERSE_VELOCITIES_SATEL = [-1, 1]* 100; % 1000
 INVERSE_VELOCITIES_STATIONS = ones(1,NUMBER_OF_STATIONS) * 800 * 1000; %80=moving, 800=almost imovable % larger value -> slower, >> >> >> >> >> >> >> >> >> >> >> >> 
-STOP_AT_TIME = 2; % == EPOCHS integer, declares when the time should be stopped
-% THETA_PHI = [0  20]; % 30, 60
+STOP_AT_TIME = 100; % == EPOCHS integer, declares when the time should be stopped
+THETA_PHI_ca = {}; % I have defined different inclinations of orbits for satellites and stations
+% THETA_PHI_ca{1} = [-10 20]; % 30, 60
+% THETA_PHI_ca{2} = [-20 20]; 
+% THETA_PHI_ca{3} = [0 10]; 
+
+
 LINK_CAPACITY = 20; % WARNING! LINK_CAPACITY must be equal to ...
 COMMUNICATION_RANGE = 150; % Default: 150; (oldest)
 PRINT_DETAILS = false; % true/false: Displays optimization problem's details (distance matrix, parameter s (Aeq, beq, A, b, l, ...) etc)
 PRINT_MAIN_PARAMETERS = false;
 SHOW_TOPOLOGY = false; % 3D topology with spheres
-THETA_PHI_ca = {}; % I have defined different inclinations of orbits for satellites and stations
 
 % SOLVER = "heuristic_1_fastest"; % "fmincon"/"linprog"/"heuristic_1_fastest"/"heuristic_1_closest"
 
@@ -33,33 +37,33 @@ THETA_PHI_ca = {}; % I have defined different inclinations of orbits for satelli
 INIT_POS = 1:(NUMBER_OF_SATELLITES + NUMBER_OF_STATIONS)*800; % GO TO CREATE_NODES TO ACTIVATE IT
  
 %%%%%%% Demo 1: (same orbits) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-for i = 1:(NUMBER_OF_SATELLITES + NUMBER_OF_STATIONS)
-    if i <= NUMBER_OF_SATELLITES
-       THETA_PHI_ca{i} = [-10 20]; % set satellite orbits. It's not necessary to be the same for everyone.
-    else
-       THETA_PHI_ca{i} = [0 10]; % set station "orbits". Necessary to be the same.
-    end
-end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%% DIFFERENT RANDOM ORBITS
-% seeds = 1:NUMBER_OF_SATELLITES; % satel = 10, stations = 3.
-% % disp('> THETA_PHI: __________________')
 % for i = 1:(NUMBER_OF_SATELLITES + NUMBER_OF_STATIONS)
 %     if i <= NUMBER_OF_SATELLITES
-%        rng(seeds(i))
-%        random_factor1 = ceil(rand()*100-50); % [-50, 50]
-%        random_factor2 = ceil(rand()*100-50); % [-50, 50]
-%        THETA_PHI_ca{i} = [-random_factor1  random_factor2]; % set satellite orbits. It's not necessary to be the same for everyone.
+%        THETA_PHI_ca{i} = [-10 20]; % set satellite orbits. It's not necessary to be the same for everyone.
 %     else
 %        THETA_PHI_ca{i} = [0 10]; % set station "orbits". Necessary to be the same.
 %     end
-% %     disp('node: '+string(i))
-% %     disp(THETA_PHI_ca{i});
 % end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%% DIFFERENT RANDOM ORBITS
+seeds = 1:NUMBER_OF_SATELLITES; % satel = 10, stations = 3.
+% disp('> THETA_PHI: __________________')
+for i = 1:(NUMBER_OF_SATELLITES + NUMBER_OF_STATIONS)
+    if i <= NUMBER_OF_SATELLITES
+       rng(seeds(i))
+       random_factor1 = ceil(rand()*100-50); % [-50, 50]
+       random_factor2 = ceil(rand()*100-50); % [-50, 50]
+       THETA_PHI_ca{i} = [-random_factor1  random_factor2]; % set satellite orbits. It's not necessary to be the same for everyone.
+    else
+       THETA_PHI_ca{i} = [0 10]; % set station "orbits". Necessary to be the same.
+    end
+%     disp('node: '+string(i))
+%     disp(THETA_PHI_ca{i});
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-SOLVER = "heuristic_1_closest"; 
-% SOLVER = "linprog";
+% SOLVER = "heuristic_1_closest"; 
+SOLVER = "linprog";
 % SOLVER = "fmincon";
 
 

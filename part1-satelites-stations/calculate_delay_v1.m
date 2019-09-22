@@ -3,6 +3,8 @@ function out = calculate_delay_v1(opt_divergencies_ca, NUMBER_OF_SATELLITES)
     % Used to measure the delay in the network. We define delay as:
     % ((1x100)+(2x200)+(3x300))/600. 100: the number of packets transmitted
     % that arrived at stations.
+    % O mesos oros epoxwn pou xreiazodai gia na paradothei ena paketo.(?)
+    % skepsou to gia na to epivevaiwseis.
     
     sum_stat_divs = null(1,1); % sum of station divergences PER EPOCH(total info received in given epoch)
     total_epochs = length(opt_divergencies_ca);
